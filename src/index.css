@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
-* {
-  font-family: "Syne", sans-serif;
-}
-
 :root {
-  --main: #333333;
+	--main: #333333;
+	--primary:#EBDFD1;
+	--secondary: #E9E8E6;
+    
+}
+* {
+	font-family: "Syne" , sans-serif;
 }
