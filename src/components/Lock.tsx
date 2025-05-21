@@ -57,18 +57,18 @@ const Lock = () => {
       <Header />
       <div className=" flex flex-col gap-5 items-center justify-center text-center py-6">
         <div>
-          <h2 className=" font-syne font-bold text-[30px] bold text-(--background)">{formattedTime}</h2>
-          <p className=" font-syne font-bold text-[14px] text-(--background)">{formattedDate(currentTime)}</p>
+          <h2 className=" font-syne font-bold text-[30px] bold text-(--main)">{formattedTime}</h2>
+          <p className=" font-syne font-bold text-[14px] text-(--main)">{formattedDate(currentTime)}</p>
         </div>
         <div className="font-syne font-bold">
           <div className="text-[16px] text-(--eye-icon)">Welcome back</div>
-          <div className="text-[22px] text-(--background)">Kartik</div>
+          <div className="text-[22px] text-(--main)">Kartik</div>
         </div>
 
         <input
           type="password"
           value={pin}
-          className="border-2 border-(--background)/50 rounded-xl
+          className="border-2 border-(--main)/50 rounded-xl
           py-2 px-15 mb-5 text-center text-2xl w-2xs" />
 
         <div className="grid grid-cols-3 gap-5 text-2xl">
