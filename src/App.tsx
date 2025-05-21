@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Customers from "./components/Customers";
@@ -18,6 +19,15 @@ function App() {
         <Route path="/inventory" element={<Inventory />} />
       </Routes>
     </BrowserRouter>
+=======
+import Lock from "./components/Lock";
+
+function App() {
+  return (
+    <>
+     <Lock />
+    </>
+>>>>>>> 51f7f0c (Lock Page)
   )
 }
 
