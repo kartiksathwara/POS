@@ -1,7 +1,11 @@
-import "./App.css";
+import Lock from "./components/Lock";
 
 function App() {
-  return <></>;
+  return (
+    <>
+     <Lock />
+    </>
+  )
 }
 
 export default App;
