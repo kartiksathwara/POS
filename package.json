@@ -13,6 +13,10 @@
     "@tailwindcss/vite": "^4.1.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+<<<<<<< HEAD
+=======
+    "react-icon": "^1.0.0",
+>>>>>>> 51f7f0c (Lock Page)
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.0",
     "tailwindcss": "^4.1.7"

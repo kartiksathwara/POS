@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import HomePage from "./components/HomePage";
@@ -12,6 +13,15 @@ function App() {
           <Route path="/customer" element={<Customers />}/>
         </Routes>
     </BrowserRouter>
+=======
+import Lock from "./components/Lock";
+
+function App() {
+  return (
+    <>
+     <Lock />
+    </>
+>>>>>>> 51f7f0c (Lock Page)
   )
 }
 
