@@ -70,50 +70,50 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose ,on
 					<div className=" space-y-3">
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">Name*</label>
-							<input name="name" value={form.name} onChange={handleChange} placeholder="Enter your name" className="input p-2 pl-4 pt-7 " />
+							<input name="name" value={form.name} onChange={handleChange} placeholder="Enter your name" className="input p-2 pl-4 pt-7 focus:outline-0" />
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">Phone*</label>
-							<input name="phone" value={form.phone} onChange={handleChange} placeholder="Enter your number" className="input  p-2 pl-4 pt-7" />
+							<input name="phone" value={form.phone} onChange={handleChange} placeholder="Enter your number" className="input  p-2 pl-4 pt-7 focus:outline-0" />
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">Email*</label>
-							<input name="email" value={form.email} onChange={handleChange} placeholder="Enter your email" className="input p-2 pl-4 pt-7" />
+							<input name="email" value={form.email} onChange={handleChange} placeholder="Enter your email" className="input p-2 pl-4 pt-7 focus:outline-0" />
 						</div>
 					</div>
 					<div className="grid grid-cols-2 gap-3 ">
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">Address*</label>
-							<input name="address1" value={form.address1} onChange={handleChange} placeholder="Store name/no." className="input p-2 pl-4 pt-7" />
+							<input name="address1" value={form.address1} onChange={handleChange} placeholder="Store name/no." className="input p-2 pl-4 pt-7 focus:outline-0" />
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">Address*</label>
-							<input name="address2" value={form.address2} onChange={handleChange} placeholder="Street, Area" className="input p-2 pl-4 pt-7" />
+							<input name="address2" value={form.address2} onChange={handleChange} placeholder="Street, Area" className="input p-2 pl-4 pt-7 focus:outline-0" />
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">Country*</label>
-							<select name="country" value={form.country} onChange={handleChange} className="input p-2 pl-4 pt-7">
+							<select name="country" value={form.country} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select country</option>
 								<option value="aaa">India</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">State*</label>
-							<select name="state" value={form.state} onChange={handleChange} className="input p-2 pl-4 pt-7">
+							<select name="state" value={form.state} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select state</option>
 								<option value="aaa">Gujrat</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">City*</label>
-							<select name="city" value={form.city} onChange={handleChange} className="input p-2 pl-4 pt-7">
+							<select name="city" value={form.city} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select city</option>
 								<option value="aaa">Kadi</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">Zip/Pin Code*</label>
-							<input name="zip" value={form.zip} onChange={handleChange} placeholder="Zip/Pin code" className="input p-2 pl-4 pt-7" />
+							<input name="zip" value={form.zip} onChange={handleChange} placeholder="Zip/Pin code" className="input p-2 pl-4 pt-7 focus:outline-0" />
 						</div>
 					</div>
 
