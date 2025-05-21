@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+<<<<<<< HEAD
 :root {
 	--main: #333333;
 	--primary:#EBDFD1;
@@ -8,4 +9,12 @@
 }
 * {
 	font-family: "Syne" , sans-serif;
+=======
+* {
+  font-family: "Syne", sans-serif;
+}
+
+:root {
+  --main: #333333;
+>>>>>>> 4b6a002 (login Page)
 }
