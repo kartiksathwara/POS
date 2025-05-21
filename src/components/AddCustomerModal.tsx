@@ -116,7 +116,6 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose ,on
 							<input name="zip" value={form.zip} onChange={handleChange} placeholder="Zip/Pin code" className="input p-2 pl-4 pt-7 focus:outline-0" />
 						</div>
 					</div>
-
 				</div>
 			</div>
 		</div>
