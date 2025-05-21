@@ -1,15 +1,13 @@
 import { Link } from "react-router-dom";
 import Checkout from "./Checkout";
 import SearchBar from "./SearchBar";
+import Header from "./Header";
 
 
 const HomePage = () => {
 	return (
 		<div className=" h-screen">
-			<header className="bg-(--main) w-full p-5 py-3 text-2xl flex justify-between">
-				<div className="text-white">DKC</div>
-				<div className="text-white">Profile</div>
-			</header>
+			<Header />
 			<div className="flex">
 				<div className="">
 					<SearchBar />
