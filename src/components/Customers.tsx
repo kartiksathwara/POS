@@ -56,7 +56,7 @@ const Customers = () => {
 					</div>
 					<div className="overflow-x-auto rounded-xl w-3xl ml-7 shadow-md ">
 						<table className="min-w-full text-left text-sm text-gray-700">
-							<thead className="bg-(--main) text-white">
+							<thead className="bg-(--main)  text-white">
 								<tr>
 									<th scope="col" className="px-6 py-4 font-medium">Customer name</th>
 									<th scope="col" className="px-6 py-4 font-medium">Phone no.</th>
@@ -70,7 +70,7 @@ const Customers = () => {
 										<td className="px-6 py-4 whitespace-nowrap">{customer.name}</td>
 										<td className="px-6 py-4 whitespace-nowrap">{customer.phone}</td>
 										<td className="px-6 py-4 whitespace-nowrap">{customer.email}</td>
-										<td className="px-6 py-4 whitespace-nowrap">
+										<td className="px-6 py-4 ">
 											{customer.address1}, {customer.address2}, {customer.city}, {customer.state}, {customer.country} {customer.zip}
 										</td>
 									</tr>
