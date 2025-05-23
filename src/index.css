@@ -1,16 +1,18 @@
-
 @import "tailwindcss";
 
 :root {
 	--main: #333333;
-	--primary:#EBDFD1;
+	--primary: #EBDFD1;
 	--secondary: #E9E8E6;
 	--buttonbg: #F9E1CC;
-    --eye-icon: #7C756B;
-    --pin-button: #f9f9f9;
+	--eye-icon: #7C756B;
+	--pin-button: #f9f9f9;
+	--form: #6B6B6B;
+	--back-button: #FFFFFF;
 }
+
 * {
-	font-family: "Syne" , sans-serif;
+	font-family: "Syne", sans-serif;
 }
 
 /* @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Neucha&family=Syne:wght@400..800&display=swap'); */
