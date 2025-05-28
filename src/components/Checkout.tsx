@@ -2,7 +2,7 @@
 const Checkout = () => {
 	return (
 		
-			<div className="w-1/2 p-5 bg-(--secondary) flex h-[calc(100vh-3.5rem)] flex-col ">
+			<div className="h-[650px] w-190 p-3 bg-(--secondary) flex flex-col ">
 				<div className="flex justify-between p-3 font-serif mb-4">
 					<button className="bg-white text-black font-semibold py-2 px-4 rounded-md ">
 						Clear cart
