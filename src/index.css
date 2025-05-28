@@ -5,11 +5,21 @@
 	--primary: #EBDFD1;
 	--secondary: #E9E8E6;
 	--buttonbg: #F9E1CC;
-	--eye-icon: #7C756B;
-	--pin-button: #f9f9f9;
-	--form: #6B6B6B;
-	--back-button: #FFFFFF;
-	--payment:#D4EDDA;
+	--bgorder: #f9f9f9;
+    
+    --eye-icon: #7C756B;
+    --pin-button: #f9f9f9;
+}
+
+* {
+	font-family: "Syne", sans-serif;
+}
+.scrollbar-hide::-webkit-scrollbar {
+	display: none;
+  }
+.scrollbar-hide {
+	-ms-overflow-style: none; 
+	scrollbar-width: none; 
 }
 
 * {

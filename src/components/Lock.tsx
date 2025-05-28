@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { FaBackspace, FaAngleRight } from "react-icons/fa";
+import { FaBackspace,FaAngleRight } from "react-icons/fa";
 import Header from "./Header";
-import { useNavigate } from "react-router-dom";
+// import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 const Lock = () => {
-
+  // const [email, setEmail] = useState("")
+  // const [password, setPassword] = useState('')
+  // const [showPassword, setShowPassword] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pin, setPin] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
   const Numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
   useEffect(() => {
@@ -18,34 +18,25 @@ const Lock = () => {
     return () => clearInterval(timer);
   }, []);
 
+  //keybord code
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key;
 
-      if (/^[0-9]$/.test(key) && pin.length < 4) {
+      if (/^[0-9]$/ .test(key) && pin.length<4) {
         setPin((prev) => prev + key);
       }
 
       if (key === "Backspace" && pin.length > 0) {
-        setPin((prev) => prev.slice(0, -1));
+        setPin((prev) => prev.slice(0,-1));
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return() => window.removeEventListener("keydown", handleKeyDown);
   }, [pin]);
-
-  useEffect(() => {
-    if (pin.length === 4) {
-      if (pin === "1234") {
-        setError("");
-        navigate("/")
-      } else {
-        setError("Incorrect Pin, Enter valid Pin")
-        setPin("");
-      }
-    }
-  }, [pin, navigate])
+  //regular code
   const handleClick = (num: any) => {
     if (pin.length < 4) {
       setPin(pin + num)
@@ -78,20 +69,20 @@ const Lock = () => {
           type="password"
           value={pin}
           className="border-2 border-(--main)/50 rounded-xl
-          py-2 px-15 5 text-center text-2xl w-2xs" />
-            {error && <p className="text-red-500 font-semibold 2">{error}</p>}
+          py-2 px-15 mb-5 text-center text-2xl w-2xs" />
+
         <div className="grid grid-cols-3 gap-5 text-2xl">
           {
             Numbers.map((num, index) => (
               <button key={index} onClick={() => handleClick(num)} className="w-15 h-16 rounded-full bg-(--pin-button) text-xl font-medium shadow">{num}</button>
             ))}
-          <FaBackspace onClick={() => setPin(pin.slice(0, -1))} className=" w-15 h-16 p-5 rounded-full bg-(--pin-button)  font-medium shadow" />
+            <FaBackspace onClick={() => setPin(pin.slice(0, -1))} className=" w-15 h-16 p-5 rounded-full bg-(--pin-button)  font-medium shadow"/> 
         </div>
-
+      
       </div>
 
       <div>
-        <button className="flex items-center text-xl">Log Out <FaAngleRight /></button>
+        <button className="flex items-center text-xl">Log Out <FaAngleRight/></button>
       </div>
 
     </div>

@@ -1,23 +1,22 @@
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
+import Customers from "./components/Customers";
+import Settingpage from "./components/Settingpage";
+// import RequestInventory from "./components/RequestInventory";
 import HomePage from "./components/HomePage";
-import Lock from "./components/Lock";
-import DiscountPage from "./components/DiscountPage";
-import CancelOrder from "./components/CancelOrder";
-import PaymentPageOne from "./components/PaymentPageOne";
-
+import Inventory from "./components/Inventory";
 
 function App() {
   return (
 
     <BrowserRouter>
       <Routes>
+        {/* <Route path="/" element={<RequestInventory />}></Route> */}
         <Route path="/" element={<HomePage />}></Route>
-        <Route path="/lock" element={<Lock />} />
-        <Route path="/discount" element={<DiscountPage />} />
-        <Route path="/checkout-1" element={<CancelOrder />} />
-        <Route path="/checkout-2" element={<PaymentPageOne />} />
+        <Route path="/customer" element={<Customers />} />
+        <Route path="/setting" element={<Settingpage />} />
+        <Route path="/inventory" element={<Inventory />} />
       </Routes>
     </BrowserRouter>
   )
