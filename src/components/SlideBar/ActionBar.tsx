@@ -44,7 +44,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ handleClose }) => {
   );
 
   return (
-    <div className="absolute bottom-0 bg-white rounded-t-2xl h-[75%] w-[130vh] px-5 pt-5 border border-b-0 shadow-lg z-40">
+    <div className="absolute bottom-0 bg-white rounded-t-2xl h-[75%] w-[122vh] px-5 pt-5 border border-b-0 shadow-lg z-40">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-gray-700 font-semibold text-lg">
           Add quick action
