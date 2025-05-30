@@ -3,11 +3,12 @@ import TitleBanner from "./TitleBanner";
 import DigitalClock from "./DigitalClock/DigitalClock";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 type UserDet = {
-  email: string,
-  password: string,
-}
+  email: string;
+  password: string;
+};
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const { login } = useAuth();
 
   const defaultData: UserDet = {
     email: "abcd@gmail.com",
@@ -28,34 +29,34 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    localStorage.setItem("User", JSON.stringify(defaultData))
-    const storedUser = localStorage.getItem("User")
+    localStorage.setItem("User", JSON.stringify(defaultData));
+    const storedUser = localStorage.getItem("User");
     if (storedUser) {
       const parsedUser: UserDet = JSON.parse(storedUser);
       console.log("Default User Set:", parsedUser);
     }
-  }, [])
+  }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
       return;
     }
 
-    const storedUser = localStorage.getItem("User")
+    const storedUser = localStorage.getItem("User");
     if (!storedUser) return;
     const user: UserDet = JSON.parse(storedUser);
     if (email === user.email && password === user.password) {
-      setError("")
+      login();
       console.log("Login success!");
-      navigate("/")
+      // navigate("/lock");
+      navigate("/");
     } else {
       console.log("Invalid credential");
       setError("Invalid credential");
     }
   };
-
-
 
   return (
     <div className="min-h-screen flex flex-col items-center">
