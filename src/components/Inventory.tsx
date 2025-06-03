@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Product {
 	id: number;
@@ -13,6 +13,7 @@ interface Product {
 }
 
 const Inventory = () => {
+	const navigate = useNavigate();
 	const categories = [
 		"Shirt", "T-Shirt", "Top", "Pants", "Jeans", "Trousers", "Dress"
 	];
@@ -21,28 +22,44 @@ const Inventory = () => {
 	const [cartItems, setCartItems] = useState<Product[]>([]);
 
 	useEffect(() => {
-		fetch("https://dummyjson.com/products")
-			.then(res => res.json())
-			.then(data => setProducts(data.products))
-			.catch(err => console.error("Error fetching products:", err));
-	}, []);
+	fetch("https://dummyjson.com/products")
+		.then(res => res.json())
+		.then(data => setProducts(data.products))
+		.catch(err => console.error("Error fetching products:", err));
+
+	
+	const savedCart = localStorage.getItem("cart");
+	if (savedCart) {
+		setCartItems(JSON.parse(savedCart));
+	}
+}, []);
 
 	const handleAddToCart = (product: Product) => {
-		setCartItems(prev => [...prev, product]);
-	};
+	const updatedCart = [...cartItems, product];
+	setCartItems(updatedCart);
+	localStorage.setItem("cart", JSON.stringify(updatedCart));
+};
 
 	const handleClearCart = () => {
-		setCartItems([]);
-	};
+	setCartItems([]);
+	localStorage.removeItem("cart");
+};
 
 	const handleRemoveItem = (id: number) => {
-		setCartItems(prev => prev.filter(item => item.id !== id));
-	};
+	const updatedCart = cartItems.filter(item => item.id !== id);
+	setCartItems(updatedCart);
+	localStorage.setItem("cart", JSON.stringify(updatedCart));
+};
 
 	const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
 	const discount = subtotal * 0.18;
 	const tax = (subtotal - discount) * 0.08;
 	const total = subtotal - discount + tax;
+
+	const handleCheckout = () => {
+		localStorage.setItem("totalAmount", total.toFixed(2));
+		navigate("/bill")
+	}
 
 	return (
 		<div className="h-screen">
@@ -89,7 +106,7 @@ const Inventory = () => {
 										className="w-16 h-16 rounded-sm border object-cover"
 									/>
 									<div>
-										<h3 className="font-semibold text-base">{product.title}</h3>
+										<h3 className="font-semibold text-base">{product.title}</h3>	
 										<p className="text-sm text-gray-500">Size - 30 UK</p>
 									</div>
 								</div>
@@ -161,10 +178,10 @@ const Inventory = () => {
 								<span>Total</span>
 								<span>${total.toFixed(2)}</span>
 							</div>
-						</div>
-						<button className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block text-center">
+						<button onClick={handleCheckout} className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center">
 							CHECKOUT &gt;
 						</button>
+						</div>
 					</div>
 				</div>
 			</div>
