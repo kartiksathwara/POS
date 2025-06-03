@@ -16,7 +16,6 @@ const Inventory = () => {
 	const categories = [
 		"Shirt", "T-Shirt", "Top", "Pants", "Jeans", "Trousers", "Dress"
 	];
-
 	const [products, setProducts] = useState<Product[]>([]);
 	const [cartItems, setCartItems] = useState<Product[]>([]);
 
@@ -50,16 +49,14 @@ const Inventory = () => {
 			<div className="flex h-[calc(100%-4rem)]">
 				<div className="w-2/3 flex flex-col">
 					<SearchBar />
-					<div className="px-8 -mt-6">
-						<div className="flex items-center">
-							<Link to="/">
+					<div className="px-8 -mt-5">
+							<Link to="/" className="flex items-center">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none">
 									<path d="M12.2665 1.98191C12.6666 1.58183 13.3186 1.59307 13.7047 2.0067L13.7437 2.04845C14.1096 2.44049 14.1011 3.05137 13.7244 3.43311L7.69142 9.54765C7.3072 9.93706 7.3072 10.5629 7.69142 10.9523L13.7244 17.0669C14.1011 17.4486 14.1096 18.0595 13.7437 18.4516L13.7047 18.4933C13.3186 18.9069 12.6666 18.9182 12.2665 18.5181L4.70554 10.9571C4.31502 10.5666 4.31502 9.93342 4.70554 9.54289L12.2665 1.98191Z" fill="#333333" />
 								</svg>
+								<span className="text-xl font-bold ml-2">INVENTORY</span>
 							</Link>
-							<h2 className="text-xl font-bold ml-2">INVENTORY</h2>
-						</div>
-						<div className="flex justify-between items-center mt-4">
+						<div className="flex justify-between  items-center mt-4">
 							<div className="flex gap-2 flex-wrap">
 								{categories.map(item => (
 									<div
@@ -75,7 +72,7 @@ const Inventory = () => {
 							</div>
 						</div>
 					</div>
-					<div className="flex-1 overflow-y-auto p-6 grid grid-cols-2 gap-4 scrollbar-hide">
+					<div className="flex-1 overflow-y-auto p-6 px-10 grid grid-cols-2 gap-4 scrollbar-hide">
 						{products.map(product => (
 							<div
 								key={product.id}
@@ -97,6 +94,18 @@ const Inventory = () => {
 							</div>
 						))}
 					</div>
+					<Link
+						to="/requestinventory"
+						className="flex items-center gap-1 font-medium text-black px-8 pb-4"
+					>
+						<span>Request Inventory</span>
+						<svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
+							<path
+								d="M4.65207 1.55133C4.40515 1.30441 4.00273 1.31135 3.76447 1.56663C3.53864 1.80859 3.54387 2.18561 3.77633 2.42121L7.10737 5.79726C7.49159 6.18667 7.49159 6.81254 7.10737 7.20195L3.77633 10.578C3.54387 10.8136 3.53864 11.1906 3.76447 11.4326C4.00273 11.6879 4.40515 11.6948 4.65207 11.4479L8.89324 7.20672C9.28377 6.81619 9.28377 6.18303 8.89324 5.7925L4.65207 1.55133Z"
+								fill="#333333"
+							/>
+						</svg>
+					</Link>
 				</div>
 				<div className="w-1/2 bg-(--secondary) p-6 flex flex-col justify-between">
 					<div>
@@ -168,6 +177,7 @@ const Inventory = () => {
 					</div>
 				</div>
 			</div>
+
 		</div>
 	);
 };

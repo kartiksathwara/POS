@@ -2,14 +2,14 @@
 
 :root {
 	--main: #333333;
-	--primary:#EBDFD1;
+	--primary: #EBDFD1;
 	--secondary: #E9E8E6;
 	--buttonbg: #F9E1CC;
 	--bgorder: #f9f9f9;
-    
+    --eye-icon: #7C756B;
 }
 * {
-	font-family: "Syne" , sans-serif;
+	font-family: "Syne" , "Poppins" ;
 }
 .scrollbar-hide::-webkit-scrollbar {
 	display: none;

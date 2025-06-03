@@ -19,37 +19,37 @@ const Header = () => {
 								<div className="bg-(--primary)">
 									<Link
 										to=""
-										className="block  px-4 py-3 text-lg text-black border-b-1 border-b-gray-400 hover:bg-gray-100"
+										className="block  px-4 py-3 text-lg text-black border-b-1 border-b-gray-400"
 									>
 										Profile
 									</Link>
 									<div className="p-2.5">
 										<Link
 											to=""
-											className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400 hover:bg-gray-100"
+											className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400"
 										>
 											Orders
 										</Link>
 										<Link
 											to=""
-											className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400 hover:bg-gray-100"
+											className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400"
 										>
 											Activites
 										</Link>
 										<Link
-											to=""
-											className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400 hover:bg-gray-100"
+											to="/requestinventory"
+											className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400"
 										>
 											Request Inventory
 										</Link>
 										<Link
 											to="/setting"
-											className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400 hover:bg-gray-100"
+											className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400"
 										>
 											Settings
 										</Link>
 										<button
-											className="w-full text-left px-4 py-3 text-lg text-(--main) hover:bg-gray-100"
+											className="w-full text-left px-4 py-3 text-lg text-(--main)"
 										>
 											Close shop
 										</button>

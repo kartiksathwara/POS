@@ -11,8 +11,10 @@ const Checkout = () => {
 					Hold this order
 				</button>
 			</div>
-			<div className="flex-grow border-t border-b border-(--main) mb-4">
-				<div className="text-gray-500 text-center">Add product manually or via scanner</div>
+			<div className="flex-grow flex items-center justify-center border-t border-b border-[--main] mb-4">
+				<div className="text-gray-500 text-center text-sm">
+					Add product manually or via scanner
+				</div>
 			</div>
 			<button className="bg-(--main) text-white font-semibold py-2 rounded-md block text-center">
 				CHECKOUT &gt;
