@@ -9,7 +9,7 @@
     --eye-icon: #7C756B;
 }
 * {
-	font-family: "Syne" , "Poppins" ;
+	font-family: "Sansation", sans-serif;
 }
 .scrollbar-hide::-webkit-scrollbar {
 	display: none;
