@@ -1,12 +1,56 @@
 import Checkout from "./Checkout";
 import SearchBar from "./SearchBar";
 import Header from "./Header";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import ActionBar from "./SlideBar/ActionBar";
 import ActionCards from "./ActionCards";
+import CustomerSvg from "./SvgCommon/CustomerSvg";
+import DiscountSvg from "./SvgCommon/DiscountSvg";
+import RequestSvg from "./SvgCommon/RequestSvg";
+import DefaultSvg from "./SvgCommon/DefaultSvg";
+import InventorySvg from "./SvgCommon/InventorySvg";
+
+interface ActionCardType {
+  label: string;
+  link: string;
+  icon?: ReactNode;
+}
 
 const HomePage = () => {
   const [showModal, setShowModal] = useState(false);
+
+  const [actionCards, setActionCards] = useState<ActionCardType[]>([
+    { label: "Inventory", link: "./inventory", icon: <InventorySvg /> },
+    { label: "Customer", link: "./customer", icon: <CustomerSvg /> },
+    { label: "Discount", link: "./discount", icon: <DiscountSvg /> },
+    { label: "Request", link: "./request", icon: <RequestSvg /> },
+  ]);
+
+  // console.log(actionCards);
+
+  const iconMap: Record<string, ReactNode> = {
+    inventory: <InventorySvg />,
+    customer: <CustomerSvg />,
+    discount: <DiscountSvg />,
+    request: <RequestSvg />,
+  };
+
+  const handleAddCard = (title: string) => {
+    //avoid same lable
+    //   const exists = actionCards.some(card => card.label.toLowerCase() === title.toLowerCase());
+    // if (exists) return;
+
+    const lower = title.toLowerCase();
+    setActionCards((prev) => [
+      ...prev,
+      {
+        label: title,
+        link: `./${lower}`,
+        icon: iconMap[lower] || <DefaultSvg />,
+      },
+    ]);
+    setShowModal(false);
+  };
 
   const handleClose = () => {
     setShowModal(false);
@@ -18,8 +62,16 @@ const HomePage = () => {
       <div className="flex">
         <div>
           <SearchBar />
-          <div className="grid grid-cols-3 px-7 gap-4">
-            <ActionCards
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 px-7 gap-4">
+            {actionCards.map((card, index) => (
+              <ActionCards
+                key={index}
+                icon={card.icon}
+                label={card.label}
+                link={card.link}
+              />
+            ))}
+            {/* <ActionCards
               icon={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -72,6 +124,7 @@ const HomePage = () => {
                 </svg>
               }
               label="Customer"
+              link={"./customer"}
             />
             <ActionCards
               icon={
@@ -124,7 +177,8 @@ const HomePage = () => {
                 </svg>
               }
               label="Request"
-            />
+            /> */}
+
             {/* <div className="bg-(--primary) p-5 gap-15 rounded-lg text-xl shadow-md flex flex-col items-start ">
               <div className="text-5xl mb-2">
                 <svg
@@ -266,7 +320,7 @@ const HomePage = () => {
 
       {showModal && (
         <div className="bg-white rounded-xl px-6 w-[90%] max-w-md mb-10 animate-slideUp transition-all">
-          <ActionBar handleClose={handleClose} />
+          <ActionBar handleClose={handleClose} onSave={handleAddCard} />
         </div>
       )}
     </div>

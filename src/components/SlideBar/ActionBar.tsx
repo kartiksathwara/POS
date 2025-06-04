@@ -15,19 +15,22 @@ type ActionItemProps = {
 
 type ActionBarProps = {
   handleClose: () => void;
+  onSave: (title: string) => void;
 };
 
-const ActionBar: React.FC<ActionBarProps> = ({ handleClose }) => {
+const ActionBar: React.FC<ActionBarProps> = ({ handleClose, onSave }) => {
   const [showFeePopup, setShowFeePopup] = useState(false);
   const [showLinkPopup, setShowLinkPopup] = useState(false);
   const [showCollection, setShowCollection] = useState(false);
 
   if (showFeePopup) {
-    return <FeePopup closeFeePopup={() => setShowFeePopup(false)} />;
+    return (
+      <FeePopup onSave={onSave} closeFeePopup={() => setShowFeePopup(false)} />
+    );
   }
 
   if (showLinkPopup) {
-    return <LinkPopup closeLinkPopup={() => setShowLinkPopup(false)} />;
+    return <LinkPopup onSave={onSave} closeLinkPopup={() => setShowLinkPopup(false)} />;
   }
   if (showCollection) {
     return <CollectionPopup closeCollection={() => setShowCollection(false)} />;
@@ -63,16 +66,21 @@ const ActionBar: React.FC<ActionBarProps> = ({ handleClose }) => {
           label="Fee"
           onClick={() => setShowFeePopup(true)}
         />
+        <hr className="opacity-40" />
+
         <ActionItem
           icon={<FiLink />}
           label="Link"
           onClick={() => setShowLinkPopup(true)}
         />
+        <hr className="opacity-40" />
+
         <ActionItem
           icon={<MdOutlineCollectionsBookmark />}
           label="Collection"
           onClick={() => setShowCollection(true)}
         />
+        <hr className="opacity-40" />
       </div>
     </div>
   );

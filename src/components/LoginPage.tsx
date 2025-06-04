@@ -17,6 +17,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
+  const userToken = "POS-token";
 
   const defaultData: UserDet = {
     email: "abcd@gmail.com",
@@ -48,7 +49,9 @@ const LoginPage = () => {
     if (!storedUser) return;
     const user: UserDet = JSON.parse(storedUser);
     if (email === user.email && password === user.password) {
-      login();
+      // const fakeToken = "fakejwttkn123";
+      // localStorage.setItem("token", fakeToken);
+      login(userToken);
       console.log("Login success!");
       // navigate("/lock");
       navigate("/");
