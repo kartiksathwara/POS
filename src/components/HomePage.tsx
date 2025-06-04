@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import Checkout from "./Checkout";
 import SearchBar from "./SearchBar";
 import Header from "./Header";
-
+// import { useState } from "react";
+// import ActionBar from "./SlideBar/ActionBar";
 
 const HomePage = () => {
 	return (
@@ -55,8 +56,9 @@ const HomePage = () => {
 				<Checkout />
 			</div>
 		</div>
-
-	)
+)
 }
+
+ 
 
 export default HomePage;
