@@ -186,7 +186,7 @@ const CancelOrder: React.FC = () => {
                                             placeholder="Name"
                                             onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
                                             onKeyDown={handleAddCustomer}
-                                        // value={newCustomer.name}
+                                        value={newCustomer.name}
                                         >
                                         </input>
                                     </div>
@@ -198,7 +198,7 @@ const CancelOrder: React.FC = () => {
                                             placeholder="Phone no"
                                             onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
                                             onKeyDown={handleAddCustomer}
-                                        // value={newCustomer.phone}
+                                        value={newCustomer.phone}
                                         >
                                         </input>
                                     </div>
@@ -209,7 +209,7 @@ const CancelOrder: React.FC = () => {
                                             placeholder="Email"
                                             onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
                                             onKeyDown={handleAddCustomer}
-                                        // value={newCustomer.email}
+                                        value={newCustomer.email}
                                         >
                                         </input>
                                     </div>
@@ -220,7 +220,7 @@ const CancelOrder: React.FC = () => {
                                             placeholder="Address"
                                             onChange={(e) => setNewCustomer({ ...newCustomer, address1: e.target.value })}
                                             onKeyDown={handleAddCustomer}
-                                        // value={newCustomer.address1}
+                                        value={newCustomer.address1}
                                         >
                                         </input>
                                     </div>

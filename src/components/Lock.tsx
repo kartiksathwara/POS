@@ -104,8 +104,8 @@ const Lock = () => {
         </div>
       </div>
 
-      <div className="flex justify-center mt-4">
-        <button className="flex items-center text-xl">Log Out <FaAngleRight /></button>
+      <div className="flex mt-4">
+        <button className="flex items-center text-xl ">Log Out <FaAngleRight /></button>
       </div>
     </div>
   );
