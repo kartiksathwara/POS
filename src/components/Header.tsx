@@ -6,7 +6,9 @@ const Header = () => {
 	return (
 		<div>
 			<header className="bg-(--main) w-full p-8 py-3 font-semibold text-2xl flex justify-between">
+				<Link to="/">
 				<div className="text-white">DKC</div>
+				</Link>
 				<div className="text-white">
 					<div className="flex items-center text-xl text-white relative">
 						<div className="relative group">
@@ -49,11 +51,13 @@ const Header = () => {
 										>
 											Settings
 										</Link>
+										<Link to="/lock">
 										<button
 											className="w-full text-left px-4 py-3 text-lg text-(--main) hover:bg-gray-100"
 										>
 											Close shop
 										</button>
+										</Link>
 									</div>
 									<div />
 								</div>

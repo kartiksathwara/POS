@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaBackspace, FaAngleRight } from "react-icons/fa";
 import Header from "./Header";
-import { useNavigate } from "react-router-dom"; // Needed for redirection
+import { Link, useNavigate } from "react-router-dom"; // Needed for redirection
 
 const Lock = () => {
   const navigate = useNavigate(); // Hook to navigate
@@ -105,7 +105,9 @@ const Lock = () => {
       </div>
 
       <div className="flex mt-4">
-        <button className="flex items-center text-xl ">Log Out <FaAngleRight /></button>
+        <Link to="/login">
+        <button className="flex items-center text-xl cursor-pointer ">Log Out <FaAngleRight /></button>
+        </Link>
       </div>
     </div>
   );

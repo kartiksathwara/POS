@@ -70,7 +70,7 @@ const Customers = () => {
 						</button>
 					</div>
 
-					<div className="overflow-auto h-120 rounded-xl w-3xl ml-8 shadow-md">
+					<div className="overflow-auto h-120 rounded-xl w-5xl ml-8 shadow-md">
 						<table className="min-w-full text-left text-sm text-gray-700">
 							<thead className="bg-(--main) text-white">
 								<tr>

@@ -10,7 +10,7 @@ const SearchBar = () => {
 				<input
 					type="text"
 					placeholder="Search here..."
-					className="p-2 px-9 w-3xl border border-gray-400 rounded-md focus:outline-none"
+					className="p-2 px-9 w-5xl border border-gray-400 rounded-md focus:outline-none"
 				/>
 				<MdQrCodeScanner className="absolute left-11/12 text-xl" />
 			</div>
