@@ -52,6 +52,7 @@ const HomePage = () => {
     setShowModal(false);
   };
 
+
   const handleClose = () => {
     setShowModal(false);
   };

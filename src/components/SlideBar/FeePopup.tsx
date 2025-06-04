@@ -1,6 +1,7 @@
 import type React from "react";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 type FeeProps = {
   closeFeePopup: () => void;
@@ -53,15 +54,20 @@ const FeePopup: React.FC<FeeProps> = ({ closeFeePopup, onSave }) => {
       <div className="flex justify-end space-x-3 mt-6">
         <button
           onClick={handleClear}
-          className="px-4 py-2 text-sm text-gray-600 border rounded-md hover:bg-gray-100"
+          className="text-gray-600 px-4 py-1 rounded-md bg-gray-100"
         >
           CLEAR
         </button>
         <button
           onClick={() => onSave(title)}
-          className="px-4 py-2 text-sm bg-peach-100 text-gray-800 rounded-md hover:bg-peach-200"
+          className="bg-(--buttonbg) flex items-center gap-2 text-black font-semibold px-2 py-1 rounded-md"
         >
           SAVE
+          <Link to="#">
+								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 12 13" fill="none">
+									<path d="M4.65109 1.55133C4.40418 1.30441 4.00175 1.31135 3.76349 1.56663C3.53766 1.80859 3.5429 2.18561 3.77535 2.42121L7.10639 5.79726C7.49061 6.18667 7.49061 6.81254 7.10639 7.20195L3.77535 10.578C3.5429 10.8136 3.53766 11.1906 3.76349 11.4326C4.00175 11.6879 4.40417 11.6948 4.65109 11.4479L8.89227 7.20672C9.28279 6.81619 9.28279 6.18303 8.89227 5.7925L4.65109 1.55133Z" fill="#333333" />
+								</svg>
+							</Link>
         </button>
       </div>
     </div>
