@@ -1,9 +1,9 @@
-export default {
-  content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
+export default  {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"], 
   theme: {
     extend: {
       fontFamily: {
-        syne: ["Syne", "sans-serif"],
+        syne: ['"Syne"', 'sans-serif'],
       },
     },
   },
