@@ -94,21 +94,21 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose ,on
 							<label className="absolute top-1 left-4">Country*</label>
 							<select name="country" value={form.country} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select country</option>
-								<option value="">India</option>
+								<option value="India">India</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">State*</label>
 							<select name="state" value={form.state} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select state</option>
-								<option value="">Gujrat</option>
+								<option value="Gujrat">Gujrat</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">City*</label>
 							<select name="city" value={form.city} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select city</option>
-								<option value="">Kadi</option>
+								<option value="Kadi">Kadi</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">

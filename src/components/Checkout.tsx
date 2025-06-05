@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 const Checkout = () => {
 	return (
 
-		<div className="w-1/2 p-5 bg-(--secondary) flex h-[calc(100vh-3.5rem)] flex-col ">
+		<div className="w-3xl p-5 bg-(--secondary) flex h-[calc(100vh-3.5rem)] flex-col ">
 			<div className="flex justify-center p-3 font-serif gap-3 mb-4">
 				<button className="bg-white text-black  w-full py-2 px-4 rounded-md ">
 					Clear cart

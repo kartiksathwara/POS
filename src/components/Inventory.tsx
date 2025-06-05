@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Product {
 	id: number;
@@ -13,6 +13,7 @@ interface Product {
 }
 
 const Inventory = () => {
+	const navigate = useNavigate();
 	const categories = [
 		"Shirt", "T-Shirt", "Top", "Pants", "Jeans", "Trousers", "Dress"
 	];
@@ -24,18 +25,29 @@ const Inventory = () => {
 			.then(res => res.json())
 			.then(data => setProducts(data.products))
 			.catch(err => console.error("Error fetching products:", err));
+
+
+		const savedCart = localStorage.getItem("cart");
+		if (savedCart) {
+			setCartItems(JSON.parse(savedCart));
+		}
 	}, []);
 
 	const handleAddToCart = (product: Product) => {
-		setCartItems(prev => [...prev, product]);
+		const updatedCart = [...cartItems, product];
+		setCartItems(updatedCart);
+		localStorage.setItem("cart", JSON.stringify(updatedCart));
 	};
 
 	const handleClearCart = () => {
 		setCartItems([]);
+		localStorage.removeItem("cart");
 	};
 
 	const handleRemoveItem = (id: number) => {
-		setCartItems(prev => prev.filter(item => item.id !== id));
+		const updatedCart = cartItems.filter(item => item.id !== id);
+		setCartItems(updatedCart);
+		localStorage.setItem("cart", JSON.stringify(updatedCart));
 	};
 
 	const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
@@ -43,10 +55,15 @@ const Inventory = () => {
 	const tax = (subtotal - discount) * 0.08;
 	const total = subtotal - discount + tax;
 
+	const handleCheckout = () => {
+		localStorage.setItem("totalAmount", total.toFixed(2));
+		navigate("/bill")
+	}
+
 	return (
 		<div className="h-screen">
 			<Header />
-			<div className="flex h-[calc(100%-4rem)]">
+			<div className="flex h-screen">
 				<div className="w-2/3 flex flex-col">
 					<SearchBar />
 					<div className="px-8 -mt-5">
@@ -120,7 +137,7 @@ const Inventory = () => {
 								Hold this order
 							</button>
 						</div>
-						<div className="flex-1 overflow-y-auto space-y-3 max-h-[300px] pr-2 scrollbar-hide">
+						<div className="flex-1 overflow-y-auto space-y-3 max-h-[225px] pr-2 scrollbar-hide">
 							{cartItems.map((item) => (
 								<div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-lg">
 									<div className="flex gap-3 items-center">
@@ -170,6 +187,9 @@ const Inventory = () => {
 								<span>Total</span>
 								<span>${total.toFixed(2)}</span>
 							</div>
+							<button onClick={handleCheckout} className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center">
+								CHECKOUT &gt;
+							</button>
 						</div>
 						<button className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block text-center">
 						<Link to="/bill">CHECKOUT &gt;</Link>

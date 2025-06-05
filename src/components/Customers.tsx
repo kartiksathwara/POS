@@ -36,6 +36,13 @@ const Customers = () => {
 		localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedCustomers));
 	};
 
+	const handleDeleteCustomer = (index: number) => {
+		const updatedCustomers = [...customers];
+		updatedCustomers.splice(index, 1);
+		setCustomers(updatedCustomers);
+		localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedCustomers));
+	};
+
 	return (
 		<div className="h-screen">
 			<Header />
@@ -54,7 +61,7 @@ const Customers = () => {
 							className="bg-(--buttonbg) py-1 px-4 rounded-lg font-semibold flex items-center"
 						>
 							Add Customer
-							<span className="ml-2">
+							<span className="ml-2 ">
 								<svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
 									<path d="M4.65207 1.55133C4.40515 1.30441 4.00273 1.31135 3.76447 1.56663C3.53864 1.80859 3.54387 2.18561 3.77633 2.42121L7.10737 5.79726C7.49159 6.18667 7.49159 6.81254 7.10737 7.20195L3.77633 10.578C3.54387 10.8136 3.53864 11.1906 3.76447 11.4326C4.00273 11.6879 4.40515 11.6948 4.65207 11.4479L8.89324 7.20672C9.28377 6.81619 9.28377 6.18303 8.89324 5.7925L4.65207 1.55133Z" fill="#333333" />
 								</svg>
@@ -62,26 +69,33 @@ const Customers = () => {
 						</button>
 					</div>
 
-					<div className="overflow-x-auto rounded-xl w-3xl ml-8 shadow-md">
+					<div className="overflow-auto h-95 scrollbar-hide rounded-2xl w-3xl ml-8">
 						<table className="min-w-full text-left text-sm text-gray-700">
-							<thead className="bg-(--main) text-white">
+							<thead className="bg-(--main) sticky top-0 w-3xl text-white rounded-t-2xl">
 								<tr>
 									<th className="px-6 py-4 font-medium">Customer name</th>
 									<th className="px-6 py-4 font-medium">Phone no.</th>
 									<th className="px-6 py-4 font-medium">Email</th>
 									<th className="px-6 py-4 font-medium">Address</th>
+									<th className="px-6 py-4 font-medium">Delete</th>
 								</tr>
 							</thead>
 
-							<tbody className="divide-y divide-gray-200 bg-white">
+							<tbody className="divide-y divide-(--primary) bg-(--primary)/10">
 								{customers.map((customer, index) => (
-									<tr key={index} className="hover:bg-gray-50 transition">
+									<tr key={index} className="">
 										<td className="px-6 py-4 whitespace-nowrap">{customer.name}</td>
 										<td className="px-6 py-4 whitespace-nowrap">{customer.phone}</td>
 										<td className="px-6 py-4 whitespace-nowrap">{customer.email}</td>
 										<td className="px-6 py-4">
 											{customer.address1}, {customer.address2}, {customer.city}, {customer.state}, {customer.country} {customer.zip}
 										</td>
+										<button
+											onClick={() => handleDeleteCustomer(index)}
+											className="text-red-500 font-semibold hover:underline"
+										>
+											Delete
+										</button>
 									</tr>
 								))}
 							</tbody>
