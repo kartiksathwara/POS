@@ -172,7 +172,7 @@ const Inventory = () => {
 							</div>
 						</div>
 						<button className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block text-center">
-							CHECKOUT &gt;
+						<Link to="/bill">CHECKOUT &gt;</Link>
 						</button>
 					</div>
 				</div>

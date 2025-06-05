@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 
 const Checkout = () => {
 	return (
@@ -17,7 +18,7 @@ const Checkout = () => {
 				</div>
 			</div>
 			<button className="bg-(--main) text-white font-semibold py-2 rounded-md block text-center">
-				CHECKOUT &gt;
+				 <Link to="/bill">CHECKOUT &gt;</Link>
 			</button>
 		</div>
 	)

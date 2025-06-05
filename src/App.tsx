@@ -6,6 +6,8 @@ import RequestInventory from "./components/RequestInventory";
 import HomePage from "./components/HomePage";
 import Inventory from "./components/Inventory";
 import LoginPage from "./components/LoginPage";
+import DiscountPage from "./components/DiscountPage";
+import CancelOrder from "./components/CancelOrder";
 
 
 
@@ -21,7 +23,8 @@ function App() {
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/requestinventory" element={<RequestInventory />}></Route>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/discount" element={<DiscountPage />} />
+        <Route path="/bill" element={<CancelOrder />} />
       </Routes>
     </BrowserRouter>
   );
