@@ -9,7 +9,7 @@ const HomePage = () => {
 		<div className=" h-screen">
 			<Header />
 			<div className="flex">
-				<div className="w-3/3">
+				<div className="w-4xl">
 					<SearchBar />
 					<div className="grid grid-cols-3 px-7 gap-4">
 						<div className="bg-(--primary) p-5 gap-15 rounded-lg text-xl shadow-md flex flex-col items-start ">

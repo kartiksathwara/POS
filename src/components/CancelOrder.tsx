@@ -115,9 +115,9 @@ const CancelOrder: React.FC = () => {
                 </button>
 
                 {dropdownOpen && (
-                    <div className="absolute mt-2 cursor-pointer w-full bg-white border border-gray-300 rounded shadow-lg max-h-64 overflow-auto">
+                    <div className="absolute cursor-pointer w-fit scrollbar-hide rounded  max-h-64 overflow-auto">
                         <table className="min-w-full text-left text-sm text-gray-700">
-                            <thead className="bg-(--main) text-white">
+                            <thead className="bg-(--main) sticky top-0 w-3xl text-white">
                                 <tr>
                                     <th className="px-6 py-4 font-medium">Customer name</th>
                                     <th className="px-6 py-4 font-medium">Phone no.</th>
@@ -126,9 +126,9 @@ const CancelOrder: React.FC = () => {
                                 </tr>
                             </thead>
 
-                            <tbody className="divide-y divide-gray-200 bg-white">
+                            <tbody className="divide-y divide-(--primary) bg-white">
                                 {customers.map((customer, index) => (
-                                    <tr key={index} className="hover:bg-gray-50 transition" onClick={() => handleSelect(customer)}>
+                                    <tr key={index} className="" onClick={() => handleSelect(customer)}>
                                         <td className="px-6 py-4 whitespace-nowrap">{customer.name}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{customer.phone}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{customer.email}</td>
@@ -151,14 +151,14 @@ const CancelOrder: React.FC = () => {
         <div className=" h-screen">
             <Header />
             <div className="flex">
-                <div className=" bg-white rounded ">
+                <div className=" w-[65%] bg-white rounded ">
 
                     <div className="p-4">
 
                         <div className="bg-(--pin-button) p-5 rounded-2xl">
 
                             <div className="text-2xl font-semibold 4">${totalAmount}</div>
-                            <div className="border-2 rounded-2xl border-(--main)/50 w-4xl p-3  6">
+                            <div className="border-2 rounded-2xl border-(--main)/50 w-[100%] p-3">
                                 <h2 className="font-semibold 2 text-(--eye-icon) flex gap-2 text-1.5xl items-center py-0.5">
                                     <FaUser className="text-(--eye-icon)/70" />
                                     Customer</h2>
@@ -175,12 +175,12 @@ const CancelOrder: React.FC = () => {
                                 </div>
 
                                 <div className="flex items-center">
-                                    <div className="border w-full h-0 text-(--main)/50"></div><p className="p-2" >or</p><div className="border w-full h-0 text-(--main)/50"></div>
+                                    <div className="border w-full text-(--main)/50"></div><p className="p-2" >or</p><div className="border w-full h-0 text-(--main)/50"></div>
                                 </div>
                                 <div className="flex justify-center  text-black-400 text-sm 3"></div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="flex flex-col border border-(--primary) rounded px-2">
-                                        <label className="text-xs text-(--form) 1 mt-2">Full name*</label>
+                                        <label className="text-xs text-(--form) 1 -2">Full name*</label>
                                         <input
                                             className="text-lg font-semibold text-(--main) outline-none"
                                             placeholder="Name"
@@ -192,7 +192,7 @@ const CancelOrder: React.FC = () => {
                                     </div>
 
                                     <div className="flex flex-col border border-(--primary) rounded px-2">
-                                        <label className="text-xs text-(--form) 1 mt-2">Phone no*</label>
+                                        <label className="text-xs text-(--form) 1 -2">Phone no*</label>
                                         <input
                                             className="text-lg font-semibold text-(--main) 2 outline-none"
                                             placeholder="Phone no"
@@ -203,7 +203,7 @@ const CancelOrder: React.FC = () => {
                                         </input>
                                     </div>
                                     <div className="flex flex-col border border-(--primary) rounded px-2">
-                                        <label className="text-xs text-(--form) 1 mt-2">Email*</label>
+                                        <label className="text-xs text-(--form) 1 -2">Email*</label>
                                         <input
                                             className="text-lg font-semibold text-(--main) 2 outline-none"
                                             placeholder="Email"
@@ -214,7 +214,7 @@ const CancelOrder: React.FC = () => {
                                         </input>
                                     </div>
                                     <div className="flex flex-col border border-(--primary) rounded px-2">
-                                        <label className="text-xs text-(--form) 1 mt-2">Address</label>
+                                        <label className="text-xs text-(--form) 1 -2">Address</label>
                                         <input
                                             className="text-lg font-semibold text-(--main) 2 outline-none"
                                             placeholder="Address"
@@ -237,13 +237,13 @@ const CancelOrder: React.FC = () => {
                                     <label className="flex items-center gap-2">
                                         <div className="bg-(--pin-button) rounded p-2 flex gap-2">
                                             <input type="radio" name="payment" />
-                                            <span className="flex items-center gap-210">Cash <RiCashLine className="text-2xl" /></span>
+                                            <span className="flex items-center gap-165">Cash <RiCashLine className="text-2xl" /></span>
                                         </div>
                                     </label>
                                     <label className="flex items-center gap-2">
                                         <div className="bg-(--pin-button) rounded p-2 flex gap-2">
                                             <input type="radio" name="payment" />
-                                            <span className="flex items-center gap-210 ">Card <CiCreditCard1 className="text-2xl" /></span>
+                                            <span className="flex items-center gap-165 ">Card <CiCreditCard1 className="text-2xl" /></span>
                                         </div>
                                     </label>
                                 </div>
@@ -271,13 +271,13 @@ const CancelOrder: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <div className="w-1/2 p-5 bg-(--secondary) flex flex-col ">
+                <div className="w-[35%] p-5 bg-(--secondary) flex flex-col ">
                     <div className="flex justify-between p-3 font-serif 4">
                         <button onClick={handleCancelCart} className="bg-white w-full text-black font-semibold py-2 px-4 rounded-md ">
                             Cancel order
                         </button>
                     </div>
-                    <div className="flex-1 overflow-y-auto  border-t py-4 space-y-3 max-h-[500px] pr-2 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto  border-t py-4 space-y-3 max-h-[460px] pr-2 scrollbar-hide">
                         {cartItems.map((item) => (
                             <div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-lg">
                                 <div className="flex gap-3 items-center">
@@ -295,13 +295,13 @@ const CancelOrder: React.FC = () => {
                             </div>
                         ))}
                     </div>
-                    <div className="mt-4 flex justify-between gap-2">
+                    <div className="flex justify-between pt-6 gap-2">
                         <Link to={"/inventory"}>
-                            <button className="w-60 py-2 bg-(--back-button) rounded shadow">Back</button>
+                            <button className="w-50 py-2 bg-(--back-button) rounded shadow">Back</button>
                         </Link>
                         <button
                             onClick={() => setIsValidate(!isvalidate)}
-                            className={`w-60 py-2 bg-(--main)/40 text-white rounded ${isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"}`} >Validate &gt;</button>
+                            className={`w-50 py-2 bg-(--main)/40 text-white rounded ${isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"}`} >Validate &gt;</button>
                     </div>
                 </div>
             </div>

@@ -22,34 +22,34 @@ const Inventory = () => {
 	const [cartItems, setCartItems] = useState<Product[]>([]);
 
 	useEffect(() => {
-	fetch("https://dummyjson.com/products")
-		.then(res => res.json())
-		.then(data => setProducts(data.products))
-		.catch(err => console.error("Error fetching products:", err));
+		fetch("https://dummyjson.com/products")
+			.then(res => res.json())
+			.then(data => setProducts(data.products))
+			.catch(err => console.error("Error fetching products:", err));
 
-	
-	const savedCart = localStorage.getItem("cart");
-	if (savedCart) {
-		setCartItems(JSON.parse(savedCart));
-	}
-}, []);
+
+		const savedCart = localStorage.getItem("cart");
+		if (savedCart) {
+			setCartItems(JSON.parse(savedCart));
+		}
+	}, []);
 
 	const handleAddToCart = (product: Product) => {
-	const updatedCart = [...cartItems, product];
-	setCartItems(updatedCart);
-	localStorage.setItem("cart", JSON.stringify(updatedCart));
-};
+		const updatedCart = [...cartItems, product];
+		setCartItems(updatedCart);
+		localStorage.setItem("cart", JSON.stringify(updatedCart));
+	};
 
 	const handleClearCart = () => {
-	setCartItems([]);
-	localStorage.removeItem("cart");
-};
+		setCartItems([]);
+		localStorage.removeItem("cart");
+	};
 
 	const handleRemoveItem = (id: number) => {
-	const updatedCart = cartItems.filter(item => item.id !== id);
-	setCartItems(updatedCart);
-	localStorage.setItem("cart", JSON.stringify(updatedCart));
-};
+		const updatedCart = cartItems.filter(item => item.id !== id);
+		setCartItems(updatedCart);
+		localStorage.setItem("cart", JSON.stringify(updatedCart));
+	};
 
 	const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
 	const discount = subtotal * 0.18;
@@ -64,7 +64,7 @@ const Inventory = () => {
 	return (
 		<div className="h-screen">
 			<Header />
-			<div className="flex h-[calc(100%-4rem)]">
+			<div className="flex h-screen">
 				<div className="w-2/3 flex flex-col">
 					<SearchBar />
 					<div className="px-8 -mt-6">
@@ -106,7 +106,7 @@ const Inventory = () => {
 										className="w-16 h-16 rounded-sm border object-cover"
 									/>
 									<div>
-										<h3 className="font-semibold text-base">{product.title}</h3>	
+										<h3 className="font-semibold text-base">{product.title}</h3>
 										<p className="text-sm text-gray-500">Size - 30 UK</p>
 									</div>
 								</div>
@@ -128,7 +128,7 @@ const Inventory = () => {
 								Hold this order
 							</button>
 						</div>
-						<div className="flex-1 overflow-y-auto space-y-3 max-h-[300px] pr-2 scrollbar-hide">
+						<div className="flex-1 overflow-y-auto space-y-3 max-h-[225px] pr-2 scrollbar-hide">
 							{cartItems.map((item) => (
 								<div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-lg">
 									<div className="flex gap-3 items-center">
@@ -178,9 +178,9 @@ const Inventory = () => {
 								<span>Total</span>
 								<span>${total.toFixed(2)}</span>
 							</div>
-						<button onClick={handleCheckout} className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center">
-							CHECKOUT &gt;
-						</button>
+							<button onClick={handleCheckout} className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center">
+								CHECKOUT &gt;
+							</button>
 						</div>
 					</div>
 				</div>

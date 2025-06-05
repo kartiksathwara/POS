@@ -12,7 +12,7 @@ const Header = () => {
 				<div className="text-white">
 					<div className="flex items-center text-xl text-white relative">
 						<div className="relative group">
-							<button className="flex items-center gap-2 px-4 py-2 rounded-xl  transition">
+							<button className="flex items-center gap-2 px-0 py-2 rounded-xl  transition">
 								<FaUser />
 								<FaAngleDown className="transition-transform group-hover:rotate-180" />
 							</button>
@@ -22,7 +22,7 @@ const Header = () => {
 								<div className="bg-(--primary)">
 									<Link
 										to=""
-										className="block  px-4 py-3 text-lg text-black border-b-1 border-b-gray-400 hover:bg-gray-100"
+										className="block px-4 py-3 text-lg text-black border-b-1 border-b-gray-400 hover:bg-gray-100"
 									>
 										Profile
 									</Link>

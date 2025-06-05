@@ -70,9 +70,9 @@ const Customers = () => {
 						</button>
 					</div>
 
-					<div className="overflow-auto h-120 rounded-xl w-5xl ml-8 shadow-md">
+					<div className="overflow-auto h-95 scrollbar-hide rounded-2xl w-3xl ml-8">
 						<table className="min-w-full text-left text-sm text-gray-700">
-							<thead className="bg-(--main) text-white">
+							<thead className="bg-(--main) sticky top-0 w-3xl text-white rounded-t-2xl">
 								<tr>
 									<th className="px-6 py-4 font-medium">Customer name</th>
 									<th className="px-6 py-4 font-medium">Phone no.</th>
@@ -82,9 +82,9 @@ const Customers = () => {
 								</tr>
 							</thead>
 
-							<tbody className="divide-y divide-gray-200 bg-white">
+							<tbody className="divide-y divide-(--primary) bg-(--primary)/10">
 								{customers.map((customer, index) => (
-									<tr key={index} className="hover:bg-gray-50 transition">
+									<tr key={index} className="">
 										<td className="px-6 py-4 whitespace-nowrap">{customer.name}</td>
 										<td className="px-6 py-4 whitespace-nowrap">{customer.phone}</td>
 										<td className="px-6 py-4 whitespace-nowrap">{customer.email}</td>
