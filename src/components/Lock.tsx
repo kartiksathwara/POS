@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { FaBackspace, FaAngleRight } from "react-icons/fa";
 import Header from "./Header";
-import { Link, useNavigate } from "react-router-dom"; // Needed for redirection
+import { Link, useNavigate } from "react-router-dom"; 
 
 const Lock = () => {
-  const navigate = useNavigate(); // Hook to navigate
+  const navigate = useNavigate(); 
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const Numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-  const CORRECT_PIN = "1234"; // Define your correct pin
+  const CORRECT_PIN = "1234"; 
 
-  // Update current time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -19,7 +18,6 @@ const Lock = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Handle keyboard input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key;
@@ -37,22 +35,20 @@ const Lock = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [pin]);
 
-  // Handle click on number buttons
   const handleClick = (num: number) => {
     if (pin.length < 4) {
       setPin(pin + num);
     }
   };
 
-  // Validate pin when length reaches 4
   useEffect(() => {
     if (pin.length === 4) {
       if (pin === CORRECT_PIN) {
         setError("");
-        navigate("/"); // or your desired home route
+        navigate("/"); 
       } else {
         setError("Incorrect PIN. Enter correct PIN.");
-        setTimeout(() => setPin(""), 1000); // Clear pin after delay
+        setTimeout(() => setPin(""), 1000); 
       }
     }
   }, [pin]);
