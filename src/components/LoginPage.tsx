@@ -54,7 +54,7 @@ const LoginPage = () => {
       login(userToken);
       console.log("Login success!");
       // navigate("/lock");
-      navigate("/");
+      navigate("/lock");
     } else {
       console.log("Invalid credential");
       setError("Invalid credential");

@@ -12,7 +12,7 @@ type TableProps<T> = {
 const Collectionlist = <T extends Record<string, any>>({ columns, data }: TableProps<T>) => {
   return (
     <div className="rounded-t-xl shadow-md overflow-hidden">
-      <div className="max-h-[60vh] overflow-y-auto rounded-t-xl shadow-md scrollbar-hidden">
+      <div className="max-h-[60vh] overflow-y-auto rounded-t-xl shadow-md scrollbar-hide">
         <table className="min-w-full text-sm text-gray-700 text-left">
           <thead className="bg-[#2b2a28] sticky top-0 text-white">
             <tr>

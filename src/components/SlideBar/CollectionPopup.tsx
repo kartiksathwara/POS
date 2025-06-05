@@ -33,6 +33,46 @@ const data = [
     name: "Abc",
     product: 28,
   },
+  {
+    image: "/kid_img.png",
+    name: "Abc",
+    product: 28,
+  },
+  {
+    image: "/kid_img.png",
+    name: "Abc",
+    product: 28,
+  },
+  {
+    image: "/kid_img.png",
+    name: "Abc",
+    product: 28,
+  },
+  {
+    image: "/kid_img.png",
+    name: "Abc",
+    product: 28,
+  },
+  {
+    image: "/kid_img.png",
+    name: "Abc",
+    product: 28,
+  },
+  {
+    image: "/kid_img.png",
+    name: "Abc",
+    product: 28,
+  },
+  {
+    image: "/kid_img.png",
+    name: "Abc",
+    product: 28,
+  },
+  {
+    image: "/kid_img.png",
+    name: "Abc",
+    product: 28,
+  },
 ];
 
 const CollectionPopup: React.FC<FeeProps> = ({ closeCollection }) => {

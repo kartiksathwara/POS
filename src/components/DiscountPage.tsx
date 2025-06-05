@@ -2,6 +2,7 @@ import Checkout from "./Checkout";
 import SearchBar from "./SearchBar";
 import Header from "./Header";
 import { FaAngleLeft } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 const discounts = [
 	{ code: '#TP-520392-72', percent: '26%', reason: 'Regular Customer' },
@@ -24,7 +25,7 @@ const DiscountPage: React.FC = () => {
 					<div className="px-8">
 						<div className="">
 							<div className="py-4 -ml-1.5 -mb-2">
-								<h2 className="flex items-center text-xl font-semibold font-sans -mt-8 text-(--main) "><FaAngleLeft className="text-(--main)" />DISCOUNT</h2>
+								<h2 className="flex items-center text-xl font-semibold font-sans -mt-8 text-(--main) "><Link to="/"><FaAngleLeft className="text-(--main)" /></Link>DISCOUNT</h2>
 							</div >
 
 							<div className="overflow-x-auto rounded-xl -ml-0.5">
