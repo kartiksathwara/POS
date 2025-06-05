@@ -1,34 +1,37 @@
-type Column<T> = {
+type Column = {
   Header: string;
-  accessor: keyof T;
+  accessor: string;
 };
 
-type TableProps<T> = {
-  columns: Column<T>[];
-  data: T[];
+type TableProps = {
+  columns: Column[];
+  data: Record<string, any>[];
 };
 
+const TableComp = ({ columns, data }:TableProps) => {
 
-const Collectionlist = <T extends Record<string, any>>({ columns, data }: TableProps<T>) => {
   return (
-    <div className="rounded-t-xl shadow-md overflow-hidden">
+    <div className="rounded-t-xl shadow-md overflow-hidden ">
       <div className="max-h-[60vh] overflow-y-auto rounded-t-xl shadow-md scrollbar-hide">
-        <table className="min-w-full text-sm text-gray-700 text-left">
-          <thead className="bg-[#2b2a28] sticky top-0 text-white">
+        <table className="min-w-full text-sm  text-gray-700 text-left overflow-scroll">
+          <thead className="bg-(--main) sticky top-0 text-white">
             <tr>
               {columns.map((col) => (
-                <th key={String(col.accessor)} className="p-4 border-b font-medium">
+                <th key={col.accessor} className="p-4 border-b font-medium">
                   {col.Header}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y">
+          <tbody
+            className="bg-white divide-y
+          "
+          >
             {data.map((row, rowIndex) => (
               <tr key={rowIndex} className="hover:bg-gray-50">
                 {columns.map((col) => (
-                  <td key={String(col.accessor)} className="p-2 border-b">
-                    {col.accessor.toString().toLowerCase() === "image" ? (
+                  <td key={col.accessor} className="p-2 border-b">
+                    {col.accessor.toLowerCase() === "image" ? (
                       <img
                         src={row[col.accessor]}
                         alt="table-item"
@@ -48,4 +51,4 @@ const Collectionlist = <T extends Record<string, any>>({ columns, data }: TableP
   );
 };
 
-export default Collectionlist;
+export default TableComp;
