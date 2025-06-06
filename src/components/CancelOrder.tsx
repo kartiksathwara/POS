@@ -148,7 +148,7 @@ const CancelOrder: React.FC = () => {
 
 
     return (
-        <div className=" h-screen">
+        <div className="min-h-screen flex flex-col">
             <Header />
             <div className="flex">
                 <div className=" w-[65%] bg-white rounded ">
@@ -252,7 +252,7 @@ const CancelOrder: React.FC = () => {
                     </div>
                     <div className="">
 
-                        <div className=" flex justify-between items-center p-4 bg-(--secondary)">
+                        <div className=" flex justify-between items-center  p-4 bg-(--secondary)">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-semibold text-(--eye-icon)">Order:</span>
                                 {orderNumbers.map((order) => (

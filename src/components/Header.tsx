@@ -51,12 +51,8 @@ const Header = () => {
 										>
 											Settings
 										</Link>
-										<Link to="/lock">
-										<button
-											className="w-full text-left px-4 py-3 text-lg text-(--main)"
-										>
+										<Link to="/lock" className="block px-4 py-1.5 text-lg text-(--main) border-b-gray-400">										
 											Close shop
-										</button>
 										</Link>
 									</div>
 									<div />

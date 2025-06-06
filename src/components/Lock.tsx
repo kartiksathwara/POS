@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { FaBackspace, FaAngleRight } from "react-icons/fa";
 import Header from "./Header";
-import {useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 const Lock = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +20,6 @@ const Lock = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Handle keyboard input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key;
@@ -74,24 +73,24 @@ const Lock = () => {
     <div className="h-screen">
       <Header />
       <div className="flex flex-col gap-5 items-center justify-center text-center py-6">
-        <div>
-          <h2 className="font-syne font-bold text-[30px] text-(--main)">
+        <div className="">
+          <h2 className=" font-bold text-[30px] text-(--main)">
             {formattedTime}
           </h2>
-          <p className="font-syne font-bold text-[14px] text-(--main)">
+          <p className=" font-bold text-[14px] text-(--main)">
             {formattedDate(currentTime)}
           </p>
         </div>
-        <div className="font-syne font-bold">
+        <div className="font-bold">
           <div className="text-[16px] text-(--eye-icon)">Welcome back</div>
-          <div className="text-[22px] text-(--main)">Kartik</div>
+          <div className="text-[22px] text-(--main)">User</div>
         </div>
 
         <input
           type="password"
           value={pin}
           readOnly
-          className="border-2 border-(--main)/50 rounded-xl py-2 px-15 mb-2 text-center text-2xl w-2xs"
+          className="border-2 border-(--main)/50 rounded-xl py-2 px-15 text-center text-2xl w-2xs"
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -111,8 +110,7 @@ const Lock = () => {
           />
         </div>
       </div>
-
-      <div className="flex mt-4">
+      <div className="fixed bottom-4 left-0 right-0 px-4">
         <button
           onClick={handleLogout}
           className="flex items-center text-xl cursor-pointer "
