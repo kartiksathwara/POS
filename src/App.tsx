@@ -16,7 +16,6 @@ import Inventory from "./components/Inventory";
 function App() {
   return (
     <AuthProvider>
-
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>}></Route>
