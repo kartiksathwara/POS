@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext"
-import "./App.css";
 import Customers from "./components/Customers";
 import ProtectedRoute from "./components/protectedRoute";
 import HomePage from "./components/HomePage";
@@ -10,7 +9,7 @@ import LoginPage from "./components/LoginPage";
 import CancelOrder from "./components/CancelOrder";
 import Lock from "./components/Lock";
 import DiscountPage from "./components/DiscountPage";
-import Inventory from "./components/Inventory/Inventory";
+import Inventory from "./components/Inventory";
 // import ActionBar from "./components/SlideBar/ActionBar";
 // import MostProduct from "./components/Products/MostProduct";
 

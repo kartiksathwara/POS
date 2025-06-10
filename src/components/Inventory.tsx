@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import Header from "../components/Header";
-import SearchBar from "../components/SearchBar";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import Header from "./Header";
+import SearchBar from "./SearchBar";
 
 interface Product {
 	id: number;
@@ -12,33 +13,62 @@ interface Product {
 	thumbnail: string;
 }
 
+interface cartItems extends Product {
+	quantity: number;
+}
 const Inventory = () => {
 	const navigate = useNavigate();
 	const categories = [
-		"Shirt", "T-Shirt", "Top", "Pants", "Jeans", "Trousers", "Dress"
+		"Shirt",
+		"T-shirt",
+		"Top",
+		"Pants",
+		"Jeans",
+		"Trousers",
+		"Dress",
 	];
-	const [products, setProducts] = useState<Product[]>([]);
-	const [cartItems, setCartItems] = useState<Product[]>([]);
 
+	const [products, setProducts] = useState<Product[]>([]);
+	const [cartItems, setCartItems] = useState<cartItems[]>([]);
 	useEffect(() => {
 		fetch("https://dummyjson.com/products")
-			.then(res => res.json())
-			.then(data => setProducts(data.products))
-			.catch(err => console.error("Error fetching products:", err));
-
+			.then((res) => res.json())
+			.then((data) => setProducts(data.products))
+			.catch((err) => console.error("Error fetching products:", err));
 
 		const savedCart = localStorage.getItem("cart");
 		if (savedCart) {
 			setCartItems(JSON.parse(savedCart));
 		}
 	}, []);
-
 	const handleAddToCart = (product: Product) => {
-		const updatedCart = [...cartItems, product];
+		const existingItem = cartItems.find(item => item.id === product.id)
+
+		let updatedCart;
+		if (existingItem) {
+			updatedCart = cartItems.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+		} else {
+			updatedCart = [...cartItems, { ...product, quantity: 1 }];
+		}
 		setCartItems(updatedCart);
 		localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+		// 	const [quantity, setQuantity] = useState<number>(1);
 	};
 
+	const increseQty = (id: number) => {
+		const updated = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
+		setCartItems(updated);
+		localStorage.setItem("cart", JSON.stringify(updated));
+	}
+
+	const decreseQty = (id: number) => {
+		const updated = cartItems.map(item => item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item)
+			.filter(item => item.quantity > 0)
+
+		setCartItems(updated);
+		localStorage.setItem("cart", JSON.stringify(updated));
+	}
 	const handleClearCart = () => {
 		setCartItems([]);
 		localStorage.removeItem("cart");
@@ -50,7 +80,7 @@ const Inventory = () => {
 		localStorage.setItem("cart", JSON.stringify(updatedCart));
 	};
 
-	const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
+	const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 	const discount = subtotal * 0.18;
 	const tax = (subtotal - discount) * 0.08;
 	const total = subtotal - discount + tax;
@@ -59,21 +89,18 @@ const Inventory = () => {
 		localStorage.setItem("totalAmount", total.toFixed(2));
 		navigate("/bill")
 	}
-
 	return (
 		<div className="h-screen">
 			<Header />
-			<div className="flex h-screen">
+			<div className="flex h-[calc(100%-4rem)]">
 				<div className="w-2/3 flex flex-col">
 					<SearchBar />
-					<div className="px-8 -mt-5">
-							<Link to="/" className="flex items-center">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none">
-									<path d="M12.2665 1.98191C12.6666 1.58183 13.3186 1.59307 13.7047 2.0067L13.7437 2.04845C14.1096 2.44049 14.1011 3.05137 13.7244 3.43311L7.69142 9.54765C7.3072 9.93706 7.3072 10.5629 7.69142 10.9523L13.7244 17.0669C14.1011 17.4486 14.1096 18.0595 13.7437 18.4516L13.7047 18.4933C13.3186 18.9069 12.6666 18.9182 12.2665 18.5181L4.70554 10.9571C4.31502 10.5666 4.31502 9.93342 4.70554 9.54289L12.2665 1.98191Z" fill="#333333" />
-								</svg>
-								<span className="text-xl font-bold ml-2">INVENTORY</span>
-							</Link>
-						<div className="flex justify-between  items-center mt-4">
+					<div className="px-8 -mt-3">
+						<Link to="/" className="flex items-center">
+							<IoIosArrowBack size={20} />
+							<span className="text-xl font-bold ml-2">INVENTORY</span>
+						</Link>
+						<div className="flex justify-between  items-center p-6">
 							<div className="flex gap-2 flex-wrap">
 								{categories.map(item => (
 									<div
@@ -116,12 +143,7 @@ const Inventory = () => {
 						className="flex items-center gap-1 font-medium text-black px-8 pb-4"
 					>
 						<span>Request Inventory</span>
-						<svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
-							<path
-								d="M4.65207 1.55133C4.40515 1.30441 4.00273 1.31135 3.76447 1.56663C3.53864 1.80859 3.54387 2.18561 3.77633 2.42121L7.10737 5.79726C7.49159 6.18667 7.49159 6.81254 7.10737 7.20195L3.77633 10.578C3.54387 10.8136 3.53864 11.1906 3.76447 11.4326C4.00273 11.6879 4.40515 11.6948 4.65207 11.4479L8.89324 7.20672C9.28377 6.81619 9.28377 6.18303 8.89324 5.7925L4.65207 1.55133Z"
-								fill="#333333"
-							/>
-						</svg>
+						<IoIosArrowForward size={20} />
 					</Link>
 				</div>
 				<div className="w-1/2 bg-(--secondary) p-6 flex flex-col justify-between">
@@ -137,7 +159,7 @@ const Inventory = () => {
 								Hold this order
 							</button>
 						</div>
-						<div className="flex-1 overflow-y-auto space-y-3 max-h-[225px] pr-2 scrollbar-hide">
+						<div className="flex-1 overflow-y-auto space-y-3 max-h-[28vh] pr-2 scrollbar-hide">
 							{cartItems.map((item) => (
 								<div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-lg">
 									<div className="flex gap-3 items-center">
@@ -148,7 +170,14 @@ const Inventory = () => {
 										/>
 										<div>
 											<h4 className="font-medium text-sm">{item.title}</h4>
-											<p className="text-xs text-gray-500">${item.price.toFixed(2)}</p>
+											<div className="flex space-x-1">
+												<p className=" text-gray-500">${item.price.toFixed(2)}</p>
+												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => decreseQty(item.id)}>
+													-
+												</button>
+												<span className="px-2 text-1">{item.quantity}</span>
+												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => increseQty(item.id)}> + </button>
+											</div>
 										</div>
 									</div>
 									<button onClick={() => handleRemoveItem(item.id)} className="text-gray-500">
@@ -158,7 +187,7 @@ const Inventory = () => {
 							))}
 						</div>
 					</div>
-					<div className="mt-6">
+					<div className="">
 						<div className="flex justify-between items-center bg-white rounded-xl px-4 py-2 mb-4">
 							<input
 								type="text"
@@ -166,7 +195,9 @@ const Inventory = () => {
 								className="bg-white text-sm text-black placeholder-black focus:outline-none w-full"
 							/>
 							<button className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2">
-								ADD
+								<Link to="/discount">
+									ADD
+								</Link>
 							</button>
 						</div>
 						<div className="text-sm space-y-2">
@@ -191,13 +222,9 @@ const Inventory = () => {
 								CHECKOUT &gt;
 							</button>
 						</div>
-						<button className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block text-center">
-						<Link to="/bill">CHECKOUT &gt;</Link>
-						</button>
 					</div>
 				</div>
 			</div>
-
 		</div>
 	);
 };
