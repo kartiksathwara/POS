@@ -26,7 +26,6 @@ const HomePage = () => {
     { label: "Request", link: "./request", icon: <RequestSvg /> },
   ]);
 
-  // console.log(actionCards);
 
   const iconMap: Record<string, ReactNode> = {
     inventory: <InventorySvg />,
@@ -36,9 +35,7 @@ const HomePage = () => {
   };
 
   const handleAddCard = (title: string) => {
-    //avoid same lable
-    //   const exists = actionCards.some(card => card.label.toLowerCase() === title.toLowerCase());
-    // if (exists) return;
+    
 
     const lower = title.toLowerCase();
     setActionCards((prev) => [

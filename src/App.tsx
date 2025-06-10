@@ -17,19 +17,19 @@ function App() {
   return (
     <AuthProvider>
 
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>}></Route>
-        <Route path="/customer" element={<Customers />} />
-        <Route path="/setting" element={<Settingpage />} />
-        <Route path="/inventory" element={<Inventory />} />
-        <Route path="/requestinventory" element={<RequestInventory />}></Route>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/bill" element={<CancelOrder />} />
-        <Route path="/lock" element={<Lock />} />
-        <Route path="/discount" element={<DiscountPage />} />
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>}></Route>
+          <Route path="/customer" element={<Customers />} />
+          <Route path="/setting" element={<Settingpage />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/requestinventory" element={<RequestInventory />}></Route>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/bill" element={<CancelOrder />} />
+          <Route path="/lock" element={<Lock />} />
+          <Route path="/discount" element={<DiscountPage />} />
+        </Routes>
+      </BrowserRouter>
     </AuthProvider>
   );
 }

@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
 import Header from "./Header";
 import SearchBar from "./SearchBar";
+import { MdOutlineArrowBackIosNew } from "react-icons/md";
+// import { IoIosArrowForward } from "react-icons/io";
 
 interface Product {
 	id: number;
@@ -95,12 +97,12 @@ const Inventory = () => {
 			<div className="flex h-[calc(100%-4rem)]">
 				<div className="w-2/3 flex flex-col">
 					<SearchBar />
-					<div className="px-8 -mt-3">
-						<Link to="/" className="flex items-center">
-							<IoIosArrowBack size={20} />
-							<span className="text-xl font-bold ml-2">INVENTORY</span>
-						</Link>
-						<div className="flex justify-between  items-center p-6">
+					<div className="px-8 -mt-5">
+							<Link to="/" className="flex items-center">
+								<MdOutlineArrowBackIosNew className="size-5" />
+								<span className="text-xl font-bold ml-2">INVENTORY</span>
+							</Link>
+						<div className="flex justify-between  items-center mt-4">
 							<div className="flex gap-2 flex-wrap">
 								{categories.map(item => (
 									<div
@@ -143,7 +145,7 @@ const Inventory = () => {
 						className="flex items-center gap-1 font-medium text-black px-8 pb-4"
 					>
 						<span>Request Inventory</span>
-						<IoIosArrowForward size={20} />
+						<IoIosArrowForward className="size-4"/>
 					</Link>
 				</div>
 				<div className="w-1/2 bg-(--secondary) p-6 flex flex-col justify-between">
@@ -159,7 +161,7 @@ const Inventory = () => {
 								Hold this order
 							</button>
 						</div>
-						<div className="flex-1 overflow-y-auto space-y-3 max-h-[28vh] pr-2 scrollbar-hide">
+						<div className="flex-1 overflow-y-auto space-y-3 max-h-[380px] pr-2 scrollbar-hide">
 							{cartItems.map((item) => (
 								<div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-lg">
 									<div className="flex gap-3 items-center">

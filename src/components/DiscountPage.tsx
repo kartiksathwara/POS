@@ -23,12 +23,11 @@ const DiscountPage: React.FC = () => {
 				<div className="">
 					<SearchBar />
 					<div className="px-8">
+						<div className="py-4">
+							<h2 className="flex items-center text-xl font-semibold font-sans text-(--main) "><Link to="/"><FaAngleLeft className="text-(--main)" /></Link>DISCOUNT</h2>
+						</div >
 						<div className="">
-							<div className="py-4 -ml-1.5 -mb-2">
-								<h2 className="flex items-center text-xl font-semibold font-sans -mt-8 text-(--main) "><Link to="/"><FaAngleLeft className="text-(--main)" /></Link>DISCOUNT</h2>
-							</div >
-
-							<div className="overflow-x-auto rounded-xl -ml-0.5">
+							<div className="overflow-x-auto  rounded-xl">
 								<table className="w-full">
 									<thead className="bg-(--main) text-white">
 										<tr className="">
