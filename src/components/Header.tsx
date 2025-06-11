@@ -68,9 +68,9 @@ const Header = () => {
 						</div>
 					</div>
 				</div>
-			</header>
-		</div>
-	)
-}
+		</header>
+			</div>
+	);
+};
 
 export default Header

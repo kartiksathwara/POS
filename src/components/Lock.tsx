@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { FaBackspace, FaAngleRight } from "react-icons/fa";
 import Header from "./Header";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import {useNavigate } from "react-router-dom"; 
+// import { useAuth } from "../auth/AuthContext";
+import type { AppDispatch } from "../app/store";
+import { useDispatch } from "react-redux";
+import { logout } from "../auth/authSlice";
 
 const Lock = () => {
   const navigate = useNavigate();
@@ -11,7 +14,8 @@ const Lock = () => {
   const [error, setError] = useState("");
   const Numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
   const CORRECT_PIN = "1234";
-  const { logout } = useAuth();
+  // const { logout } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -45,7 +49,8 @@ const Lock = () => {
 
   const handleLogout = () => {
     navigate("/login");
-    logout();
+    dispatch(logout())
+    // logout();
   };
 
   useEffect(() => {
@@ -70,14 +75,14 @@ const Lock = () => {
   };
 
   return (
-    <div className="h-screen">
+    <div className="flex flex-col h-screen ">
       <Header />
-      <div className="flex flex-col gap-5 items-center justify-center text-center py-6">
-        <div className="">
-          <h2 className=" font-bold text-[30px] text-(--main)">
+      <div className="flex flex-col h-[calc(100%-6rem)] gap-4 items-center justify-center text-center py-6">
+        <div>
+          <h2 className="font-bold text-[30px] text-(--main)">
             {formattedTime}
           </h2>
-          <p className=" font-bold text-[14px] text-(--main)">
+          <p className="font-bold text-[14px] text-(--main)">
             {formattedDate(currentTime)}
           </p>
         </div>
