@@ -3,7 +3,11 @@ import TitleBanner from "./TitleBanner";
 import DigitalClock from "./DigitalClock/DigitalClock";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+// import { useAuth } from "../auth/AuthContext";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../app/store";
+import { login } from "../auth/authSlice";
+
 
 type UserDet = {
   email: string;
@@ -16,7 +20,8 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth();
+  // const { login } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
   const userToken = "POS-token";
 
   const defaultData: UserDet = {
@@ -51,9 +56,9 @@ const LoginPage = () => {
     if (email === user.email && password === user.password) {
       // const fakeToken = "fakejwttkn123";
       // localStorage.setItem("token", fakeToken);
-      login(userToken);
-      console.log("Login success!");
-      // navigate("/lock");
+      // login(userToken);
+      // console.log("Login success!");
+      dispatch(login(userToken));
       navigate("/lock");
     } else {
       console.log("Invalid credential");
@@ -91,7 +96,7 @@ const LoginPage = () => {
                 className="absolute right-2 top-6 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 aria-label="Toggle password visibility"
               >
-                {showPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
+                {showPassword ? <IoEye size={20} /> : <IoEyeOff size={20} />}
               </button>
             </div>
             <div className="min-h-[1.25rem]">

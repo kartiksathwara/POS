@@ -11,8 +11,8 @@ import CancelOrder from "./components/CancelOrder";
 import Lock from "./components/Lock";
 import DiscountPage from "./components/DiscountPage";
 import Inventory from "./components/Inventory/Inventory";
+import MostProduct from "./components/Products/MostProduct";
 // import ActionBar from "./components/SlideBar/ActionBar";
-// import MostProduct from "./components/Products/MostProduct";
 
 function App() {
   return (
@@ -29,6 +29,7 @@ function App() {
         <Route path="/bill" element={<CancelOrder />} />
         <Route path="/lock" element={<Lock />} />
         <Route path="/discount" element={<DiscountPage />} />
+        <Route path="/most-product" element={<MostProduct />} />
       </Routes>
     </BrowserRouter>
     </AuthProvider>

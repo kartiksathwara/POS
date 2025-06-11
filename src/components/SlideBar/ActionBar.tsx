@@ -30,8 +30,11 @@ const ActionBar: React.FC<ActionBarProps> = ({ handleClose, onSave }) => {
   }
 
   if (showLinkPopup) {
-    return <LinkPopup onSave={onSave} closeLinkPopup={() => setShowLinkPopup(false)} />;
+    return (
+      <LinkPopup onSave={onSave} closeLinkPopup={() => setShowLinkPopup(false)} />
+    );
   }
+
   if (showCollection) {
     return <CollectionPopup closeCollection={() => setShowCollection(false)} />;
   }
@@ -42,14 +45,14 @@ const ActionBar: React.FC<ActionBarProps> = ({ handleClose, onSave }) => {
       className="flex items-center gap-3 py-3 cursor-pointer hover:bg-gray-50"
     >
       <span className="text-gray-600 text-xl">{icon}</span>
-      <span className="text-gray-700">{label}</span>
+      <span className="text-gray-700 text-base sm:text-sm">{label}</span>
     </div>
   );
 
   return (
-    <div className="absolute bottom-0 bg-white rounded-t-2xl h-[75%] w-[122vh] px-5 pt-5 border border-b-0 shadow-lg z-40">
+    <div className="fixed bottom-0 left-0 right-0 mx-auto bg-white rounded-t-2xl h-[75%] max-h-[80vh] w-full sm:w-[90%] md:w-[80%] px-4 sm:px-6 pt-5 border border-b-0 shadow-lg z-40">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-gray-700 font-semibold text-lg">
+        <h2 className="text-gray-700 font-semibold text-lg sm:text-base">
           Add quick action
         </h2>
         <button
