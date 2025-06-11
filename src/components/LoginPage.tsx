@@ -67,9 +67,9 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center">
+    <div className="min-h-screen flex flex-col items-center justify-center sm:justify-start">
       <TitleBanner />
-      <div className="flex flex-col gap-10 items-center justify-start flex-1 w-full max-w-md sm:mt-16 ">
+      <div className="flex flex-col items-center flex-1 w-full pt-28 sm:pt-16 gap-10 sm:gap-10 px-4">
         <div className="text-center">
           <DigitalClock />
         </div>

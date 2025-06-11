@@ -103,7 +103,7 @@ const CancelOrder: React.FC = () => {
     };
 
     return (
-      <div className="relative">
+      <div className="relative w-full">
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="w-full px-1 text-left text-lg"
@@ -161,18 +161,18 @@ const CancelOrder: React.FC = () => {
   return (
     <div className=" h-screen">
       <Header />
-      <div className="flex h-[calc(100%-4rem)]">
-        <div className="w-2/3 flex flex-col justify-between bg-white rounded-md">
-          <div className="flex flex-col h-[80%] justify-between p-4">
-            <div className="bg-(--pin-button) flex flex-col gap-3 p-4 rounded-2xl">
+      <div className="flex flex-col lg:flex-row h-[calc(100%-4rem)]">
+        <div className="w-full lg:w-2/3 flex flex-col justify-between bg-white rounded-md">
+          <div className="flex flex-col h-[80%] justify-between p-1">
+            <div className="bg-(--pin-button) flex flex-col gap-3 p-2 rounded-2xl">
               <div className="text-2xl font-semibold">${totalAmount}</div>
               <div className="border-2 rounded-2xl border-(--main)/50 w-[100%] p-2">
-                <h2 className="font-semibold 2 text-(--eye-icon) flex gap-2 text-1.5xl items-center py-0.5">
+                <h2 className="font-semibold text-(--eye-icon) flex gap-2 text-1.5xl items-center py-0.5">
                   <FaUser className="text-(--eye-icon)/70" />
                   Customer
                 </h2>
                 <div className="flex flex-col border border-(--primary) rounded px-2 py-1">
-                  <label className="text-xs text-gray-600 pl-1 mb-1">
+                  <label className="text-xs text-gray-600">
                     Select Customer
                   </label>
                   <CustomerSelectDropdown
@@ -189,10 +189,10 @@ const CancelOrder: React.FC = () => {
                   <p className="p-2">or</p>
                   <div className="border w-full h-0 text-(--main)/50"></div>
                 </div>
-                <div className="flex justify-center  text-black-400 text-sm 3"></div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex justify-center text-black-400 text-sm 3"></div>
+                <div className="grid grid-cols-2 gap-2">
                   <div className="flex flex-col border border-(--primary) rounded px-2">
-                    <label className="text-xs text-(--form) 1 -2">
+                    <label className="text-xs text-(--for)">
                       Full name*
                     </label>
                     <input
@@ -207,7 +207,7 @@ const CancelOrder: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col border border-(--primary) rounded px-2">
-                    <label className="text-xs text-(--form) 1 -2">
+                    <label className="text-xs text-(--form) ">
                       Phone no*
                     </label>
                     <input
@@ -224,7 +224,7 @@ const CancelOrder: React.FC = () => {
                     ></input>
                   </div>
                   <div className="flex flex-col border border-(--primary) rounded px-2">
-                    <label className="text-xs text-(--form) 1 -2">Email*</label>
+                    <label className="text-xs text-(--form)">Email*</label>
                     <input
                       className="text-lg font-semibold text-(--main) 2 outline-none"
                       placeholder="Email"
@@ -239,11 +239,11 @@ const CancelOrder: React.FC = () => {
                     ></input>
                   </div>
                   <div className="flex flex-col border border-(--primary) rounded px-2">
-                    <label className="text-xs text-(--form)">
+                    <label className="text-xs text-(--form) 1 -2">
                       Address
                     </label>
                     <input
-                      className="text-lg font-semibold text-(--main) outline-none"
+                      className="text-lg font-semibold text-(--main) 2 outline-none"
                       placeholder="Address"
                       onChange={(e) =>
                         setNewCustomer({
@@ -294,10 +294,11 @@ const CancelOrder: React.FC = () => {
               >
                 {order}
               </button>
-            ))}
+            ))} 
+            
           </div>
         </div>
-        <div className="w-[42%] p-6 bg-(--secondary) flex flex-col justify-between">
+        <div className="w-full lg:w-[42%] p-6 bg-(--secondary) flex flex-col justify-between">
           <div className="font-serif">
             <button
               onClick={handleCancelCart}
@@ -305,13 +306,14 @@ const CancelOrder: React.FC = () => {
             >
               Cancel order
             </button>
+            <hr className="mt-3"/>
           </div>
-          <hr />
-          <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] pr-2 scrollbar-hide">
+          {/* <hr /> */}
+          <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] scrollbar-hide">
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="flex justify-between items-center bg-white p-3 rounded-lg"
+                className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-3 rounded-lg gap-2"
               >
                 <div className="flex gap-3 items-center">
                   <img
@@ -328,16 +330,19 @@ const CancelOrder: React.FC = () => {
                 </div>
               </div>
             ))}
+            {cartItems.length === 0 && (
+      <div className="h-screen mt-8"></div>
+    )}
           </div>
-          <div className="flex justify-between gap-2">
-            <Link to={"/inventory"}>
-              <button className="w-50 py-2 bg-(--back-button) rounded shadow">
+          <div className="flex flex-row sm:flex-row justify-between gap-2">
+            <Link to={"/inventory"} className="w-full sm:w-auto">
+              <button className="w-full py-2 bg-(--back-button) rounded shadow sm:w-40 px-4 text-sm sm:text-base ">
                 Back
               </button>
             </Link>
             <button
               onClick={() => setIsValidate(!isvalidate)}
-              className={`w-50 py-2 bg-(--main)/40 text-white rounded ${
+              className={`w-full py-2 bg-(--main)/40 text-white rounded sm:w-40 px-4 text-sm sm:text-base ${
                 isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
               }`}
             >

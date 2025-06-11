@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import type { Customer } from "./Customers";
+import { IoIosArrowForward } from "react-icons/io";
 
 interface AddCustomerModalProps {
 	isOpen: boolean;
@@ -57,11 +57,7 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose ,on
 						</button>
 						<button className="bg-(--buttonbg) flex items-center gap-1  text-black font-semibold pl-3 py-1 rounded-md" onClick={handleSave}>
 							SAVE
-							<Link to="" className="mr-2">
-								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 12 13" fill="none">
-									<path d="M4.65109 1.55133C4.40418 1.30441 4.00175 1.31135 3.76349 1.56663C3.53766 1.80859 3.5429 2.18561 3.77535 2.42121L7.10639 5.79726C7.49061 6.18667 7.49061 6.81254 7.10639 7.20195L3.77535 10.578C3.5429 10.8136 3.53766 11.1906 3.76349 11.4326C4.00175 11.6879 4.40417 11.6948 4.65109 11.4479L8.89227 7.20672C9.28279 6.81619 9.28279 6.18303 8.89227 5.7925L4.65109 1.55133Z" fill="#333333" />
-								</svg>
-							</Link>
+							<IoIosArrowForward />
 						</button>
 					</div>
 				</div>
@@ -94,21 +90,21 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose ,on
 							<label className="absolute top-1 left-4">Country*</label>
 							<select name="country" value={form.country} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select country</option>
-								<option value="">India</option>
+								<option value="India">India</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">State*</label>
 							<select name="state" value={form.state} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select state</option>
-								<option value="">Gujrat</option>
+								<option value="Gujrat">Gujrat</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">City*</label>
 							<select name="city" value={form.city} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select city</option>
-								<option value="">Kadi</option>
+								<option value="Kadi">Kadi</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">

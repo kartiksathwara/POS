@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../auth/authSlice";
 
 const Lock = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
@@ -88,14 +88,14 @@ const Lock = () => {
         </div>
         <div className="font-bold">
           <div className="text-[16px] text-(--eye-icon)">Welcome back</div>
-          <div className="text-[22px] text-(--main)">Kartik</div>
+          <div className="text-[22px] text-(--main)">User</div>
         </div>
 
         <input
           type="password"
           value={pin}
           readOnly
-          className="border-2 border-(--main)/50 rounded-xl py-2 px-15 mb-2 text-center text-2xl w-2xs"
+          className="border-2 border-(--main)/50 rounded-xl py-2 px-15 text-center text-2xl w-2xs"
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -115,8 +115,7 @@ const Lock = () => {
           />
         </div>
       </div>
-
-      <div className="flex">
+      <div className="fixed bottom-4 left-0 right-0 px-4">
         <button
           onClick={handleLogout}
           className="flex items-center text-xl cursor-pointer "
