@@ -161,7 +161,7 @@ const Inventory = () => {
 								Hold this order
 							</button>
 						</div>
-						<div className="flex-1 overflow-y-auto space-y-3 max-h-[380px] pr-2 scrollbar-hide">
+						<div className="flex-1 overflow-y-auto space-y-3 max-h-[33vh] pr-2 scrollbar-hide">
 							{cartItems.map((item) => (
 								<div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-lg">
 									<div className="flex gap-3 items-center">

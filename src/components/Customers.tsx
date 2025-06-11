@@ -48,10 +48,10 @@ const Customers = () => {
 	return (
 		<div className="h-screen">
 			<Header />
-			<div className="flex">
+			<div className="flex flex-col lg:flex-row">
 				<div>
 					<SearchBar />
-					<div className="flex justify-between items-center p-8 -mt-12">
+					<div className="flex flex-row pb-5 sm:flex-row justify-between items-center px-4 sm:px-8 gap-4 sm:gap-0">
 						<Link to="/" className="flex items-center">
 							<MdOutlineArrowBackIosNew className="size-5" />
 							<span className="text-xl font-bold ml-1">CUSTOMERS</span>
@@ -65,8 +65,8 @@ const Customers = () => {
 						</button>
 					</div>
 
-					<div className="overflow-auto h-95 scrollbar-hide rounded-2xl w-3xl ml-8">
-						<table className="min-w-full text-left text-sm text-gray-700">
+					<div className="overflow-auto h-95 scrollbar-hide rounded-2xl w-full lg:w-3xl ml-0 lg:ml-8">
+						<table className="min-w-full text-left text-xs sm:text-sm text-gray-700">
 							<thead className="bg-(--main) sticky top-0 w-3xl text-white rounded-t-2xl">
 								<tr>
 									<th className="px-6 py-4 font-medium">Customer name</th>

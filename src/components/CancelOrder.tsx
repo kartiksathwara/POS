@@ -224,7 +224,7 @@ const CancelOrder: React.FC = () => {
                     ></input>
                   </div>
                   <div className="flex flex-col border border-(--primary) rounded px-2">
-                    <label className="text-xs text-(--form) 1 -2">Email*</label>
+                    <label className="text-xs text-(--form)">Email*</label>
                     <input
                       className="text-lg font-semibold text-(--main) 2 outline-none"
                       placeholder="Email"
@@ -306,9 +306,10 @@ const CancelOrder: React.FC = () => {
             >
               Cancel order
             </button>
+            <hr className="mt-3"/>
           </div>
-          <hr />
-          <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] pr-2 scrollbar-hide">
+          {/* <hr /> */}
+          <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] scrollbar-hide">
             {cartItems.map((item) => (
               <div
                 key={item.id}
