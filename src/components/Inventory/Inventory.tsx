@@ -26,12 +26,16 @@ const Inventory = () => {
   ];
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [showMobileCategories, setShowMobileCategories] = useState(false);
   const [cartItems, setCartItems] = useState<Product[]>([]);
   useEffect(() => {
     fetch("https://dummyjson.com/products")
       .then((res) => res.json())
-      .then((data) => setProducts(data.products))
+      .then((data) => {
+        setProducts(data.products);
+        setAllProducts(data.products);
+      })
       .catch((err) => console.error("Error fetching products:", err));
 
     const savedCart = localStorage.getItem("cart");
@@ -65,20 +69,30 @@ const Inventory = () => {
     localStorage.setItem("totalAmount", total.toFixed(2));
     navigate("/bill");
   };
+
+  const handleSearch = (query: string) => {
+    if (!query.trim()) {
+      setProducts(allProducts);
+      return;
+    }
+
+    const filtered = allProducts.filter((item) =>
+      item.title.toLowerCase().includes(query.toLowerCase())
+    );
+    setProducts(filtered);
+  };
   return (
     <div className="h-screen flex flex-col">
       <Header />
-      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-        <div className="flex flex-col gap-3 w-full lg:w-[66%] overflow-auto">
-          <SearchBar />
-          {/* Unified top row */}
+      <div className="flex flex-col justify-between lg:flex-row flex-1 overflow-hidden">
+        <div className="flex flex-col gap-3 w-full lg:w-[70%] overflow-auto p-4">
+          <SearchBar onSearch={handleSearch} />
           <div className="flex items-center justify-between px-4 sm:px-6 mt-2">
             <Link to="/" className="flex items-center">
               <IoIosArrowBack size={20} />
               <span className="text-xl font-bold ml-2">INVENTORY</span>
             </Link>
 
-            {/* Show dots only on mobile */}
             <button
               className="md:hidden p-2 bg-[#E9DCCF] rounded-lg"
               onClick={() => setShowMobileCategories(!showMobileCategories)}
@@ -87,7 +101,6 @@ const Inventory = () => {
             </button>
           </div>
 
-          {/* Desktop categories */}
           <div className="hidden md:flex gap-2 flex-wrap px-4 sm:px-6 mt-4">
             {categories.map((item) => (
               <div
@@ -98,8 +111,6 @@ const Inventory = () => {
               </div>
             ))}
           </div>
-
-          {/* Mobile categories */}
           {showMobileCategories && (
             <div className="md:hidden flex flex-col gap-2 px-4 sm:px-6 mt-3">
               {categories.map((item) => (
@@ -118,9 +129,9 @@ const Inventory = () => {
               <div
                 key={product.id}
                 onClick={() => handleAddToCart(product)}
-                className="flex justify-between items-center p-4 rounded-md bg-(--bgorder) shadow-sm hover:shadow-md cursor-pointer"
+                className="flex h-24 justify-between items-center p-4 rounded-md bg-(--bgorder) shadow-sm hover:shadow-md cursor-pointer"
               >
-                <div className="flex gap-4">
+                <div className="flex items-center gap-4">
                   <img
                     src={product.thumbnail}
                     alt={product.title}
@@ -145,7 +156,7 @@ const Inventory = () => {
             <IoIosArrowForward size={20} />
           </Link>
         </div>
-        <div className="w-full lg:w-[34%] bg-(--secondary) flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
+        <div className="w-full lg:w-[30%] bg-(--secondary) flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
           <div className="w-full h-full bg-[var(--secondary)] flex flex-col">
             <div className="flex justify-center gap-3 mb-2">
               <button

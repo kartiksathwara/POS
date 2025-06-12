@@ -104,7 +104,13 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose ,on
 							<label className="absolute top-1 left-4">City*</label>
 							<select name="city" value={form.city} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select city</option>
+								<option value="Adalaj">Adalaj</option>
+								<option value="Ahmedabad">Ahmedabad</option>
+								<option value="Bayad">Bayad</option>
+								<option value="Gandhinagar">Gandhinagar</option>
 								<option value="Kadi">Kadi</option>
+								<option value="Modasa">Modasa</option>
+								<option value="Talod">Talod</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
