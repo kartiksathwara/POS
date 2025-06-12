@@ -19,7 +19,7 @@ interface ActionCardType {
 
 const HomePage = () => {
   const [showModal, setShowModal] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("");
   const [actionCards, setActionCards] = useState<ActionCardType[]>([
     { label: "Inventory", link: "./inventory", icon: <InventorySvg /> },
     { label: "Customer", link: "./customer", icon: <CustomerSvg /> },
@@ -32,6 +32,10 @@ const HomePage = () => {
     customer: <CustomerSvg />,
     discount: <DiscountSvg />,
     request: <RequestSvg />,
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchTerm(query.toLowerCase());
   };
 
   const handleAddCard = (title: string) => {
@@ -51,14 +55,18 @@ const HomePage = () => {
     setShowModal(false);
   };
 
+  const filteredCards = actionCards.filter((card) =>
+    card.label.toLowerCase().includes(searchTerm)
+  );
+
   return (
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-        <div className="relative flex-1 overflow-y-auto p-4">
-          <SearchBar />
+        <div className="relative flex-1 overflow-y-auto p-4 scrollbar-hide">
+          <SearchBar onSearch={handleSearch} />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-2 gap-4">
-            {actionCards.map((card, index) => (
+            {filteredCards.map((card, index) => (
               <ActionCards
                 key={index}
                 icon={card.icon}
@@ -76,20 +84,18 @@ const HomePage = () => {
               <span>Add quick action</span>
             </div>
           </div>
-
-          
         </div>
 
         <div className="w-full lg:w-[30%] max-h-full overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
           <Checkout />
         </div>
         {showModal && (
-            <div className="absolute inset-0 z-50 bg-black/30  flex items-end justify-center">
-              <div className="w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] bg-white rounded-t-2xl p-6 shadow-lg animate-slideUp">
-                <ActionBar handleClose={handleClose} onSave={handleAddCard} />
-              </div>
+          <div className="absolute inset-0 z-50 bg-black/30  flex items-end justify-center">
+            <div className="w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] bg-white rounded-t-2xl p-6 shadow-lg animate-slideUp">
+              <ActionBar handleClose={handleClose} onSave={handleAddCard} />
             </div>
-          )}
+          </div>
+        )}
       </div>
     </div>
   );

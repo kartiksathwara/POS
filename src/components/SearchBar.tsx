@@ -1,6 +1,18 @@
+import { useState } from "react";
 import { MdQrCodeScanner } from "react-icons/md";
 
-const SearchBar = () => {
+type SearchBarProps = {
+  onSearch: (query: string) => void;
+};
+
+const SearchBar = ({ onSearch }: SearchBarProps) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    onSearch(value);
+  };
   return (
     <div className="w-full px-4 sm:px-8 md:px-1 my-3">
       <div className="relative w-full max-w-4xl mx-auto">
@@ -20,6 +32,8 @@ const SearchBar = () => {
 
         <input
           type="text"
+          value={searchTerm}
+          onChange={handleChange}
           placeholder="Search here..."
           className="w-full pl-10 pr-12 py-2 border border-gray-400 rounded-md focus:outline-none text-sm sm:text-base"
         />

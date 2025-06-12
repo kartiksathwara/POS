@@ -110,9 +110,8 @@ const CancelOrder: React.FC = () => {
           className="w-full px-1 text-left text-lg"
         >
           <FaChevronDown
-            className={`absolute ${
-              !dropdownOpen ? null : "rotate-180"
-            } right-0 transition-all`}
+            className={`absolute ${!dropdownOpen ? null : "rotate-180"
+              } right-0 transition-all`}
           />
           {selectedCustomer ? selectedCustomer.name : "Select customer"}
         </button>
@@ -193,9 +192,7 @@ const CancelOrder: React.FC = () => {
                 <div className="flex justify-center text-black-400 text-sm 3"></div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="flex flex-col border border-(--primary) rounded px-2">
-                    <label className="text-xs text-(--for)">
-                      Full name*
-                    </label>
+                    <label className="text-xs text-(--for)">Full name*</label>
                     <input
                       className="text-lg font-semibold text-(--main) outline-none"
                       placeholder="Name"
@@ -208,9 +205,7 @@ const CancelOrder: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col border border-(--primary) rounded px-2">
-                    <label className="text-xs text-(--form) ">
-                      Phone no*
-                    </label>
+                    <label className="text-xs text-(--form) ">Phone no*</label>
                     <input
                       className="text-lg font-semibold text-(--main) 2 outline-none"
                       placeholder="Phone no"
@@ -287,16 +282,14 @@ const CancelOrder: React.FC = () => {
               <button
                 key={order}
                 onClick={() => setSelectedOrder(order)}
-                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${
-                  selectedOrder === order
-                    ? "bg-(--main) text-white"
-                    : "bg-(--main)/50 text-white"
-                }`}
+                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${selectedOrder === order
+                  ? "bg-(--main) text-white"
+                  : "bg-(--main)/50 text-white"
+                  }`}
               >
                 {order}
               </button>
-            ))} 
-            
+            ))}
           </div>
         </div>
         <div className="w-full lg:w-[42%] p-6 bg-(--secondary) flex flex-col justify-between">
@@ -307,7 +300,7 @@ const CancelOrder: React.FC = () => {
             >
               Cancel order
             </button>
-            <hr className="mt-3"/>
+            <hr className="mt-3" />
           </div>
           {/* <hr /> */}
           <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] scrollbar-hide">
@@ -334,21 +327,20 @@ const CancelOrder: React.FC = () => {
                 </div>
               </div>
             ))}
-            {cartItems.length === 0 && (
-      <div className="h-screen mt-8"></div>
-    )}
+            {cartItems.length === 0 && <div className="h-screen mt-8"></div>}
           </div>
-          <div className="flex flex-row sm:flex-row justify-between gap-2">
-            <Link to={"/inventory"} className="w-full sm:w-auto">
-              <button className="w-full py-2 bg-(--back-button) rounded shadow sm:w-40 px-4 text-sm sm:text-base ">
+          <div className="flex flex-col sm:flex-row justify-between gap-3 w-full mt-10">
+            <Link to="/inventory" className="w-full sm:w-1/2">
+              <button className="w-full py-3 px-4 rounded bg-white text-black text-base font-medium border border-gray-300 hover:bg-gray-50 transition">
                 Back
               </button>
             </Link>
-            <button
+<button
+              disabled = {cartItems.length === 0}
               onClick={() => setIsValidate(!isvalidate)}
-              className={`w-full py-2 bg-(--main)/40 text-white rounded sm:w-40 px-4 text-sm sm:text-base ${
-                isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
-              }`}
+              className={`w-full py-2 bg-(--main)/40 text-white rounded sm:w-40 px-4 text-sm sm:text-base disabled:bg-(--main)/40 ${
+                !isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
+              } `}
             >
               Validate &gt;
             </button>

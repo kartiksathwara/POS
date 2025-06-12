@@ -6,6 +6,7 @@ import CollectionList from "./CollectionList";
 import BagOrderInput from "./BagList";
 import InventoryList from "./Inventory/InventoryList";
 import { IoIosArrowBack } from "react-icons/io";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 type CollectionItem = {
   image: string;
@@ -14,10 +15,23 @@ type CollectionItem = {
   price: string;
 };
 
+type InventoryItem = {
+  id: string;
+  title: string;
+  price: string;
+  thumbnail: string;
+};
+
 const RequestInventory = () => {
   const [activeTab, setActiveTab] = useState<
     "Inventory" | "Collection" | "Bag"
   >("Inventory");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showMobileCategories, setShowMobileCategories] = useState(false);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query.toLowerCase());
+  };
 
   const collectionColumns = [
     { Header: "Image", accessor: "image" },
@@ -47,15 +61,160 @@ const RequestInventory = () => {
     },
   ];
 
+  const inventoryData: InventoryItem[] = [
+    {
+      id: "1",
+      title: "Black Shoes",
+      price: "100",
+      thumbnail: "https://via.placeholder.com/50",
+    },
+    {
+      id: "2",
+      title: "Red Shirt",
+      price: "50",
+      thumbnail: "https://via.placeholder.com/50",
+    },
+    {
+      id: "3",
+      title: "Red Shirt",
+      price: "50",
+      thumbnail: "https://via.placeholder.com/50",
+    },
+    {
+      id: "4",
+      title: "Black Shoes",
+      price: "100",
+      thumbnail: "https://via.placeholder.com/50",
+    },
+    {
+      id: "5",
+      title: "Red Shirt",
+      price: "50",
+      thumbnail: "https://via.placeholder.com/50",
+    },
+    {
+      id: "6",
+      title: "Red Shirt",
+      price: "50",
+      thumbnail: "https://via.placeholder.com/50",
+    },
+    {
+      id: "7",
+      title: "Red Shirt",
+      price: "50",
+      thumbnail: "https://via.placeholder.com/50",
+    },
+  ];
+
+  const filteredCollectionData = collectionData.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchQuery) ||
+      item.category.toLowerCase().includes(searchQuery) ||
+      item.price.toLowerCase().includes(searchQuery)
+  );
+
+  const filteredInventoryData = inventoryData.filter(
+    (item) =>
+      item.title.toLowerCase().includes(searchQuery) ||
+      item.price.toLowerCase().includes(searchQuery)
+  );
+
   return (
-    <div className="">
+    <div className="h-screen flex flex-col">
       <Header />
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+        <div className="w-full lg:w-3/5 p-1 flex flex-col">
+          <SearchBar onSearch={handleSearch} />
+          <div className="flex items-center justify-between px-4 sm:px-6 mt-2 gap-2">
+            <Link to="/" className="flex items-center">
+              <IoIosArrowBack size={20} />
+              <h1 className="text-xl font-bold">REQUEST INVENTORY</h1>
+            </Link>
+            <button
+              className="md:hidden p-2 bg-[#E9DCCF] rounded-lg"
+              onClick={() => setShowMobileCategories(!showMobileCategories)}
+            >
+              <BsThreeDotsVertical size={20} />
+            </button>
+          </div>
+          <div className="hidden md:flex gap-2 px-4 sm:px-10 mt-4">
+            {["Inventory", "Collection", "Bag"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() =>
+                  setActiveTab(tab as "Inventory" | "Collection" | "Bag")
+                }
+                className={`p-4 rounded-xl font-semibold w-[200px] flex justify-center text-lg transition-all duration-200 shadow-sm ${
+                  activeTab === tab
+                    ? "bg-neutral-800 text-[#EEE2D9]"
+                    : "bg-[#EEE2D9] text-neutral-800"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          {showMobileCategories && (
+            <div className="md:hidden flex flex-col gap-2 px-4 sm:px-6 mt-3">
+              {["Inventory", "Collection", "Bag"].map((item) => (
+                <div
+                  key={item}
+                  className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
+                  onClick={() =>
+                  setActiveTab(item as "Inventory" | "Collection" | "Bag")
+                }
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="p-5 flex-1 overflow-y-auto scrollbar-hide">
+            {activeTab === "Inventory" ? (
+              <InventoryList data={filteredInventoryData} />
+            ) : activeTab === "Collection" ? (
+              <CollectionList<CollectionItem>
+                columns={collectionColumns}
+                data={filteredCollectionData}
+              />
+            ) : (
+              <BagOrderInput />
+            )}
+          </div>
+        </div>
+
+        <div className="w-full lg:w-2/5 p-4 sm:p-6 bg-[var(--secondary)] flex flex-col justify-between gap-4  h-full">
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <button className="bg-white text-black w-full py-2 px-4 rounded-md">
+              Clear cart
+            </button>
+          </div>
+
+          <div className="flex-1 max-h-[400px] overflow-y-auto p-2 flex flex-col gap-3 border-y scrollbar-hide">
+            <div className="flex-grow h-full flex items-center justify-center border-[var(--main)]">
+              <div className="text-gray-500 text-center text-sm px-2">
+                Products
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Link
+              to="/bill"
+              className="bg-[var(--main)] text-white font-semibold py-2 rounded-md block text-center"
+            >
+              SEND &gt;
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
         <div className="p-1">
-          <SearchBar />
-          <div className="flex items-center p-7 gap-2 -mt-10 ">
+          <SearchBar onSearch={handleSearch} />
+          <div className="flex items-center p-7 gap-2 ">
             <Link to="/">
-              <IoIosArrowBack size={20}/>
+              <IoIosArrowBack size={20} />
             </Link>
             <h1 className="text-xl font-bold">REQUEST INVENTORY</h1>
           </div>
@@ -77,17 +236,41 @@ const RequestInventory = () => {
             ))}
           </div>
 
-            <div className="p-5">
-              {activeTab === "Inventory" ? (
-                <InventoryList />
-              ) : activeTab === "Collection" ? (
-                <CollectionList<CollectionItem>
-                  columns={collectionColumns}
-                  data={collectionData}
-                />
-              ) : (
-                <BagOrderInput />
-              )}
+          <div className="p-5">
+            {activeTab === "Inventory" ? (
+              <InventoryList data={filteredInventoryData} />
+            ) : activeTab === "Collection" ? (
+              <CollectionList<CollectionItem>
+                columns={collectionColumns}
+                data={filteredCollectionData}
+              />
+            ) : (
+              <BagOrderInput />
+            )}
+          </div>
+        </div>
+        <div className="w-full h-full p-4 sm:p-6 bg-[var(--secondary)] flex flex-col justify-between gap-2">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 ">
+            <button className="bg-white text-black w-full py-2 px-4 rounded-md">
+              Clear cart
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-automax-h-[69vh] p-2 flex flex-col gap-3 scrollbar-hide border-y">
+            <div className="flex-grow h-full flex items-center justify-center border-[var(--main)]">
+              <div className="text-gray-500 text-center text-sm px-2">
+                Products
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Link
+              to="/bill"
+              className="bg-[var(--main)] text-white font-semibold py-2 rounded-md block text-center"
+            >
+              SEND &gt;
+            </Link>
           </div>
         </div>
         <div className="w-1/2 p-5 bg-(--secondary) flex h-[calc(100vh-3.5rem)] flex-col ">
@@ -103,7 +286,7 @@ const RequestInventory = () => {
             SEND &gt;
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

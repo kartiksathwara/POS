@@ -34,6 +34,7 @@ const Inventory = () => {
 	];
 
 	const [products, setProducts] = useState<Product[]>([]);
+	const [allProducts, setAllProducts] = useState<Product[]>([]);
 	const [selectedCategory, setSelectedCategory] = useState<string>('All');
 	const filteredProducts = selectedCategory === 'All'
 		? products
@@ -44,7 +45,10 @@ const Inventory = () => {
 	useEffect(() => {
 		fetch("https://dummyjson.com/products")
 			.then((res) => res.json())
-			.then((data) => setProducts(data.products))
+			.then((data) => { 
+				setProducts(data.products);
+				setAllProducts(data.products)
+			})
 			.catch((err) => console.error("Error fetching products:", err));
 
 		const savedCart = localStorage.getItem("cart");
@@ -105,12 +109,23 @@ const Inventory = () => {
 		localStorage.setItem("totalAmount", total.toFixed(2));
 		navigate("/bill")
 	}
+	const handleSearch = (query: string) => {
+		if (!query.trim()) {
+			setProducts(allProducts);
+			return;
+		}
+
+		const filtered = allProducts.filter((item) =>
+			item.title.toLowerCase().includes(query.toLowerCase())
+		);
+		setProducts(filtered);
+	};
 	return (
 		<div className="h-screen">
 			<Header />
 			<div className="flex h-[calc(100%-4rem)]">
 				<div className="w-2/3 flex flex-col">
-					<SearchBar />
+					<SearchBar onSearch={handleSearch} />
 					<div className="px-8 mt-3">
 						<Link to="/" className="flex items-center">
 							<MdOutlineArrowBackIosNew className="size-5" />
@@ -251,3 +266,6 @@ const Inventory = () => {
 };
 
 export default Inventory;
+
+
+//inventory code with discount complete
