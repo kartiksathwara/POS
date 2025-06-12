@@ -124,7 +124,7 @@ const Inventory = () => {
 		<div className="h-screen">
 			<Header />
 			<div className="flex h-[calc(100%-4rem)]">
-				<div className="w-2/3 flex flex-col">
+				<div className="w-2/3 flex flex-col p-4">
 					<SearchBar onSearch={handleSearch} />
 					<div className="px-8 mt-3">
 						<Link to="/" className="flex items-center">
