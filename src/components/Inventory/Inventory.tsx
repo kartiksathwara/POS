@@ -11,24 +11,27 @@ interface Product {
   title: string;
   price: number;
   thumbnail: string;
+  category:string;
+}
+
+interface cartItems extends Product {
+	quantity: number;
 }
 
 const Inventory = () => {
   const navigate = useNavigate();
-  const categories = [
-    "Shirt",
-    "T-shirt",
-    "Top",
-    "Pants",
-    "Jeans",
-    "Trousers",
-    "Dress",
-  ];
+  const categories = ["All", "beauty", "fragrances", "furniture", "groceries"];
 
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [showMobileCategories, setShowMobileCategories] = useState(false);
-  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [cartItems, setCartItems] = useState<cartItems[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter((product) => product.category === selectedCategory);
+
   useEffect(() => {
     fetch("https://dummyjson.com/products")
       .then((res) => res.json())
@@ -44,10 +47,32 @@ const Inventory = () => {
     }
   }, []);
   const handleAddToCart = (product: Product) => {
-    const updatedCart = [...cartItems, product];
+    const existingItem = cartItems.find(item => item.id === product.id)
+
+		let updatedCart;
+    if (existingItem) {
+			updatedCart = cartItems.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+		} else {
+			updatedCart = [...cartItems, { ...product, quantity: 1 }];
+		}
+    // const updatedCart = [...cartItems, product];
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
+
+  const increseQty = (id: number) => {
+		const updated = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
+		setCartItems(updated);
+		localStorage.setItem("cart", JSON.stringify(updated));
+	}
+
+	const decreseQty = (id: number) => {
+		const updated = cartItems.map(item => item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item)
+			.filter(item => item.quantity > 0)
+
+		setCartItems(updated);
+		localStorage.setItem("cart", JSON.stringify(updated));
+	}
 
   const handleClearCart = () => {
     setCartItems([]);
@@ -60,10 +85,15 @@ const Inventory = () => {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
-  const discount = subtotal * 0.18;
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+	// const discount = subtotal * 0.18;
+
+	const selectedDiscount = localStorage.getItem("selectedDiscount") || "18%";
+	const discountReason = localStorage.getItem("discountReason") || "Default Discount";
+  const discountPercent = parseFloat(selectedDiscount.replace("%", ""));
+	const discount = subtotal * (discountPercent / 100);
   const tax = (subtotal - discount) * 0.08;
-  const total = subtotal - discount + tax;
+	const total = subtotal - discount + tax;
 
   const handleCheckout = () => {
     localStorage.setItem("totalAmount", total.toFixed(2));
@@ -106,6 +136,7 @@ const Inventory = () => {
               <div
                 key={item}
                 className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
+                onClick={()=>setSelectedCategory(item)}
               >
                 {item}
               </div>
@@ -117,6 +148,7 @@ const Inventory = () => {
                 <div
                   key={item}
                   className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
+                  onClick={()=>setSelectedCategory(item)}
                 >
                   {item}
                 </div>
@@ -125,7 +157,7 @@ const Inventory = () => {
           )}
 
           <div className="flex-1 overflow-y-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 scrollbar-hide rounded-md pb-4">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 onClick={() => handleAddToCart(product)}
@@ -184,9 +216,14 @@ const Inventory = () => {
                     />
                     <div>
                       <h4 className="font-medium text-sm">{item.title}</h4>
-                      <p className="text-xs text-gray-500">
-                        ${item.price.toFixed(2)}
-                      </p>
+                      <div className="flex space-x-1">
+												<p className=" text-gray-500">${item.price.toFixed(2)}</p>
+												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => decreseQty(item.id)}>
+													-
+												</button>
+												<span className="px-2 text-1">{item.quantity}</span>
+												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => increseQty(item.id)}> + </button>
+											</div>
                     </div>
                   </div>
                   <button
@@ -207,20 +244,20 @@ const Inventory = () => {
                 className="bg-white text-sm text-black placeholder-black focus:outline-none w-full"
               />
               <button className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2">
-                ADD
-              </button>
+								<Link to="/discount">
+									ADD
+								</Link>
+							</button>
             </div>
             <div className="flex justify-between">
               <span>Subtotal • {cartItems.length} items</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-gray-500">
-              <span>Discount (-18%)</span>
-              <span>-${discount.toFixed(2)}</span>
-            </div>
-            <div className="text-xs text-gray-400">
-              Regular customer discount
-            </div>
+								<span>Discount (-{discountPercent}%)</span>
+								<span>-${discount.toFixed(2)}</span>
+							</div>
+            <div className="text-xs text-gray-400">{discountReason}</div>
             <div className="flex justify-between text-gray-500">
               <span>Tax (+8%)</span>
               <span>${tax.toFixed(2)}</span>

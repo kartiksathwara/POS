@@ -2,7 +2,7 @@ import Checkout from "./Checkout";
 import SearchBar from "./SearchBar";
 import Header from "./Header";
 import { FaAngleLeft } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const discounts = [
@@ -18,6 +18,7 @@ const discounts = [
 
 const DiscountPage: React.FC = () => {
   const [discount, setDiscount] = useState(discounts);
+  const navigate = useNavigate();
   const handleSearch = (query: string) => {
     if (!query.trim()) {
       setDiscount(discounts);
@@ -31,6 +32,7 @@ const DiscountPage: React.FC = () => {
     );
     setDiscount(filtered);
   };
+
   return (
     <div className="h-screen flex flex-col">
       <Header />
@@ -62,6 +64,11 @@ const DiscountPage: React.FC = () => {
                     <tr
                       key={i}
                       className="bg-[var(--primary)]/20 border-b border-[var(--primary)]"
+                      onClick={() => {
+                        localStorage.setItem("selectedDiscount", d.percent);
+                        localStorage.setItem("discountReason", d.reason);
+                        navigate("/inventory");
+                      }}
                     >
                       <td className="p-3">{d.code}</td>
                       <td className="p-3 text-center">{d.percent}</td>
