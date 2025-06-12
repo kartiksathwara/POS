@@ -8,7 +8,7 @@ import LoginPage from "./components/LoginPage";
 import CancelOrder from "./components/CancelOrder";
 import Lock from "./components/Lock";
 import DiscountPage from "./components/DiscountPage";
-import Inventory from "./components/Inventory/Inventory";
+import Inventory from "./components/Inventory";
 import MostProduct from "./components/Products/MostProduct";
 import Customers from "./components/Customers";
 // import ActionBar from "./components/SlideBar/ActionBar";

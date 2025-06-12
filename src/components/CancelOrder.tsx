@@ -318,9 +318,9 @@ const CancelOrder: React.FC = () => {
                   <div>
                     <h4 className="font-medium text-sm">{item.title}</h4>
                     <p className="text-xs text-gray-500">
-                      ${item.price.toFixed(2)} × {item.quantity} ={" "}
-                      <span className="font-semibold">
-                        ${(item.price * item.quantity).toFixed(2)}
+                      ${item.price.toFixed(2)} * {item.quantity} = {""}
+                      <span>
+                        ${(item.price* item.quantity).toFixed(2)}
                       </span>
                     </p>
                   </div>

@@ -105,6 +105,7 @@ const Customers = () => {
       <AddCustomerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+
         onSave={handleAddCustomer}
       />
     </div>
