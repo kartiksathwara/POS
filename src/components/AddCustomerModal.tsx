@@ -6,6 +6,7 @@ interface AddCustomerModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	onSave: (customer: Customer) => void;
+	
 }
 
 
@@ -41,14 +42,15 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose ,on
 	};
 	const handleSave = () => {
 		onSave(form); 
+		handleClear();
 		onClose(); 
 	};
 
 	if (!isOpen) return null;
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-			<div className="bg-white rounded-xl shadow-lg w-full max-w-4xl p-6 space-y-4 border">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
+			<div className="bg-white rounded-xl shadow-lg w-full max-w-4xl p-6 space-y-4 border" onClick={(e) => e.stopPropagation()}>
 				<div className="flex justify-between items-center">
 					<h2 className="text-xl font-semibold text-gray-800">Add customer</h2>
 					<div className="flex space-x-2">

@@ -39,8 +39,8 @@ const Customers = () => {
   return (
     <div className="h-screen flex flex-col">
       <Header />
-      <div className="flex flex-col lg:flex-row flex-1">
-        <div className="relative flex-1 overflow-y-auto p-2 flex flex-col items-center gap-4">
+      <div className="flex flex-col lg:flex-row flex-1 ">
+        <div className="relative flex-1 overflow-y-auto p-2 flex flex-col items-center gap-4 scrollbar-hide">
           <SearchBar />
           <div className="flex w-full justify-between items-center px-4">
             <Link to="/" className="flex items-center">
@@ -80,7 +80,7 @@ const Customers = () => {
             </button>
           </div>
 
-          <div className="overflow-x-auto w-[93%] ml-0  shadow-md rounded-xl">
+          <div className="overflow-x-auto w-[93%] ml-0  shadow-md rounded-xl scrollbar-hide">
             <table className="min-w-full text-left text-sm text-gray-700">
               <thead className="bg-(--main) text-white">
                 <tr>
@@ -121,6 +121,7 @@ const Customers = () => {
       <AddCustomerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+
         onSave={handleAddCustomer}
       />
     </div>
