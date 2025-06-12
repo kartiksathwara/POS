@@ -23,6 +23,7 @@ interface Product {
   title: string;
   price: number;
   thumbnail: string;
+  quantity: number;
 }
 
 const CancelOrder: React.FC = () => {
@@ -109,9 +110,8 @@ const CancelOrder: React.FC = () => {
           className="w-full px-1 text-left text-lg"
         >
           <FaChevronDown
-            className={`absolute ${
-              !dropdownOpen ? null : "rotate-180"
-            } right-0 transition-all`}
+            className={`absolute ${!dropdownOpen ? null : "rotate-180"
+              } right-0 transition-all`}
           />
           {selectedCustomer ? selectedCustomer.name : "Select customer"}
         </button>
@@ -282,11 +282,10 @@ const CancelOrder: React.FC = () => {
               <button
                 key={order}
                 onClick={() => setSelectedOrder(order)}
-                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${
-                  selectedOrder === order
-                    ? "bg-(--main) text-white"
-                    : "bg-(--main)/50 text-white"
-                }`}
+                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${selectedOrder === order
+                  ? "bg-(--main) text-white"
+                  : "bg-(--main)/50 text-white"
+                  }`}
               >
                 {order}
               </button>
@@ -319,7 +318,10 @@ const CancelOrder: React.FC = () => {
                   <div>
                     <h4 className="font-medium text-sm">{item.title}</h4>
                     <p className="text-xs text-gray-500">
-                      ${item.price.toFixed(2)}
+                      ${item.price.toFixed(2)} × {item.quantity} ={" "}
+                      <span className="font-semibold">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -327,9 +329,9 @@ const CancelOrder: React.FC = () => {
             ))}
             {cartItems.length === 0 && <div className="h-screen mt-8"></div>}
           </div>
-          <div className="flex flex-row sm:flex-row justify-between gap-2">
-            <Link to={"/inventory"} className="w-full sm:w-auto">
-              <button className="w-full py-2 bg-(--back-button) rounded shadow sm:w-40 px-4 text-sm sm:text-base ">
+          <div className="flex flex-col sm:flex-row justify-between gap-3 w-full mt-10">
+            <Link to="/inventory" className="w-full sm:w-1/2">
+              <button className="w-full py-3 px-4 rounded bg-white text-black text-base font-medium border border-gray-300 hover:bg-gray-50 transition">
                 Back
               </button>
             </Link>

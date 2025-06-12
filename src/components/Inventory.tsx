@@ -6,7 +6,6 @@ import { IoIosArrowForward } from "react-icons/io";
 import Header from "./Header";
 import SearchBar from "./SearchBar";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
-// import { IoIosArrowForward } from "react-icons/io";
 
 interface Product {
 	id: number;
@@ -15,9 +14,10 @@ interface Product {
 	thumbnail: string;
 }
 
-interface cartItems extends Product {
+interface CartItem extends Product {
 	quantity: number;
 }
+
 const Inventory = () => {
 	const navigate = useNavigate();
 	const categories = [
@@ -31,7 +31,10 @@ const Inventory = () => {
 	];
 
 	const [products, setProducts] = useState<Product[]>([]);
-	const [cartItems, setCartItems] = useState<cartItems[]>([]);
+	const [cartItems, setCartItems] = useState<CartItem[]>([]);
+	const [selectedCoupon, setSelectedCoupon] = useState<string | null>(null);
+	const [couponDiscount, setCouponDiscount] = useState<number>(0);
+
 	useEffect(() => {
 		fetch("https://dummyjson.com/products")
 			.then((res) => res.json())
@@ -42,35 +45,76 @@ const Inventory = () => {
 		if (savedCart) {
 			setCartItems(JSON.parse(savedCart));
 		}
+
+		const savedCoupon = localStorage.getItem("selectedCoupon");
+		if (savedCoupon) {
+			setSelectedCoupon(savedCoupon);
+		}
 	}, []);
+
+	useEffect(() => {
+		if (selectedCoupon !== null) {
+			localStorage.setItem("selectedCoupon", selectedCoupon);
+		} else {
+			localStorage.removeItem("selectedCoupon");
+		}
+	}, [selectedCoupon]);
+
+	useEffect(() => {
+		const calculateCouponDiscount = () => {
+			if (selectedCoupon) {
+				const discountsString = localStorage.getItem("discounts");
+				if (discountsString) {
+					const discounts = JSON.parse(discountsString);
+					const selectedDiscount = discounts.find((d: { code: string }) => d.code === selectedCoupon);
+					if (selectedDiscount) {
+						const discountAmount = subtotal * (parseFloat(selectedDiscount.percent) / 100);
+						setCouponDiscount(discountAmount);
+						return discountAmount;
+					}
+				}
+			}
+			setCouponDiscount(0);
+			return 0;
+		};
+
+		calculateCouponDiscount();
+	}, [selectedCoupon, cartItems]);
+
 	const handleAddToCart = (product: Product) => {
-		const existingItem = cartItems.find(item => item.id === product.id)
+		const existingItem = cartItems.find(item => item.id === product.id);
 
 		let updatedCart;
 		if (existingItem) {
-			updatedCart = cartItems.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+			updatedCart = cartItems.map(item =>
+				item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+			);
 		} else {
 			updatedCart = [...cartItems, { ...product, quantity: 1 }];
 		}
 		setCartItems(updatedCart);
 		localStorage.setItem("cart", JSON.stringify(updatedCart));
-
-		// 	const [quantity, setQuantity] = useState<number>(1);
 	};
 
-	const increseQty = (id: number) => {
-		const updated = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
+	const increaseQty = (id: number) => {
+		const updated = cartItems.map(item =>
+			item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+		);
 		setCartItems(updated);
 		localStorage.setItem("cart", JSON.stringify(updated));
-	}
+	};
 
-	const decreseQty = (id: number) => {
-		const updated = cartItems.map(item => item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item)
-			.filter(item => item.quantity > 0)
+	const decreaseQty = (id: number) => {
+		const updated = cartItems
+			.map(item =>
+				item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item
+			)
+			.filter(item => item.quantity > 0);
 
 		setCartItems(updated);
 		localStorage.setItem("cart", JSON.stringify(updated));
-	}
+	};
+
 	const handleClearCart = () => {
 		setCartItems([]);
 		localStorage.removeItem("cart");
@@ -84,30 +128,41 @@ const Inventory = () => {
 
 	const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 	const discount = subtotal * 0.18;
-	const tax = (subtotal - discount) * 0.08;
-	const total = subtotal - discount + tax;
+
+	const discountedSubtotal = subtotal - discount - couponDiscount;
+	const tax = discountedSubtotal * 0.08;
+	const total = discountedSubtotal + tax;
 
 	const handleCheckout = () => {
 		localStorage.setItem("totalAmount", total.toFixed(2));
-		navigate("/bill")
-	}
+		navigate("/bill");
+	};
+
+	const handleGoToDiscount = () => {
+		navigate("/discount", { state: { subtotal: subtotal } });
+	};
+
+	const handleRemoveCoupon = () => {
+		setSelectedCoupon(null);
+	};
+
 	return (
-		<div className="h-screen">
+		<div className="max-h-screen flex flex-col">
 			<Header />
-			<div className="flex h-[calc(100%-4rem)]">
-				<div className="w-2/3 flex flex-col">
+			<div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+				<div className="w-full md:w-2/3 flex flex-col overflow-auto">
 					<SearchBar />
-					<div className="px-8 -mt-5">
-							<Link to="/" className="flex items-center">
-								<MdOutlineArrowBackIosNew className="size-5" />
-								<span className="text-xl font-bold ml-2">INVENTORY</span>
-							</Link>
-						<div className="flex justify-between  items-center mt-4">
+					<div className="px-4 md:px-8 -mt-5">
+						<Link to="/" className="flex items-center">
+							<MdOutlineArrowBackIosNew className="size-5" />
+							<span className="text-xl font-bold ml-2">INVENTORY</span>
+						</Link>
+						<div className="flex justify-between items-center mt-4 flex-wrap gap-y-2">
 							<div className="flex gap-2 flex-wrap">
 								{categories.map(item => (
 									<div
 										key={item}
-										className="py-2 px-4 bg-(--primary) rounded-lg cursor-pointer text-sm font-medium"
+										className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
 									>
 										{item}
 									</div>
@@ -118,18 +173,19 @@ const Inventory = () => {
 							</div>
 						</div>
 					</div>
-					<div className="flex-1 overflow-y-auto p-6 px-10 grid grid-cols-2 gap-4 scrollbar-hide">
+
+					<div className="flex-1 overflow-y-auto p-4 md:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
 						{products.map(product => (
 							<div
 								key={product.id}
 								onClick={() => handleAddToCart(product)}
-								className="flex justify-between items-center p-4 rounded-md bg-(--bgorder) shadow-sm hover:shadow-md cursor-pointer"
+								className="flex justify-between items-center p-4 rounded-md bg-[var(--bgorder)] shadow-sm hover:shadow-md cursor-pointer"
 							>
 								<div className="flex gap-4">
 									<img
 										src={product.thumbnail}
 										alt={product.title}
-										className="w-16 h-16 rounded-sm border object-cover"
+										className="w-16 h-16 rounded-sm object-cover"
 									/>
 									<div>
 										<h3 className="font-semibold text-base">{product.title}</h3>
@@ -140,30 +196,34 @@ const Inventory = () => {
 							</div>
 						))}
 					</div>
+
 					<Link
 						to="/requestinventory"
-						className="flex items-center gap-1 font-medium text-black px-8 pb-4"
+						className="flex items-center gap-1 font-medium text-black px-4 md:px-8 pb-4"
 					>
 						<span>Request Inventory</span>
-						<IoIosArrowForward className="size-4"/>
+						<IoIosArrowForward className="size-4" />
 					</Link>
 				</div>
-				<div className="w-1/2 bg-(--secondary) p-6 flex flex-col justify-between">
+				<div className="w-full md:w-1/2 bg-[var(--secondary)] p-4 md:p-6 flex flex-col justify-between">
 					<div>
-						<div className="flex justify-center gap-3 mb-4">
+						<div className="flex flex-col sm:flex-row justify-center gap-3 mb-4">
 							<button
 								onClick={handleClearCart}
 								className="bg-white w-full text-black py-2 px-4 rounded-md"
 							>
 								Clear cart
 							</button>
-							<button className="bg-(--main) w-full text-white  py-2 px-4 rounded-md">
+							<button className="bg-[var(--main)] w-full text-white py-2 px-4 rounded-md">
 								Hold this order
 							</button>
 						</div>
-						<div className="flex-1 overflow-y-auto space-y-3 max-h-[33vh] pr-2 scrollbar-hide">
+						<div className="overflow-y-auto space-y-3 max-h-[380px] pr-2">
 							{cartItems.map((item) => (
-								<div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-lg">
+								<div
+									key={item.id}
+									className="flex justify-between items-center bg-white p-3 rounded-lg"
+								>
 									<div className="flex gap-3 items-center">
 										<img
 											src={item.thumbnail}
@@ -172,36 +232,61 @@ const Inventory = () => {
 										/>
 										<div>
 											<h4 className="font-medium text-sm">{item.title}</h4>
-											<div className="flex space-x-1">
-												<p className=" text-gray-500">${item.price.toFixed(2)}</p>
-												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => decreseQty(item.id)}>
+											<div className="flex space-x-1 items-center">
+												<p className="text-gray-500 text-sm">${item.price.toFixed(2)}</p>
+												<button
+													className="px-2 bg-gray-200 rounded hover:bg-gray-300"
+													onClick={() => decreaseQty(item.id)}
+												>
 													-
 												</button>
-												<span className="px-2 text-1">{item.quantity}</span>
-												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => increseQty(item.id)}> + </button>
+												<span className="px-2 text-sm">{item.quantity}</span>
+												<button
+													className="px-2 bg-gray-200 rounded hover:bg-gray-300"
+													onClick={() => increaseQty(item.id)}
+												>
+													+
+												</button>
 											</div>
 										</div>
 									</div>
-									<button onClick={() => handleRemoveItem(item.id)} className="text-gray-500">
+									<button
+										onClick={() => handleRemoveItem(item.id)}
+										className="text-gray-500"
+									>
 										<FaTrash />
 									</button>
 								</div>
 							))}
 						</div>
 					</div>
-					<div className="">
-						<div className="flex justify-between items-center bg-white rounded-xl px-4 py-2 mb-4">
+					<div className="pt-4">
+						<div className="flex justify-between items-center bg-white rounded-xl px-4 py-2 mb-2">
 							<input
 								type="text"
 								placeholder="Discount"
 								className="bg-white text-sm text-black placeholder-black focus:outline-none w-full"
+								readOnly
+								value={selectedCoupon || ""}
 							/>
-							<button className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2">
-								<Link to="/discount">
-									ADD
-								</Link>
-							</button>
+							<div className="flex">
+								<button
+									onClick={handleGoToDiscount}
+									className="bg-[var(--buttonbg)] text-sm font-semibold px-4 py-1.5 rounded-md ml-2"
+								>
+									{selectedCoupon ? "Edit" : "Add"}
+								</button>
+								{selectedCoupon && (
+									<button
+										onClick={handleRemoveCoupon}
+										className="bg-[var(--main)] text-white text-sm font-semibold px-2 py-1.5 rounded-md ml-2"
+									>
+										Remove
+									</button>
+								)}
+							</div>
 						</div>
+
 						<div className="text-sm space-y-2">
 							<div className="flex justify-between">
 								<span>Subtotal • {cartItems.length} items</span>
@@ -213,6 +298,10 @@ const Inventory = () => {
 							</div>
 							<div className="text-xs text-gray-400">Regular customer discount</div>
 							<div className="flex justify-between text-gray-500">
+								<span>Coupon Discount</span>
+								<span>-${couponDiscount.toFixed(2)}</span>
+							</div>
+							<div className="flex justify-between text-gray-500">
 								<span>Tax (+8%)</span>
 								<span>${tax.toFixed(2)}</span>
 							</div>
@@ -220,7 +309,10 @@ const Inventory = () => {
 								<span>Total</span>
 								<span>${total.toFixed(2)}</span>
 							</div>
-							<button onClick={handleCheckout} className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center">
+							<button
+								onClick={handleCheckout}
+								className="bg-[var(--main)] w-full text-white font-semibold py-2 rounded-md text-center"
+							>
 								CHECKOUT &gt;
 							</button>
 						</div>
