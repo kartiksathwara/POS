@@ -2,8 +2,7 @@ import Checkout from "./Checkout";
 import SearchBar from "./SearchBar";
 import Header from "./Header";
 import { FaAngleLeft } from "react-icons/fa6";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 
@@ -19,27 +18,28 @@ const discounts = [
 ];
 
 const DiscountPage: React.FC = () => {
-	const [discount, setDiscount] = useState(discounts);
-	const handleSearch = (query: string) => {
-		if (!query.trim()) {
-			setDiscount(discounts);
-			return;
-		}
+  const [discount, setDiscount] = useState(discounts);
+  const navigate = useNavigate();
+  const handleSearch = (query: string) => {
+    if (!query.trim()) {
+      setDiscount(discounts);
+      return;
+    }
 
-		const filtered = discounts.filter(
-			(item) =>
-				item.reason.toLowerCase().includes(query.toLowerCase()) ||
-				item.code.toLowerCase().includes(query.toLowerCase())
-		);
-		setDiscount(filtered);
-	};
-	const navigate = useNavigate();
-	return (
-		<div className="h-screen flex flex-col">
-			<Header />
-			<div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-				<div className="w-full lg:w-[70%] overflow-y-auto p-4 flex flex-col gap-4 scrollbar-hide">
-					<SearchBar onSearch={handleSearch} />
+    const filtered = discounts.filter(
+      (item) =>
+        item.reason.toLowerCase().includes(query.toLowerCase()) ||
+        item.code.toLowerCase().includes(query.toLowerCase())
+    );
+    setDiscount(filtered);
+  };
+
+  return (
+    <div className="h-screen flex flex-col">
+      <Header />
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+        <div className="w-full lg:w-[70%] overflow-y-auto p-4 flex flex-col gap-4">
+          <SearchBar onSearch={handleSearch} />
 
 					<div className="px-2 sm:px-6">
 						<h2 className="flex items-center text-xl font-semibold text-[var(--main)] gap-2">
@@ -50,37 +50,37 @@ const DiscountPage: React.FC = () => {
 						</h2>
 					</div>
 
-					<div className="px-2 sm:px-6">
-						<div className="overflow-auto shadow-md rounded-xl">
-							<table className="min-w-full text-sm text-gray-700">
-								<thead className="bg-[var(--main)] text-white">
-									<tr>
-										<th className="p-3 text-left">Coupon Code</th>
-										<th className="p-3 text-center">Percentage</th>
-										<th className="p-3 text-right">Reason</th>
-									</tr>
-								</thead>
-								<tbody className="divide-y divide-gray-200 bg-white">
-									{discount.map((d, i) => (
-										<tr
-											key={i}
-											className="bg-[var(--primary)]/20 border-b border-[var(--primary)]"
-											onClick={() => {
-												localStorage.setItem("selectedDiscount", d.percent);
-												localStorage.setItem("discountReason", d.reason);
-												navigate("/inventory");
-											}}
-										>
-											<td className="p-3">{d.code}</td>
-											<td className="p-3 text-center">{d.percent}</td>
-											<td className="p-3 text-right">{d.reason}</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
+          <div className="px-2 sm:px-6">
+            <div className="overflow-auto shadow-md rounded-xl">
+              <table className="min-w-full text-sm text-gray-700">
+                <thead className="bg-[var(--main)] text-white">
+                  <tr>
+                    <th className="p-3 text-left">Coupon Code</th>
+                    <th className="p-3 text-center">Percentage</th>
+                    <th className="p-3 text-right">Reason</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {discount.map((d, i) => (
+                    <tr
+                      key={i}
+                      className="bg-[var(--primary)]/20 border-b border-[var(--primary)]"
+                      onClick={() => {
+                        localStorage.setItem("selectedDiscount", d.percent);
+                        localStorage.setItem("discountReason", d.reason);
+                        navigate("/inventory");
+                      }}
+                    >
+                      <td className="p-3">{d.code}</td>
+                      <td className="p-3 text-center">{d.percent}</td>
+                      <td className="p-3 text-right">{d.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
 				<div className="w-full lg:w-[30%] max-h-full overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
 					<Checkout />
