@@ -17,7 +17,7 @@ const TableComp = ({ columns, data }:TableProps) => {
           <thead className="bg-(--main) sticky top-0 text-white">
             <tr>
               {columns.map((col) => (
-                <th key={col.accessor} className="p-4 text-center border-b font-medium">
+                <th key={col.accessor} className="p-4  font-medium">
                   {col.Header}
                 </th>
               ))}
@@ -30,7 +30,7 @@ const TableComp = ({ columns, data }:TableProps) => {
             {data.map((row, rowIndex) => (
               <tr key={rowIndex} className="hover:bg-gray-50">
                 {columns.map((col) => (
-                  <td key={col.accessor} className="p-2 text-center border-b">
+                  <td key={col.accessor} className="p-4 border-b">
                     {col.accessor.toLowerCase() === "image" ? (
                       <img
                         src={row[col.accessor]}

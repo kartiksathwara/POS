@@ -115,7 +115,7 @@ const Inventory = () => {
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-col justify-between lg:flex-row flex-1 overflow-hidden">
-        <div className="flex flex-col gap-3 w-full lg:w-[70%] overflow-auto p-4">
+        <div className="flex flex-col  w-full lg:w-[70%] overflow-auto p-4">
           <SearchBar onSearch={handleSearch} />
           <div className="flex items-center justify-between px-4 sm:px-6 mt-2">
             <Link to="/" className="flex items-center">
@@ -181,7 +181,7 @@ const Inventory = () => {
             ))}
           </div>
           <Link
-            to="/requestinventory"
+            to="/request"
             className="flex items-center gap-1 font-medium text-black px-8 pb-4"
           >
             <span>Request Inventory</span>

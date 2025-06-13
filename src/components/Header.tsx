@@ -46,7 +46,7 @@ const Header = () => {
 												Activites
 											</Link>
 											<Link
-												to="/requestinventory"
+												to="/request"
 												className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400"
 											>
 												Request Inventory

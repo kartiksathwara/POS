@@ -123,9 +123,9 @@ const RequestInventory = () => {
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-        <div className="w-full lg:w-3/5 p-1 flex flex-col">
+        <div className="flex flex-col  w-full lg:w-[70%] overflow-auto p-4">
           <SearchBar onSearch={handleSearch} />
-          <div className="flex items-center justify-between px-4 sm:px-6 mt-2 gap-2">
+          <div className="flex items-center justify-between px-4 sm:px-6 mt-2">
             <Link to="/" className="flex items-center">
               <IoIosArrowBack size={20} />
               <h1 className="text-xl font-bold">REQUEST INVENTORY</h1>
@@ -161,8 +161,8 @@ const RequestInventory = () => {
                   key={item}
                   className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
                   onClick={() =>
-                  setActiveTab(item as "Inventory" | "Collection" | "Bag")
-                }
+                    setActiveTab(item as "Inventory" | "Collection" | "Bag")
+                  }
                 >
                   {item}
                 </div>
@@ -182,111 +182,33 @@ const RequestInventory = () => {
             )}
           </div>
         </div>
-
-        <div className="w-full lg:w-2/5 p-4 sm:p-6 bg-[var(--secondary)] flex flex-col justify-between gap-4  h-full">
-          <div className="flex flex-col sm:flex-row justify-center gap-3">
-            <button className="bg-white text-black w-full py-2 px-4 rounded-md">
-              Clear cart
-            </button>
-          </div>
-
-          <div className="flex-1 max-h-[400px] overflow-y-auto p-2 flex flex-col gap-3 border-y scrollbar-hide">
-            <div className="flex-grow h-full flex items-center justify-center border-[var(--main)]">
-              <div className="text-gray-500 text-center text-sm px-2">
-                Products
+        <div className="w-full lg:w-[30%] bg-(--secondary) hidden lg:flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
+          <div className="w-full h-full bg-[var(--secondary)] flex flex-col">
+            <div className="mb-2 ">
+              <button className="bg-white text-black w-full py-2 px-4 rounded-md">
+                Clear cart
+              </button>
+            </div>
+            <hr className="mb-2 opacity-20" />
+            <div className="flex-1 overflow-y-auto h-fit flex flex-col gap-3 scrollbar-hide">
+              <div className="flex-grow h-full flex items-center justify-center border-[var(--main)]">
+                <div className="text-gray-500 text-center text-sm px-2">
+                  Products
+                </div>
               </div>
             </div>
-          </div>
-
-          <div>
-            <Link
-              to="/bill"
-              className="bg-[var(--main)] text-white font-semibold py-2 rounded-md block text-center"
-            >
-              SEND &gt;
-            </Link>
+            <hr className="my-2 opacity-20" />
+            <div>
+              <Link
+                to="/bill"
+                className="bg-[var(--main)] text-white font-semibold py-2 rounded-md block text-center"
+              >
+                SEND &gt;
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-        <div className="p-1">
-          <SearchBar onSearch={handleSearch} />
-          <div className="flex items-center p-7 gap-2 ">
-            <Link to="/">
-              <IoIosArrowBack size={20} />
-            </Link>
-            <h1 className="text-xl font-bold">REQUEST INVENTORY</h1>
-          </div>
-          <div className="flex px-9 gap-3">
-            {["Inventory", "Collection", "Bag"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() =>
-                  setActiveTab(tab as "Inventory" | "Collection" | "Bag")
-                }
-                className={`p-4 rounded-xl font-semibold w-[250px] flex justify-items-start text-lg transition-all duration-200 shadow-sm ${
-                  activeTab === tab
-                    ? "bg-neutral-800 text-[#EEE2D9]"
-                    : "bg-[#EEE2D9] text-neutral-800"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          <div className="p-5">
-            {activeTab === "Inventory" ? (
-              <InventoryList data={filteredInventoryData} />
-            ) : activeTab === "Collection" ? (
-              <CollectionList<CollectionItem>
-                columns={collectionColumns}
-                data={filteredCollectionData}
-              />
-            ) : (
-              <BagOrderInput />
-            )}
-          </div>
-        </div>
-        <div className="w-full h-full p-4 sm:p-6 bg-[var(--secondary)] flex flex-col justify-between gap-2">
-          <div className="flex flex-col sm:flex-row justify-center gap-3 ">
-            <button className="bg-white text-black w-full py-2 px-4 rounded-md">
-              Clear cart
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-automax-h-[69vh] p-2 flex flex-col gap-3 scrollbar-hide border-y">
-            <div className="flex-grow h-full flex items-center justify-center border-[var(--main)]">
-              <div className="text-gray-500 text-center text-sm px-2">
-                Products
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <Link
-              to="/bill"
-              className="bg-[var(--main)] text-white font-semibold py-2 rounded-md block text-center"
-            >
-              SEND &gt;
-            </Link>
-          </div>
-        </div>
-        <div className="w-1/2 p-5 bg-(--secondary) flex h-[calc(100vh-3.5rem)] flex-col ">
-          <div className="flex p-3 items-center font-serif pl-7">
-            <button className="bg-white text-black font-semibold py-2 w-sm rounded-md ">
-              Clear cart
-            </button>
-          </div>
-          <div className="flex-grow border-t border-b border-(--main) mb-4">
-            products
-          </div>
-          <button className="bg-(--main) text-white font-semibold py-2 rounded-md block text-center">
-            SEND &gt;
-          </button>
-        </div>
-      </div> */}
     </div>
   );
 };

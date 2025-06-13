@@ -60,7 +60,7 @@ const DiscountPage: React.FC = () => {
                     <th className="p-3 text-right">Reason</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-gray-200 bg-white">
                   {discount.map((d, i) => (
                     <tr
                       key={i}
@@ -82,7 +82,7 @@ const DiscountPage: React.FC = () => {
           </div>
         </div>
 
-				<div className="w-full lg:w-[30%] max-h-full overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
+				<div className="w-full lg:w-[30%] bg-(--secondary) hidden lg:flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
 					<Checkout />
 				</div>
 			</div>

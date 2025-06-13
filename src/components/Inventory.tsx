@@ -171,7 +171,7 @@ const Inventory = () => {
 						))}
 					</div>
 					<Link
-						to="/requestinventory"
+						to="request"
 						className="flex items-center gap-1 font-medium text-black px-8 pb-4"
 					>
 						<span>Request Inventory</span>
