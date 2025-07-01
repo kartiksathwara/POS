@@ -104,14 +104,14 @@ const Lock = () => {
             <button
               key={index}
               onClick={() => handleClick(num)}
-              className="w-15 h-16 rounded-full bg-(--pin-button) text-xl font-medium shadow"
+              className="w-15 h-16 rounded-full bg-(--bgorder) text-xl font-medium shadow"
             >
               {num}
             </button>
           ))}
           <FaBackspace
             onClick={() => setPin(pin.slice(0, -1))}
-            className="w-15 h-16 p-5 rounded-full bg-(--pin-button) font-medium shadow cursor-pointer"
+            className="w-15 h-16 p-5 rounded-full bg-(--bgorder) font-medium shadow cursor-pointer"
           />
         </div>
       </div>

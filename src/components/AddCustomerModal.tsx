@@ -93,13 +93,29 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose ,on
 							<select name="country" value={form.country} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select country</option>
 								<option value="India">India</option>
+								<option value="Russia">Russia</option>
+								<option value="Pakistan">Pakistan</option>
+								<option value="China">China</option>
+								<option value="Israel">Israel</option>
+								<option value="USA">USA</option>
+								<option value="Canada">Canada</option>
+								<option value="Australia">Australia</option>
+								<option value="UK">UK</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">
 							<label className="absolute top-1 left-4">State*</label>
 							<select name="state" value={form.state} onChange={handleChange} className="input p-2 pl-4 pt-7 focus:outline-0">
 								<option value="">Select state</option>
-								<option value="Gujrat">Gujrat</option>
+								<option value="Gujarat">Gujarat</option>
+								<option value="Maharastra">Maharastra</option>
+								<option value="MP">MP</option>
+								<option value="Kerela">Kerela (100%)</option>
+								<option value="Lucknow">Lucknow</option>
+								<option value="Assam">Assam</option>
+								<option value="J&K">J&K</option>
+								<option value="Delhi">Delhi</option>
+								<option value="Rajasthan">Rajasthan</option>
 							</select>
 						</div>
 						<div className="border-(--primary) border rounded-md flex flex-col relative">

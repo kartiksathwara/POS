@@ -5,6 +5,7 @@ import SearchBar from "../SearchBar";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import useFetchProducts from "../../hooks/useFetchProducts";
 
 interface Product {
   id: number;
@@ -19,11 +20,12 @@ interface cartItems extends Product {
 }
 
 const MostProduct = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  // const [products, setProducts] = useState<Product[]>([]);
+  // const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [showMobileCategories, setShowMobileCategories] = useState(false);
   const [cartItems, setCartItems] = useState<cartItems[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const {products,allProducts,setProducts} = useFetchProducts();
   const filteredProducts =
     selectedCategory === "All"
       ? products
@@ -64,21 +66,13 @@ const MostProduct = () => {
   };
 
   useEffect(() => {
-      fetch("https://dummyjson.com/products")
-        .then((res) => res.json())
-        .then((data) => {
-          setProducts(data.products);
-          setAllProducts(data.products);
-        })
-        .catch((err) => console.error("Error fetching products:", err));
-  
       const savedCart = localStorage.getItem("cart");
       if (savedCart) {
         setCartItems(JSON.parse(savedCart));
       }
     }, []);
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col ">
       <Header />
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
         <div className="flex flex-col w-full lg:w-[70%] overflow-auto p-4">

@@ -1,7 +1,7 @@
 import Checkout from "./Checkout";
 import SearchBar from "./SearchBar";
 import Header from "./Header";
-import { useState, type ReactNode } from "react";
+import {  useState, type ReactNode } from "react";
 import ActionBar from "./SlideBar/ActionBar";
 import ActionCards from "./ActionCards";
 import CustomerSvg from "./SvgCommon/CustomerSvg";
@@ -10,6 +10,8 @@ import RequestSvg from "./SvgCommon/RequestSvg";
 import DefaultSvg from "./SvgCommon/DefaultSvg";
 import InventorySvg from "./SvgCommon/InventorySvg";
 import AddAction from "./SvgCommon/AddAction";
+import WinterSvg from "./SvgCommon/WinterSvg";
+import OrderNoDisplay from "./Order/OrderNoDisplay";
 
 interface ActionCardType {
   label: string;
@@ -26,7 +28,7 @@ const HomePage = () => {
     { label: "Discount", link: "./discount", icon: <DiscountSvg /> },
     { label: "Request", link: "./request", icon: <RequestSvg /> },
   ]);
-
+  
   const iconMap: Record<string, ReactNode> = {
     inventory: <InventorySvg />,
     customer: <CustomerSvg />,
@@ -40,12 +42,24 @@ const HomePage = () => {
 
   const handleAddCard = (title: string) => {
     const lower = title.toLowerCase();
+
+    const exists = actionCards.some((card) => card.label.toLowerCase() === lower);
+    if (exists) {
+      setShowModal(false);
+      return;
+    }
+
+    let icon = iconMap[lower] || <DefaultSvg />;
+    if (lower === "winter collection") {
+      icon = <WinterSvg />;
+    }
+
     setActionCards((prev) => [
       ...prev,
       {
         label: title,
         link: `./${lower}`,
-        icon: iconMap[lower] || <DefaultSvg />,
+        icon,
       },
     ]);
     setShowModal(false);
@@ -83,6 +97,9 @@ const HomePage = () => {
               </div>
               <span>Add quick action</span>
             </div>
+          </div>
+          <div>
+            <OrderNoDisplay />
           </div>
         </div>
 

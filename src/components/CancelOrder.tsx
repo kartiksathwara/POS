@@ -3,7 +3,7 @@ import { FaUser } from "react-icons/fa6";
 import { RiCashLine } from "react-icons/ri";
 import { CiCreditCard1 } from "react-icons/ci";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa6";
 
 export interface Customer {
@@ -27,12 +27,20 @@ interface Product {
 }
 
 const CancelOrder: React.FC = () => {
-  const [selectedOrder, setSelectedOrder] = useState("002");
+  const [selectedOrder, setSelectedOrder] = useState("001");
   const [isvalidate, setIsValidate] = useState(false);
+  const [user, setUser] = useState<string | null>(null);
+  const [orderNo, setOrderNo] = useState<number>(1);
   const orderNumbers = ["001", "002", "003", "004"];
   const [totalAmount, setTotalAmount] = useState("0");
   const [customerData, setCustomerData] = useState<Customer[]>([]);
   const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | null>(
+    null
+  );
+  const navigate = useNavigate();
+  const storedUser = localStorage.getItem("customer");
+
   const [newCustomer, setNewCustomer] = useState<Customer>({
     name: "",
     phone: "",
@@ -45,6 +53,11 @@ const CancelOrder: React.FC = () => {
     zip: "",
   });
   useEffect(() => {
+    const storedOrderNo = localStorage.getItem("orderNo");
+  if (storedOrderNo) {
+    setOrderNo(parseInt(storedOrderNo));
+  }
+
     const storedTotal = localStorage.getItem("totalAmount");
     if (storedTotal) {
       setTotalAmount(storedTotal);
@@ -59,6 +72,12 @@ const CancelOrder: React.FC = () => {
     if (storedCart) {
       setCartItems(JSON.parse(storedCart));
     }
+
+    const userData = localStorage.getItem("User");
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser.name);
+    }
   }, []);
 
   const handleCancelCart = () => {
@@ -67,6 +86,35 @@ const CancelOrder: React.FC = () => {
     localStorage.setItem("totalAmount", "0.00");
     localStorage.removeItem("cart");
   };
+
+  const handleProduct = () => {
+  const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
+  const orderDetails = {
+    orderNo: orderNo,
+    customer: customerDet,
+    items: cartItems,
+    method: paymentMethod,
+    timestamp: new Date().toISOString(),
+  };
+
+  localStorage.setItem(
+    `order-${user}-${orderNo}`,
+    JSON.stringify(orderDetails)
+  );
+
+  const nextOrderNo = orderNo + 1;
+  setOrderNo(nextOrderNo);
+  localStorage.setItem("orderNo", nextOrderNo.toString());
+
+  setIsValidate((prev) => !prev);
+
+  if (paymentMethod === "cash") {
+    navigate("/invoice");
+  } else {
+    navigate("/payment");
+  }
+};
+
   const handleAddCustomer = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const updatedCustomers = [...customerData, newCustomer];
@@ -110,8 +158,9 @@ const CancelOrder: React.FC = () => {
           className="w-full px-1 text-left text-lg"
         >
           <FaChevronDown
-            className={`absolute ${!dropdownOpen ? null : "rotate-180"
-              } right-0 transition-all`}
+            className={`absolute ${
+              !dropdownOpen ? null : "rotate-180"
+            } right-0 transition-all`}
           />
           {selectedCustomer ? selectedCustomer.name : "Select customer"}
         </button>
@@ -164,7 +213,7 @@ const CancelOrder: React.FC = () => {
       <div className="flex flex-col lg:flex-row h-[calc(100%-4rem)]">
         <div className="w-full lg:w-2/3 flex flex-col justify-between bg-white rounded-md">
           <div className="flex flex-col h-[80%] justify-between p-1">
-            <div className="bg-(--pin-button) flex flex-col gap-3 p-2 rounded-2xl">
+            <div className="bg-(--bgorder) flex flex-col gap-3 p-2 rounded-2xl">
               <div className="text-2xl font-semibold">${totalAmount}</div>
               <div className="border-2 rounded-2xl border-(--main)/50 w-[100%] p-2">
                 <h2 className="font-semibold text-(--eye-icon) flex gap-2 text-1.5xl items-center py-0.5">
@@ -180,6 +229,14 @@ const CancelOrder: React.FC = () => {
                     selectedCustomer={newCustomer.name ? newCustomer : null}
                     onSelect={(customer) => {
                       setNewCustomer(customer);
+                      const updatedCustomer = {
+                        ...customer,
+                        paymentMethod: paymentMethod || null,
+                      };
+                      localStorage.setItem(
+                        "customer",
+                        JSON.stringify(updatedCustomer)
+                      );
                     }}
                   />
                 </div>
@@ -260,14 +317,54 @@ const CancelOrder: React.FC = () => {
               <p className="text-sm text-gray-500 ">
                 All transactions are secure and encrypted.
               </p>
-              <div className="bg-(--pin-button) rounded p-2 flex gap-2">
-                <input type="radio" name="payment" />
+              <div className="bg-(--v) rounded p-2 flex gap-2">
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={paymentMethod === "cash"}
+                  onChange={() => {
+                    setPaymentMethod("cash");
+
+                    const existingCustomer = JSON.parse(
+                      localStorage.getItem("customer") || "{}"
+                    );
+                    const updatedCustomer = {
+                      ...existingCustomer,
+                      paymentMethod: "cash",
+                    };
+                    localStorage.setItem(
+                      "customer",
+                      JSON.stringify(updatedCustomer)
+                    );
+                  }}
+                />
+
                 <span className="flex items-center justify-between w-full">
                   Cash <RiCashLine className="text-2xl" />
                 </span>
               </div>
-              <div className="bg-(--pin-button) rounded p-2 flex gap-2">
-                <input type="radio" name="payment" />
+              <div className="bg-(--bgorder) rounded p-2 flex gap-2">
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={paymentMethod === "card"}
+                  onChange={() => {
+                    setPaymentMethod("card");
+
+                    const existingCustomer = JSON.parse(
+                      localStorage.getItem("customer") || "{}"
+                    );
+                    const updatedCustomer = {
+                      ...existingCustomer,
+                      paymentMethod: "card",
+                    };
+                    localStorage.setItem(
+                      "customer",
+                      JSON.stringify(updatedCustomer)
+                    );
+                  }}
+                />
+
                 <span className="flex items-center justify-between w-full">
                   Card <CiCreditCard1 className="text-2xl" />
                 </span>
@@ -275,6 +372,7 @@ const CancelOrder: React.FC = () => {
             </div>
           </div>
           <div className="flex gap-3 items-center p-3 bg-(--secondary)">
+            {/* <OrderNoDisplay/> */}
             <span className="text-sm font-semibold text-(--eye-icon)">
               Order:
             </span>
@@ -282,10 +380,11 @@ const CancelOrder: React.FC = () => {
               <button
                 key={order}
                 onClick={() => setSelectedOrder(order)}
-                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${selectedOrder === order
-                  ? "bg-(--main) text-white"
-                  : "bg-(--main)/50 text-white"
-                  }`}
+                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${
+                  selectedOrder === order
+                    ? "bg-(--main) text-white"
+                    : "bg-(--main)/50 text-white"
+                }`}
               >
                 {order}
               </button>
@@ -302,7 +401,6 @@ const CancelOrder: React.FC = () => {
             </button>
             <hr className="mt-3" />
           </div>
-          {/* <hr /> */}
           <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] scrollbar-hide">
             {cartItems.map((item) => (
               <div
@@ -319,9 +417,7 @@ const CancelOrder: React.FC = () => {
                     <h4 className="font-medium text-sm">{item.title}</h4>
                     <p className="text-xs text-gray-500">
                       ${item.price.toFixed(2)} * {item.quantity} = {""}
-                      <span>
-                        ${(item.price* item.quantity).toFixed(2)}
-                      </span>
+                      <span>${(item.price * item.quantity).toFixed(2)}</span>
                     </p>
                   </div>
                 </div>
@@ -335,10 +431,12 @@ const CancelOrder: React.FC = () => {
                 Back
               </button>
             </Link>
-<button
-              disabled = {cartItems.length === 0}
-              onClick={() => setIsValidate(!isvalidate)}
-              className={`w-full py-2 bg-(--main)/40 text-white rounded sm:w-40 px-4 text-sm sm:text-base disabled:bg-(--main)/40 ${
+            <button
+              disabled={
+                cartItems.length === 0 || !storedUser || paymentMethod === null
+              }
+              onClick={handleProduct}
+              className={`w-full sm:w-1/2 py-2 bg-(--main)/40 text-white rounded px-4 text-sm sm:text-base disabled:bg-(--main)/40 hover:cursor-pointer ${
                 !isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
               } `}
             >

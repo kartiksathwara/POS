@@ -1,6 +1,6 @@
 import Header from "./Header";
 import SearchBar from "./SearchBar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import CollectionList from "./CollectionList";
 import BagOrderInput from "./BagList";
@@ -15,23 +15,25 @@ type CollectionItem = {
   price: string;
 };
 
-type InventoryItem = {
-  id: string;
-  title: string;
-  price: string;
-  thumbnail: string;
-};
-
 const RequestInventory = () => {
   const [activeTab, setActiveTab] = useState<
     "Inventory" | "Collection" | "Bag"
   >("Inventory");
   const [searchQuery, setSearchQuery] = useState("");
+  const nav = useNavigate();
   const [showMobileCategories, setShowMobileCategories] = useState(false);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query.toLowerCase());
+    if(activeTab === "Inventory") {
+      
+    }
   };
+
+  const requestItems = () => {
+    if(activeTab === "Bag")
+    nav("/")
+  }
 
   const collectionColumns = [
     { Header: "Image", accessor: "image" },
@@ -61,61 +63,10 @@ const RequestInventory = () => {
     },
   ];
 
-  const inventoryData: InventoryItem[] = [
-    {
-      id: "1",
-      title: "Black Shoes",
-      price: "100",
-      thumbnail: "https://via.placeholder.com/50",
-    },
-    {
-      id: "2",
-      title: "Red Shirt",
-      price: "50",
-      thumbnail: "https://via.placeholder.com/50",
-    },
-    {
-      id: "3",
-      title: "Red Shirt",
-      price: "50",
-      thumbnail: "https://via.placeholder.com/50",
-    },
-    {
-      id: "4",
-      title: "Black Shoes",
-      price: "100",
-      thumbnail: "https://via.placeholder.com/50",
-    },
-    {
-      id: "5",
-      title: "Red Shirt",
-      price: "50",
-      thumbnail: "https://via.placeholder.com/50",
-    },
-    {
-      id: "6",
-      title: "Red Shirt",
-      price: "50",
-      thumbnail: "https://via.placeholder.com/50",
-    },
-    {
-      id: "7",
-      title: "Red Shirt",
-      price: "50",
-      thumbnail: "https://via.placeholder.com/50",
-    },
-  ];
-
   const filteredCollectionData = collectionData.filter(
     (item) =>
       item.name.toLowerCase().includes(searchQuery) ||
       item.category.toLowerCase().includes(searchQuery) ||
-      item.price.toLowerCase().includes(searchQuery)
-  );
-
-  const filteredInventoryData = inventoryData.filter(
-    (item) =>
-      item.title.toLowerCase().includes(searchQuery) ||
       item.price.toLowerCase().includes(searchQuery)
   );
 
@@ -171,7 +122,7 @@ const RequestInventory = () => {
           )}
           <div className="p-5 flex-1 overflow-y-auto scrollbar-hide">
             {activeTab === "Inventory" ? (
-              <InventoryList data={filteredInventoryData} />
+              <InventoryList searchQuery={searchQuery} />
             ) : activeTab === "Collection" ? (
               <CollectionList<CollectionItem>
                 columns={collectionColumns}
@@ -196,15 +147,15 @@ const RequestInventory = () => {
                   Products
                 </div>
               </div>
+              
             </div>
             <hr className="my-2 opacity-20" />
             <div>
-              <Link
-                to="/bill"
-                className="bg-[var(--main)] text-white font-semibold py-2 rounded-md block text-center"
-              >
+                <button onClick={requestItems} className="bg-[var(--main)] text-white font-semibold py-2 rounded-md block text-center w-full disabled:opacity-70"
+                disabled={activeTab === "Inventory" || activeTab === "Collection"}
+                >
                 SEND &gt;
-              </Link>
+                </button>
             </div>
           </div>
         </div>
