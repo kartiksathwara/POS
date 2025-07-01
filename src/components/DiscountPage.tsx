@@ -60,7 +60,7 @@ const DiscountPage: React.FC = () => {
                     <th className="p-3 text-right">Reason</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="">
                   {discount.map((d, i) => (
                     <tr
                       key={i}

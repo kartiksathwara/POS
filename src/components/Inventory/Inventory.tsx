@@ -11,11 +11,17 @@ interface Product {
   title: string;
   price: number;
   thumbnail: string;
-  category:string;
+  category: string;
 }
 
 interface cartItems extends Product {
-	quantity: number;
+  quantity: number;
+}
+
+interface Customer {
+  name?: string;
+  phone?: string;
+
 }
 
 const Inventory = () => {
@@ -49,30 +55,30 @@ const Inventory = () => {
   const handleAddToCart = (product: Product) => {
     const existingItem = cartItems.find(item => item.id === product.id)
 
-		let updatedCart;
+    let updatedCart;
     if (existingItem) {
-			updatedCart = cartItems.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
-		} else {
-			updatedCart = [...cartItems, { ...product, quantity: 1 }];
-		}
-    // const updatedCart = [...cartItems, product];
+      updatedCart = cartItems.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+    } else {
+      updatedCart = [...cartItems, { ...product, quantity: 1 }];
+    }
+
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const increseQty = (id: number) => {
-		const updated = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
-		setCartItems(updated);
-		localStorage.setItem("cart", JSON.stringify(updated));
-	}
+    const updated = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
+    setCartItems(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
+  }
 
-	const decreseQty = (id: number) => {
-		const updated = cartItems.map(item => item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item)
-			.filter(item => item.quantity > 0)
+  const decreseQty = (id: number) => {
+    const updated = cartItems.map(item => item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item)
+      .filter(item => item.quantity > 0)
 
-		setCartItems(updated);
-		localStorage.setItem("cart", JSON.stringify(updated));
-	}
+    setCartItems(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
+  }
 
   const handleClearCart = () => {
     setCartItems([]);
@@ -86,19 +92,47 @@ const Inventory = () => {
   };
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-	// const discount = subtotal * 0.18;
 
-	const selectedDiscount = localStorage.getItem("selectedDiscount") || "18%";
-	const discountReason = localStorage.getItem("discountReason") || "Default Discount";
+
+  const selectedDiscount = localStorage.getItem("selectedDiscount") || "18%";
+  const discountReason = localStorage.getItem("discountReason") || "Default Discount";
   const discountPercent = parseFloat(selectedDiscount.replace("%", ""));
-	const discount = subtotal * (discountPercent / 100);
+  const discount = subtotal * (discountPercent / 100);
   const tax = (subtotal - discount) * 0.08;
-	const total = subtotal - discount + tax;
+  const total = subtotal - discount + tax;
+
 
   const handleCheckout = () => {
+    if (cartItems.length === 0) return;
+
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+    const possibleIDs = ["001", "002", "003", "004"];
+    const usedIDs = holdOrders.map((o) => o.id);
+    const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
+
+    if (availableID) {
+      const newOrder: HoldOrder = {
+        id: availableID,
+        cartItems,
+        totalAmount: total.toFixed(2),
+      };
+
+      const updatedOrders = [...holdOrders, newOrder];
+      localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+      localStorage.setItem("currentOrderID", availableID);
+
+      setCartItems([]);
+      localStorage.removeItem("cart");
+    }
+
+
     localStorage.setItem("totalAmount", total.toFixed(2));
     navigate("/bill");
   };
+
+
 
   const handleSearch = (query: string) => {
     if (!query.trim()) {
@@ -111,6 +145,46 @@ const Inventory = () => {
     );
     setProducts(filtered);
   };
+  type HoldOrder = {
+    id: string; // e.g., '001'
+    cartItems: cartItems[];
+    totalAmount: string;
+    customer?: Customer;
+  };
+
+  const saveToNextHoldOrderSlot = () => {
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+    const possibleIDs = ["001", "002", "003", "004"];
+    const usedIDs = holdOrders.map((o) => o.id);
+    const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
+
+    if (!availableID) {
+
+      return null;
+    }
+
+    const newOrder: HoldOrder = {
+      id: availableID,
+      cartItems,
+      totalAmount: total.toFixed(2),
+    };
+
+    const updatedOrders = [...holdOrders, newOrder];
+    localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+    setCartItems([]);
+    localStorage.removeItem("cart");
+
+    return availableID;
+  };
+
+  const handleHoldOrder = () => {
+    const id = saveToNextHoldOrderSlot();
+    if (id) {
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col">
       <Header />
@@ -136,7 +210,7 @@ const Inventory = () => {
               <div
                 key={item}
                 className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
-                onClick={()=>setSelectedCategory(item)}
+                onClick={() => setSelectedCategory(item)}
               >
                 {item}
               </div>
@@ -148,7 +222,7 @@ const Inventory = () => {
                 <div
                   key={item}
                   className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
-                  onClick={()=>setSelectedCategory(item)}
+                  onClick={() => setSelectedCategory(item)}
                 >
                   {item}
                 </div>
@@ -181,7 +255,7 @@ const Inventory = () => {
             ))}
           </div>
           <Link
-            to="/requestinventory"
+            to="/request"
             className="flex items-center gap-1 font-medium text-black px-8 pb-4"
           >
             <span>Request Inventory</span>
@@ -197,7 +271,7 @@ const Inventory = () => {
               >
                 Clear cart
               </button>
-              <button className="bg-(--main) w-full text-white px-4 rounded-md">
+              <button className="bg-(--main) w-full text-white px-4 rounded-md" onClick={handleHoldOrder}>
                 Hold this order
               </button>
             </div>
@@ -217,13 +291,13 @@ const Inventory = () => {
                     <div>
                       <h4 className="font-medium text-sm">{item.title}</h4>
                       <div className="flex space-x-1">
-												<p className=" text-gray-500">${item.price.toFixed(2)}</p>
-												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => decreseQty(item.id)}>
-													-
-												</button>
-												<span className="px-2 text-1">{item.quantity}</span>
-												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => increseQty(item.id)}> + </button>
-											</div>
+                        <p className=" text-gray-500">${item.price.toFixed(2)}</p>
+                        <button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => decreseQty(item.id)}>
+                          -
+                        </button>
+                        <span className="px-2 text-1">{item.quantity}</span>
+                        <button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => increseQty(item.id)}> + </button>
+                      </div>
                     </div>
                   </div>
                   <button
@@ -244,19 +318,19 @@ const Inventory = () => {
                 className="bg-white text-sm text-black placeholder-black focus:outline-none w-full"
               />
               <button className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2">
-								<Link to="/discount">
-									ADD
-								</Link>
-							</button>
+                <Link to="/discount">
+                  ADD
+                </Link>
+              </button>
             </div>
             <div className="flex justify-between">
               <span>Subtotal • {cartItems.length} items</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-gray-500">
-								<span>Discount (-{discountPercent}%)</span>
-								<span>-${discount.toFixed(2)}</span>
-							</div>
+              <span>Discount (-{discountPercent}%)</span>
+              <span>-${discount.toFixed(2)}</span>
+            </div>
             <div className="text-xs text-gray-400">{discountReason}</div>
             <div className="flex justify-between text-gray-500">
               <span>Tax (+8%)</span>

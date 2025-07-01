@@ -34,19 +34,19 @@ const Header = () => {
 										</Link>
 										<div className="p-2.5">
 											<Link
-												to=""
+												to="/order"
 												className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400"
 											>
 												Orders
 											</Link>
 											<Link
-												to=""
+												to="/activity"
 												className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400"
 											>
 												Activites
 											</Link>
 											<Link
-												to="/requestinventory"
+												to="/request"
 												className="block px-4 py-3 text-lg text-(--main) border-b-1 border-b-gray-400"
 											>
 												Request Inventory
