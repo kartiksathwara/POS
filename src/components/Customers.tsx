@@ -73,7 +73,7 @@ const Customers = () => {
   return (
     <div className="h-screen flex flex-col">
       <Header />
-      <div className="flex flex-col lg:flex-row flex-1">
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
         <div className="relative flex-1 overflow-y-auto p-4 flex flex-col items-center gap-4">
           <SearchBar onSearch={handleSearch} />
           <div className="flex w-full justify-between items-center px-4">
@@ -97,7 +97,7 @@ const Customers = () => {
           </div>
         </div>
 
-        <div className="w-full lg:w-[30%] max-h-full overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
+        <div className="w-full lg:w-[30%] bg-(--secondary) hidden lg:flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
           <Checkout />
         </div>
       </div>

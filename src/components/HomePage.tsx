@@ -124,7 +124,7 @@ const HomePage = () => {
 
         </div>
 
-        <div className="w-full lg:w-[30%] max-h-full overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
+        <div className="w-full lg:w-[30%] bg-(--secondary) hidden lg:flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
           <Checkout />
         </div>
         {showModal && (

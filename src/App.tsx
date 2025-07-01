@@ -27,8 +27,10 @@ function App() {
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/request" element={<RequestInventory />}></Route>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/bill" element={<CancelOrder />} />
-        <Route path="/lock" element={<Lock />} />
+        <Route path="/lock" element={<ProtectedRoute><Lock /></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>}></Route>
+        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/customer" element={<Customers />} />
         <Route path="/discount" element={<DiscountPage />} />
         <Route path="/most-product" element={<MostProduct />} />
         <Route path="/order" element={<Order />} />
