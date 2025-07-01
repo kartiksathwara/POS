@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { FaBackspace, FaAngleRight } from "react-icons/fa";
-import Header from "./Header";
+// import Header from "./Header";
 import {useNavigate } from "react-router-dom"; 
 // import { useAuth } from "../auth/AuthContext";
 import type { AppDispatch } from "../app/store";
 import { useDispatch } from "react-redux";
 import { logout } from "../auth/authSlice";
+import TitleBanner from "./TitleBanner";
 
 const Lock = () => {
   const navigate = useNavigate();
@@ -75,8 +76,8 @@ const Lock = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen ">
-      <Header />
+    <div className="min-h-screen flex flex-col items-center justify-center sm:justify-start">
+          <TitleBanner />
       <div className="flex flex-col h-[calc(100%-6rem)] gap-4 items-center justify-center text-center py-6">
         <div>
           <h2 className="font-bold text-[30px] text-(--main)">

@@ -6,8 +6,6 @@ import { FaTrash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import useFetchProducts from "../../hooks/useFetchProducts";
-import { useDispatch } from "react-redux";
-import { clearOrderItems } from "../../auth/orderSlice";
 
 interface Product {
   id: number;
@@ -21,9 +19,15 @@ interface cartItems extends Product {
   quantity: number;
 }
 
+interface Customer {
+  name?: string;
+  phone?: string;
+
+}
+
 const Inventory = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const categories = ["All", "beauty", "fragrances", "furniture", "groceries"];
   const { products,setProducts, allProducts} = useFetchProducts()
   const [orderNo, setOrderNo] = useState<number>(1);
@@ -63,25 +67,18 @@ const Inventory = () => {
   };
 
   const increseQty = (id: number) => {
-    const updated = cartItems.map((item) =>
-      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-    );
+    const updated = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
-  };
+  }
 
   const decreseQty = (id: number) => {
-    const updated = cartItems
-      .map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-          : item
-      )
-      .filter((item) => item.quantity > 0);
+    const updated = cartItems.map(item => item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item)
+      .filter(item => item.quantity > 0)
 
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
-  };
+  }
 
   const handleClearCart = () => {
     setCartItems([]);
@@ -94,50 +91,75 @@ const Inventory = () => {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+
   const selectedDiscount = localStorage.getItem("selectedDiscount") || "18%";
-  const discountReason =
-    localStorage.getItem("discountReason") || "Default Discount";
+  const discountReason = localStorage.getItem("discountReason") || "Default Discount";
   const discountPercent = parseFloat(selectedDiscount.replace("%", ""));
   const discount = subtotal * (discountPercent / 100);
   const tax = (subtotal - discount) * 0.08;
   const total = subtotal - discount + tax;
 
-  const handleHoldOrder = () => {
-      const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
-      const holdOrder = {
-        orderNo,
-        customer: customerDet,
-        items: cartItems,
-        timestamp: new Date().toISOString(),
-        status: "ongoing",
-      };
+  // const handleHoldOrder = () => {
+  //     const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
+  //     const holdOrder = {
+  //       orderNo,
+  //       customer: customerDet,
+  //       items: cartItems,
+  //       timestamp: new Date().toISOString(),
+  //       status: "ongoing",
+  //     };
   
-      const heldOrders = JSON.parse(localStorage.getItem("heldOrders") || "[]");
+  //     const heldOrders = JSON.parse(localStorage.getItem("heldOrders") || "[]");
   
-      if (heldOrders.length >= 4) {
-        alert("Maximum of 4 orders can be held at a time.");
-        return;
-      }
+  //     if (heldOrders.length >= 4) {
+  //       alert("Maximum of 4 orders can be held at a time.");
+  //       return;
+  //     }
   
-      heldOrders.push(holdOrder);
-      localStorage.setItem("heldOrders", JSON.stringify(heldOrders));
+  //     heldOrders.push(holdOrder);
+  //     localStorage.setItem("heldOrders", JSON.stringify(heldOrders));
   
-      dispatch(clearOrderItems());
-      localStorage.removeItem("customer");
+  //     dispatch(clearOrderItems());
+  //     localStorage.removeItem("customer");
   
-      const nextOrderNo = orderNo + 1;
-      setOrderNo(nextOrderNo);
-      localStorage.setItem("orderNo", nextOrderNo.toString());
-    };
+  //     const nextOrderNo = orderNo + 1;
+  //     setOrderNo(nextOrderNo);
+  //     localStorage.setItem("orderNo", nextOrderNo.toString());
+  //   };
 
   const handleCheckout = () => {
+    if (cartItems.length === 0) return;
+
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+    const possibleIDs = ["001", "002", "003", "004"];
+    const usedIDs = holdOrders.map((o) => o.id);
+    const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
+
+    if (availableID) {
+      const newOrder: HoldOrder = {
+        id: availableID,
+        cartItems,
+        totalAmount: total.toFixed(2),
+      };
+
+      const updatedOrders = [...holdOrders, newOrder];
+      localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+      localStorage.setItem("currentOrderID", availableID);
+
+      setCartItems([]);
+      localStorage.removeItem("cart");
+    }
+
+
     localStorage.setItem("totalAmount", total.toFixed(2));
     navigate("/bill");
   };
+
+
 
   const handleSearch = (query: string) => {
     if (!query.trim()) {
@@ -151,6 +173,45 @@ const Inventory = () => {
         item.category.toLowerCase().includes(query.toLowerCase())
     );
     setProducts(filtered);
+  };
+  type HoldOrder = {
+    id: string; // e.g., '001'
+    cartItems: cartItems[];
+    totalAmount: string;
+    customer?: Customer;
+  };
+
+  const saveToNextHoldOrderSlot = () => {
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+    const possibleIDs = ["001", "002", "003", "004"];
+    const usedIDs = holdOrders.map((o) => o.id);
+    const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
+
+    if (!availableID) {
+
+      return null;
+    }
+
+    const newOrder: HoldOrder = {
+      id: availableID,
+      cartItems,
+      totalAmount: total.toFixed(2),
+    };
+
+    const updatedOrders = [...holdOrders, newOrder];
+    localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+    setCartItems([]);
+    localStorage.removeItem("cart");
+
+    return availableID;
+  };
+
+  const handleHoldOrder = () => {
+    const id = saveToNextHoldOrderSlot();
+    if (id) {
+    }
   };
 
   return (
@@ -239,7 +300,7 @@ const Inventory = () => {
               >
                 Clear cart
               </button>
-              <button onClick={handleHoldOrder} className="bg-(--main) w-full text-white px-4 rounded-md">
+              <button className="bg-(--main) w-full text-white px-4 rounded-md" onClick={handleHoldOrder}>
                 Hold this order
               </button>
             </div>
@@ -259,23 +320,12 @@ const Inventory = () => {
                     <div>
                       <h4 className="font-medium text-sm">{item.title}</h4>
                       <div className="flex space-x-1">
-                        <p className=" text-gray-500">
-                          ${item.price.toFixed(2)}
-                        </p>
-                        <button
-                          className="px-2 bg-gray-200 rounded hover:bg-gray-300"
-                          onClick={() => decreseQty(item.id)}
-                        >
+                        <p className=" text-gray-500">${item.price.toFixed(2)}</p>
+                        <button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => decreseQty(item.id)}>
                           -
                         </button>
                         <span className="px-2 text-1">{item.quantity}</span>
-                        <button
-                          className="px-2 bg-gray-200 rounded hover:bg-gray-300"
-                          onClick={() => increseQty(item.id)}
-                        >
-                          {" "}
-                          +{" "}
-                        </button>
+                        <button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => increseQty(item.id)}> + </button>
                       </div>
                     </div>
                   </div>
@@ -297,7 +347,9 @@ const Inventory = () => {
                 className="bg-white text-sm text-black placeholder-black focus:outline-none w-full"
               />
               <button className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2">
-                <Link to="/discount">ADD</Link>
+                <Link to="/discount">
+                  ADD
+                </Link>
               </button>
             </div>
             <div className="flex justify-between">

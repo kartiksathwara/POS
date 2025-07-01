@@ -22,6 +22,11 @@ function App() {
 
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>}></Route>
+        <Route path="/customer" element={<Customers />} />
+        <Route path="/setting" element={<Settingpage />} />
+        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/request" element={<RequestInventory />}></Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/lock" element={<ProtectedRoute><Lock /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>}></Route>

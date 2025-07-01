@@ -88,11 +88,11 @@
 // export default Checkout;
 
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import type { RootState } from "../app/store";
 import { clearOrderItems, removeItemFromOrder, setOrderData } from "../auth/orderSlice";
-import { useEffect, useState } from "react";
 
 const Checkout = () => {
   const dispatch = useDispatch();
@@ -155,10 +155,25 @@ const Checkout = () => {
     }
   }, []);
 
+  // return (
+  //   <div className="w-full h-full bg-[var(--secondary)] flex flex-col">
+  //     <div className="flex justify-center gap-3 mb-2">
+  //       <button className="bg-white text-black w-full py-2 px-4 rounded-md">
+  // const handleRemoveItem = (id: number) => {
+  //   const updatedCart = cartItems.filter((item) => item.id !== id);
+  //   setCartItems(updatedCart);
+  //   localStorage.setItem("cart", JSON.stringify(updatedCart));
+  // };
+ 
+  const handleClearCart = () => {
+    // setCartItems([]);
+    localStorage.removeItem("cart");
+  };
   return (
-    <div className="w-full h-full bg-[var(--secondary)] flex flex-col">
-      <div className="flex justify-center gap-3 mb-2">
-        <button className="bg-white text-black w-full py-2 px-4 rounded-md">
+    <div className="w-full h-full p-4 sm:p-6 bg-[var(--secondary)] flex flex-col justify-between gap-2">
+      <div className="flex flex-col sm:flex-row justify-center gap-3 ">
+        <button className="bg-white text-black w-full py-2 px-4 rounded-md"
+        onClick={handleClearCart}>
           Clear cart
         </button>
         <button

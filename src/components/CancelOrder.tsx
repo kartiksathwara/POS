@@ -26,8 +26,17 @@ interface Product {
   quantity: number;
 }
 
+interface HoldOrder {
+  id: string;
+  cartItems: Product[];
+  totalAmount: string;
+  customer?: Customer;
+}
+
 const CancelOrder: React.FC = () => {
-  const [selectedOrder, setSelectedOrder] = useState("001");
+  const [selectedOrder, setSelectedOrder] = useState(() => {
+    return localStorage.getItem("selectedOrder") || "001";
+  });
   const [isvalidate, setIsValidate] = useState(false);
   const [user, setUser] = useState<string | null>(null);
   const [orderNo, setOrderNo] = useState<number>(1);
@@ -80,11 +89,40 @@ const CancelOrder: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+    const activeOrder = holdOrders.find(o => o.id === selectedOrder);
+    if (activeOrder) {
+      setCartItems(activeOrder.cartItems);
+      setTotalAmount(activeOrder.totalAmount);
+      setNewCustomer(
+        activeOrder.customer ?? {
+          name: "", phone: "", email: "", address1: "", address2: "",
+          country: "", state: "", city: "", zip: "",
+        }
+      );
+    } else {
+      setCartItems([]);
+      setTotalAmount("0.00");
+      setNewCustomer({
+        name: "", phone: "", email: "", address1: "", address2: "",
+        country: "", state: "", city: "", zip: "",
+      });
+    }
+  }, [selectedOrder]);
+
+
   const handleCancelCart = () => {
     setCartItems([]);
     setTotalAmount("0.00");
-    localStorage.setItem("totalAmount", "0.00");
-    localStorage.removeItem("cart");
+
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    let holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+    holdOrders = holdOrders.filter(order => order.id !== selectedOrder);
+    localStorage.setItem("holdOrders", JSON.stringify(holdOrders));
   };
 
   const handleProduct = () => {
@@ -132,6 +170,16 @@ const CancelOrder: React.FC = () => {
         city: "",
         zip: "",
       });
+      const holdOrdersRaw = localStorage.getItem("holdOrders");
+      const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+      const updatedOrders = holdOrders.map(order =>
+        order.id === selectedOrder
+          ? { ...order, customer: newCustomer }
+          : order
+      );
+
+      localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
     }
   };
 
@@ -208,12 +256,12 @@ const CancelOrder: React.FC = () => {
   };
 
   return (
-    <div className=" h-screen">
+    <div className="h-screen">
       <Header />
       <div className="flex flex-col lg:flex-row h-[calc(100%-4rem)]">
-        <div className="w-full lg:w-2/3 flex flex-col justify-between bg-white rounded-md">
-          <div className="flex flex-col h-[80%] justify-between p-1">
-            <div className="bg-(--bgorder) flex flex-col gap-3 p-2 rounded-2xl">
+        <div className="w-full lg:w-[75%] flex flex-col justify-between bg-white rounded-md">
+          <div className="flex flex-col h-[80%] justify-between p-3">
+            <div className="bg-(--pin-button) flex flex-col gap-3 p-2 rounded-2xl">
               <div className="text-2xl font-semibold">${totalAmount}</div>
               <div className="border-2 rounded-2xl border-(--main)/50 w-[100%] p-2">
                 <h2 className="font-semibold text-(--eye-icon) flex gap-2 text-1.5xl items-center py-0.5">
@@ -237,6 +285,18 @@ const CancelOrder: React.FC = () => {
                         "customer",
                         JSON.stringify(updatedCustomer)
                       );
+
+                      // Save selected customer to holdOrders
+                      const holdOrdersRaw = localStorage.getItem("holdOrders");
+                      const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+                      const updatedOrders = holdOrders.map(order =>
+                        order.id === selectedOrder
+                          ? { ...order, customer }
+                          : order
+                      );
+
+                      localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
                     }}
                   />
                 </div>
@@ -391,7 +451,7 @@ const CancelOrder: React.FC = () => {
             ))}
           </div>
         </div>
-        <div className="w-full lg:w-[42%] p-6 bg-(--secondary) flex flex-col justify-between">
+        <div className="w-full lg:w-[32%] p-6 bg-(--secondary) flex flex-col justify-between">
           <div className="font-serif">
             <button
               onClick={handleCancelCart}
@@ -417,7 +477,9 @@ const CancelOrder: React.FC = () => {
                     <h4 className="font-medium text-sm">{item.title}</h4>
                     <p className="text-xs text-gray-500">
                       ${item.price.toFixed(2)} * {item.quantity} = {""}
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      <span>
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -426,8 +488,8 @@ const CancelOrder: React.FC = () => {
             {cartItems.length === 0 && <div className="h-screen mt-8"></div>}
           </div>
           <div className="flex flex-col sm:flex-row justify-between gap-3 w-full mt-10">
-            <Link to="/inventory" className="w-full sm:w-1/2">
-              <button className="w-full py-3 px-4 rounded bg-white text-black text-base font-medium border border-gray-300 hover:bg-gray-50 transition">
+            <Link to="/inventory" className="w-full">
+              <button className="w-full py-3 px-4 rounded bg-white text-black text-base font-medium border-gray-300 hover:bg-gray-50 transition">
                 Back
               </button>
             </Link>
@@ -439,9 +501,38 @@ const CancelOrder: React.FC = () => {
               className={`w-full sm:w-1/2 py-2 bg-(--main)/40 text-white rounded px-4 text-sm sm:text-base disabled:bg-(--main)/40 hover:cursor-pointer ${
                 !isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
               } `}
+              // disabled={cartItems.length === 0}
+              // onClick={() => {
+              //   const existingOrdersRaw = localStorage.getItem("orders");
+              //   const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
+
+              //   // const nextOrderId = String(existingOrders.length + 1).padStart(1, "0");
+
+              //   const now = new Date();
+              //   const date = now.toLocaleDateString("en-Us", { month: "short", day: "2-digit", year: "numeric" });
+              //   const time = now.toLocaleTimeString("en-Us", { hour: "2-digit", minute: "2-digit" });
+              //   const newOrder = {
+              //     id: String(existingOrders.length + 1).padStart(2, "0"),  // Always 2-digit
+              //     name: newCustomer.name || "N/A",
+              //     date,
+              //     time,
+              //     status: "Ongoing",
+              //   };
+
+              //   const updatedOrders = [...existingOrders, newOrder];
+              //   localStorage.setItem("orders", JSON.stringify(updatedOrders));
+
+              //   handleCancelCart();
+              //   setIsValidate(true);
+              // }}
+
+
+              // className={`w-full py-3 px-4 rounded bg-(--main)/40 text-white text-base font-medium  disabled:bg-(--main)/40 ${!isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
+              //   } `}
             >
               Validate &gt;
             </button>
+
           </div>
         </div>
       </div>
