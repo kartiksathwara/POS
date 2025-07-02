@@ -34,6 +34,7 @@ function App() {
         <Route path="/discount" element={<DiscountPage />} />
         <Route path="/most-product" element={<MostProduct />} />
         <Route path="/order" element={<Order />} />
+        <Route path="/bill" element={<CancelOrder />} />
         <Route path="/activity" element={<Activities/>} />
       </Routes>
     </BrowserRouter>
