@@ -1,9 +1,9 @@
 import Checkout from "./Checkout";
 import SearchBar from "./SearchBar";
 import Header from "./Header";
-import { FaAngleLeft } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { IoIosArrowBack } from "react-icons/io";
 
 
 const discounts = [
@@ -44,7 +44,7 @@ const DiscountPage: React.FC = () => {
 					<div className="px-2 sm:px-6">
 						<h2 className="flex items-center text-xl font-semibold text-[var(--main)] gap-2">
 							<Link to="/" className="text-[var(--main)]">
-								<FaAngleLeft />
+								<IoIosArrowBack />
 							</Link>
 							DISCOUNT
 						</h2>

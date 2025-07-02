@@ -15,7 +15,7 @@ type ActionItemProps = {
 
 type ActionBarProps = {
   handleClose: () => void;
-  onSave: (title: string) => void;
+  onSave: (title: string) => any;
 };
 
 const ActionBar: React.FC<ActionBarProps> = ({ handleClose, onSave }) => {

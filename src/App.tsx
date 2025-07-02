@@ -11,8 +11,10 @@ import DiscountPage from "./components/DiscountPage";
 import Inventory from "./components/Inventory/Inventory";
 import MostProduct from "./components/Products/MostProduct";
 import Customers from "./components/Customers";
-import Order from "./components/Order";
 import Activities from "./components/Activities";
+import Invoice from "./components/Invoice";
+import Payment from "./components/Payment";
+import Order from "./components/Order";
 // import ActionBar from "./components/SlideBar/ActionBar";
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/lock" element={<ProtectedRoute><Lock /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>}></Route>
+        <Route path="/activities" element={<Activities />} />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/customer" element={<Customers />} />
         <Route path="/discount" element={<DiscountPage />} />
@@ -36,6 +39,12 @@ function App() {
         <Route path="/order" element={<Order />} />
         <Route path="/bill" element={<CancelOrder />} />
         <Route path="/activity" element={<Activities/>} />
+        <Route path="/request" element={<RequestInventory />}></Route>
+        <Route path="/setting" element={<Settingpage />} />
+        <Route path="/bill" element={<CancelOrder />} />
+        <Route path="/invoice" element={<Invoice />} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/most-product" element={<ProtectedRoute><MostProduct /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
     </AuthProvider>

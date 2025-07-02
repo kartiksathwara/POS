@@ -5,6 +5,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import useFetchProducts from "../../hooks/useFetchProducts";
 
 interface Product {
   id: number;
@@ -26,10 +27,10 @@ interface Customer {
 
 const Inventory = () => {
   const navigate = useNavigate();
+  // const dispatch = useDispatch();
   const categories = ["All", "beauty", "fragrances", "furniture", "groceries"];
-
-  const [products, setProducts] = useState<Product[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const { products,setProducts, allProducts} = useFetchProducts()
+  const [orderNo, setOrderNo] = useState<number>(1);
   const [showMobileCategories, setShowMobileCategories] = useState(false);
   const [cartItems, setCartItems] = useState<cartItems[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -39,29 +40,28 @@ const Inventory = () => {
       : products.filter((product) => product.category === selectedCategory);
 
   useEffect(() => {
-    fetch("https://dummyjson.com/products")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data.products);
-        setAllProducts(data.products);
-      })
-      .catch((err) => console.error("Error fetching products:", err));
-
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       setCartItems(JSON.parse(savedCart));
     }
+    
+    const storedOrderNo = localStorage.getItem("orderNo");
+    if (storedOrderNo) {
+      setOrderNo(parseInt(storedOrderNo));
+    }
   }, []);
+
   const handleAddToCart = (product: Product) => {
-    const existingItem = cartItems.find(item => item.id === product.id)
+    const existingItem = cartItems.find((item) => item.id === product.id);
 
     let updatedCart;
     if (existingItem) {
-      updatedCart = cartItems.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      updatedCart = cartItems.map((item) =>
+        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+      );
     } else {
       updatedCart = [...cartItems, { ...product, quantity: 1 }];
     }
-
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -101,6 +101,33 @@ const Inventory = () => {
   const tax = (subtotal - discount) * 0.08;
   const total = subtotal - discount + tax;
 
+  // const handleHoldOrder = () => {
+  //     const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
+  //     const holdOrder = {
+  //       orderNo,
+  //       customer: customerDet,
+  //       items: cartItems,
+  //       timestamp: new Date().toISOString(),
+  //       status: "ongoing",
+  //     };
+  
+  //     const heldOrders = JSON.parse(localStorage.getItem("heldOrders") || "[]");
+  
+  //     if (heldOrders.length >= 4) {
+  //       alert("Maximum of 4 orders can be held at a time.");
+  //       return;
+  //     }
+  
+  //     heldOrders.push(holdOrder);
+  //     localStorage.setItem("heldOrders", JSON.stringify(heldOrders));
+  
+  //     dispatch(clearOrderItems());
+  //     localStorage.removeItem("customer");
+  
+  //     const nextOrderNo = orderNo + 1;
+  //     setOrderNo(nextOrderNo);
+  //     localStorage.setItem("orderNo", nextOrderNo.toString());
+  //   };
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
@@ -140,8 +167,10 @@ const Inventory = () => {
       return;
     }
 
-    const filtered = allProducts.filter((item) =>
-      item.title.toLowerCase().includes(query.toLowerCase())
+    const filtered = allProducts.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        item.category.toLowerCase().includes(query.toLowerCase())
     );
     setProducts(filtered);
   };
@@ -189,9 +218,9 @@ const Inventory = () => {
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-col justify-between lg:flex-row flex-1 overflow-hidden">
-        <div className="flex flex-col  w-full lg:w-[70%] overflow-auto p-4">
+        <div className="flex flex-col  w-full lg:w-[70%] overflow-auto p-4 gap-2">
           <SearchBar onSearch={handleSearch} />
-          <div className="flex items-center justify-between px-4 sm:px-6 mt-2">
+          <div className="flex items-center justify-between px-4 sm:px-6">
             <Link to="/" className="flex items-center">
               <IoIosArrowBack size={20} />
               <span className="text-xl font-bold ml-2">INVENTORY</span>

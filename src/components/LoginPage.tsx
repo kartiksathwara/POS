@@ -10,6 +10,7 @@ import { login } from "../auth/authSlice";
 
 
 type UserDet = {
+  name: string;
   email: string;
   password: string;
 };
@@ -25,6 +26,7 @@ const LoginPage = () => {
   const userToken = "POS-token";
 
   const defaultData: UserDet = {
+    name: "ABCD",
     email: "abcd@gmail.com",
     password: "1234",
   };
@@ -54,10 +56,6 @@ const LoginPage = () => {
     if (!storedUser) return;
     const user: UserDet = JSON.parse(storedUser);
     if (email === user.email && password === user.password) {
-      // const fakeToken = "fakejwttkn123";
-      // localStorage.setItem("token", fakeToken);
-      // login(userToken);
-      // console.log("Login success!");
       dispatch(login(userToken));
       navigate("/lock");
     } else {

@@ -1,18 +1,20 @@
-type InventoryItem = {
-  id: string;
-  title: string;
-  price: string;
-  thumbnail: string;
+import useFetchProducts from "../../hooks/useFetchProducts";
+
+type InventoryListProps = {
+  searchQuery: string;
 };
 
-type Props = {
-  data: InventoryItem[];
-};
+const InventoryList = ({ searchQuery }: InventoryListProps) => {
+  const {products} =useFetchProducts()
 
-const InventoryList = ({data}:Props) => {
+const filteredProducts = products.filter(
+    (product) =>
+      product.title.toLowerCase().includes(searchQuery) ||
+      product.price.toString().toLowerCase().includes(searchQuery)
+  );
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 overflow-y-auto space-y-3 max-h-[320px] px-5 scrollbar-hide">
-      {data.map((product) => (
+      {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="flex h-24 justify-between items-center p-4 rounded-md bg-(--bgorder) border shadow-sm hover:shadow-md cursor-pointer"

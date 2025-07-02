@@ -10,6 +10,7 @@ import RequestSvg from "./SvgCommon/RequestSvg";
 import DefaultSvg from "./SvgCommon/DefaultSvg";
 import InventorySvg from "./SvgCommon/InventorySvg";
 import AddAction from "./SvgCommon/AddAction";
+import WinterSvg from "./SvgCommon/WinterSvg";
 
 interface ActionCardType {
   label: string;
@@ -42,7 +43,7 @@ const HomePage = () => {
     { label: "Discount", link: "./discount", icon: <DiscountSvg /> },
     { label: "Request", link: "./request", icon: <RequestSvg /> },
   ]);
-
+  
   const iconMap: Record<string, ReactNode> = {
     inventory: <InventorySvg />,
     customer: <CustomerSvg />,
@@ -56,12 +57,24 @@ const HomePage = () => {
 
   const handleAddCard = (title: string) => {
     const lower = title.toLowerCase();
+
+    const exists = actionCards.some((card) => card.label.toLowerCase() === lower);
+    if (exists) {
+      setShowModal(false);
+      return;
+    }
+
+    let icon = iconMap[lower] || <DefaultSvg />;
+    if (lower === "winter collection") {
+      icon = <WinterSvg />;
+    }
+
     setActionCards((prev) => [
       ...prev,
       {
         label: title,
         link: `./${lower}`,
-        icon: iconMap[lower] || <DefaultSvg />,
+        icon,
       },
     ]);
     setShowModal(false);

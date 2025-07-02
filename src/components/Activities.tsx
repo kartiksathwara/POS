@@ -18,7 +18,7 @@ export interface Activities {
 
 const Activities = () => {
     const [loginTime, setLoginTime] = useState<string | null>(null);
-    const [email, setEmail] = useState<string | null>(null);
+    const [user, setUser] = useState<string | null>(null);
     const [collection, setCollection] = useState<any[]>([]);
     const [filteredCollection, setFilteredCollection] = useState<any[]>([]);
 
@@ -29,6 +29,28 @@ const Activities = () => {
         setFilteredCollection(filtered);
     };
 
+useEffect(() => {
+    const loginTimestamp = localStorage.getItem("tokenLoginTime");
+    const userData = localStorage.getItem("User");
+
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser.name || "Unknown");
+      } catch (error) {
+        console.error("Error parsing User data from localStorage:", error);
+      }
+    }
+
+    if (loginTimestamp) {
+      const parsedTimestamp = parseInt(loginTimestamp);
+      if (!isNaN(parsedTimestamp)) {
+        const loginDate = new Date(parsedTimestamp);
+        setLoginTime(loginDate.toLocaleString());
+      }
+    }
+  }, []);
+  
     useEffect(() => {
         const savedActivities = localStorage.getItem("activities");
         if (savedActivities) {
@@ -38,12 +60,6 @@ const Activities = () => {
         }
 
         const loginTimestamp = localStorage.getItem("tokenLoginTime");
-        const userData = localStorage.getItem("User");
-
-        if (userData) {
-            const parsedUser = JSON.parse(userData);
-            setEmail(parsedUser.email || "Unknown");
-        }
         if (loginTimestamp) {
             const parsedTimestamp = parseInt(loginTimestamp);
             if (!isNaN(parsedTimestamp)) {
@@ -66,7 +82,7 @@ const Activities = () => {
                 </div>
                 <div className="flex flex-col gap-3 overflow-y-scroll scrollbar-hide rounded-xl">
                     <div className="flex justify-between p-2 bg-(--bgorder) rounded-xl">
-                        <p>{email}</p>
+                        <p>{user}</p>
                         <p>Login:{loginTime}</p>
                     </div>
                     {filteredCollection.map((item, index) => (

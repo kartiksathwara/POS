@@ -3,7 +3,7 @@ import { FaUser } from "react-icons/fa6";
 import { RiCashLine } from "react-icons/ri";
 import { CiCreditCard1 } from "react-icons/ci";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa6";
 
 export interface Customer {
@@ -38,10 +38,18 @@ const CancelOrder: React.FC = () => {
     return localStorage.getItem("selectedOrder") || "001";
   });
   const [isvalidate, setIsValidate] = useState(false);
+  const [user, setUser] = useState<string | null>(null);
+  const [orderNo, setOrderNo] = useState<number>(1);
   const orderNumbers = ["001", "002", "003", "004"];
   const [totalAmount, setTotalAmount] = useState("0");
   const [customerData, setCustomerData] = useState<Customer[]>([]);
   const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | null>(
+    null
+  );
+  const navigate = useNavigate();
+  const storedUser = localStorage.getItem("customer");
+
   const [newCustomer, setNewCustomer] = useState<Customer>({
     name: "",
     phone: "",
@@ -54,6 +62,11 @@ const CancelOrder: React.FC = () => {
     zip: "",
   });
   useEffect(() => {
+    const storedOrderNo = localStorage.getItem("orderNo");
+  if (storedOrderNo) {
+    setOrderNo(parseInt(storedOrderNo));
+  }
+
     const storedTotal = localStorage.getItem("totalAmount");
     if (storedTotal) {
       setTotalAmount(storedTotal);
@@ -67,6 +80,12 @@ const CancelOrder: React.FC = () => {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
       setCartItems(JSON.parse(storedCart));
+    }
+
+    const userData = localStorage.getItem("User");
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser.name);
     }
   }, []);
 
@@ -105,6 +124,35 @@ const CancelOrder: React.FC = () => {
     holdOrders = holdOrders.filter(order => order.id !== selectedOrder);
     localStorage.setItem("holdOrders", JSON.stringify(holdOrders));
   };
+
+  const handleProduct = () => {
+  const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
+  const orderDetails = {
+    orderNo: orderNo,
+    customer: customerDet,
+    items: cartItems,
+    method: paymentMethod,
+    timestamp: new Date().toISOString(),
+  };
+
+  localStorage.setItem(
+    `order-${user}-${orderNo}`,
+    JSON.stringify(orderDetails)
+  );
+
+  const nextOrderNo = orderNo + 1;
+  setOrderNo(nextOrderNo);
+  localStorage.setItem("orderNo", nextOrderNo.toString());
+
+  setIsValidate((prev) => !prev);
+
+  if (paymentMethod === "cash") {
+    navigate("/invoice");
+  } else {
+    navigate("/payment");
+  }
+};
+
   const handleAddCustomer = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const updatedCustomers = [...customerData, newCustomer];
@@ -158,8 +206,9 @@ const CancelOrder: React.FC = () => {
           className="w-full px-1 text-left text-lg"
         >
           <FaChevronDown
-            className={`absolute ${!dropdownOpen ? null : "rotate-180"
-              } right-0 transition-all`}
+            className={`absolute ${
+              !dropdownOpen ? null : "rotate-180"
+            } right-0 transition-all`}
           />
           {selectedCustomer ? selectedCustomer.name : "Select customer"}
         </button>
@@ -228,6 +277,14 @@ const CancelOrder: React.FC = () => {
                     selectedCustomer={newCustomer.name ? newCustomer : null}
                     onSelect={(customer) => {
                       setNewCustomer(customer);
+                      const updatedCustomer = {
+                        ...customer,
+                        paymentMethod: paymentMethod || null,
+                      };
+                      localStorage.setItem(
+                        "customer",
+                        JSON.stringify(updatedCustomer)
+                      );
 
                       // Save selected customer to holdOrders
                       const holdOrdersRaw = localStorage.getItem("holdOrders");
@@ -320,14 +377,54 @@ const CancelOrder: React.FC = () => {
               <p className="text-sm text-gray-500 ">
                 All transactions are secure and encrypted.
               </p>
-              <div className="bg-(--pin-button) rounded p-2 flex gap-2">
-                <input type="radio" name="payment" />
+              <div className="bg-(--v) rounded p-2 flex gap-2">
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={paymentMethod === "cash"}
+                  onChange={() => {
+                    setPaymentMethod("cash");
+
+                    const existingCustomer = JSON.parse(
+                      localStorage.getItem("customer") || "{}"
+                    );
+                    const updatedCustomer = {
+                      ...existingCustomer,
+                      paymentMethod: "cash",
+                    };
+                    localStorage.setItem(
+                      "customer",
+                      JSON.stringify(updatedCustomer)
+                    );
+                  }}
+                />
+
                 <span className="flex items-center justify-between w-full">
                   Cash <RiCashLine className="text-2xl" />
                 </span>
               </div>
-              <div className="bg-(--pin-button) rounded p-2 flex gap-2">
-                <input type="radio" name="payment" />
+              <div className="bg-(--bgorder) rounded p-2 flex gap-2">
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={paymentMethod === "card"}
+                  onChange={() => {
+                    setPaymentMethod("card");
+
+                    const existingCustomer = JSON.parse(
+                      localStorage.getItem("customer") || "{}"
+                    );
+                    const updatedCustomer = {
+                      ...existingCustomer,
+                      paymentMethod: "card",
+                    };
+                    localStorage.setItem(
+                      "customer",
+                      JSON.stringify(updatedCustomer)
+                    );
+                  }}
+                />
+
                 <span className="flex items-center justify-between w-full">
                   Card <CiCreditCard1 className="text-2xl" />
                 </span>
@@ -335,6 +432,7 @@ const CancelOrder: React.FC = () => {
             </div>
           </div>
           <div className="flex gap-3 items-center p-3 bg-(--secondary)">
+            {/* <OrderNoDisplay/> */}
             <span className="text-sm font-semibold text-(--eye-icon)">
               Order:
             </span>
@@ -342,10 +440,11 @@ const CancelOrder: React.FC = () => {
               <button
                 key={order}
                 onClick={() => setSelectedOrder(order)}
-                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${selectedOrder === order
-                  ? "bg-(--main) text-white"
-                  : "bg-(--main)/50 text-white"
-                  }`}
+                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${
+                  selectedOrder === order
+                    ? "bg-(--main) text-white"
+                    : "bg-(--main)/50 text-white"
+                }`}
               >
                 {order}
               </button>
@@ -362,7 +461,6 @@ const CancelOrder: React.FC = () => {
             </button>
             <hr className="mt-3" />
           </div>
-          {/* <hr /> */}
           <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] scrollbar-hide">
             {cartItems.map((item) => (
               <div
@@ -396,34 +494,41 @@ const CancelOrder: React.FC = () => {
               </button>
             </Link>
             <button
-              disabled={cartItems.length === 0}
-              onClick={() => {
-                const existingOrdersRaw = localStorage.getItem("orders");
-                const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
+              disabled={
+                cartItems.length === 0 || !storedUser || paymentMethod === null
+              }
+              onClick={handleProduct}
+              className={`w-full sm:w-1/2 py-2 bg-(--main)/40 text-white rounded px-4 text-sm sm:text-base disabled:bg-(--main)/40 hover:cursor-pointer ${
+                !isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
+              } `}
+              // disabled={cartItems.length === 0}
+              // onClick={() => {
+              //   const existingOrdersRaw = localStorage.getItem("orders");
+              //   const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
 
-                // const nextOrderId = String(existingOrders.length + 1).padStart(1, "0");
+              //   // const nextOrderId = String(existingOrders.length + 1).padStart(1, "0");
 
-                const now = new Date();
-                const date = now.toLocaleDateString("en-Us", { month: "short", day: "2-digit", year: "numeric" });
-                const time = now.toLocaleTimeString("en-Us", { hour: "2-digit", minute: "2-digit" });
-                const newOrder = {
-                  id: String(existingOrders.length + 1).padStart(2, "0"),  // Always 2-digit
-                  name: newCustomer.name || "N/A",
-                  date,
-                  time,
-                  status: "Ongoing",
-                };
+              //   const now = new Date();
+              //   const date = now.toLocaleDateString("en-Us", { month: "short", day: "2-digit", year: "numeric" });
+              //   const time = now.toLocaleTimeString("en-Us", { hour: "2-digit", minute: "2-digit" });
+              //   const newOrder = {
+              //     id: String(existingOrders.length + 1).padStart(2, "0"),  // Always 2-digit
+              //     name: newCustomer.name || "N/A",
+              //     date,
+              //     time,
+              //     status: "Ongoing",
+              //   };
 
-                const updatedOrders = [...existingOrders, newOrder];
-                localStorage.setItem("orders", JSON.stringify(updatedOrders));
+              //   const updatedOrders = [...existingOrders, newOrder];
+              //   localStorage.setItem("orders", JSON.stringify(updatedOrders));
 
-                handleCancelCart();
-                setIsValidate(true);
-              }}
+              //   handleCancelCart();
+              //   setIsValidate(true);
+              // }}
 
 
-              className={`w-full py-3 px-4 rounded bg-(--main)/40 text-white text-base font-medium  disabled:bg-(--main)/40 ${!isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
-                } `}
+              // className={`w-full py-3 px-4 rounded bg-(--main)/40 text-white text-base font-medium  disabled:bg-(--main)/40 ${!isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
+              //   } `}
             >
               Validate &gt;
             </button>
