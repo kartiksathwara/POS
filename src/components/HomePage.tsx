@@ -25,17 +25,18 @@ const HomePage = () => {
 
   useEffect(() => {
     const holdOrdersRaw = localStorage.getItem("holdOrders");
-    const holdOrders: { id: string }[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
-    const orderIds = holdOrders.map(order => order.id);
+    const holdOrders: { id: string }[] = holdOrdersRaw
+      ? JSON.parse(holdOrdersRaw)
+      : [];
+    const orderIds = holdOrders.map((order) => order.id);
     setOrderNumbers(orderIds);
   }, []);
 
   const [selectedOrder, setSelectedOrder] = useState("");
   const handleOrderClick = (order: string) => {
-  setSelectedOrder(order);
-  localStorage.setItem("selectedOrder", order);
- 
-};
+    setSelectedOrder(order);
+    localStorage.setItem("selectedOrder", order);
+  };
 
   const [actionCards, setActionCards] = useState<ActionCardType[]>([
     { label: "Inventory", link: "./inventory", icon: <InventorySvg /> },
@@ -43,7 +44,7 @@ const HomePage = () => {
     { label: "Discount", link: "./discount", icon: <DiscountSvg /> },
     { label: "Request", link: "./request", icon: <RequestSvg /> },
   ]);
-  
+
   const iconMap: Record<string, ReactNode> = {
     inventory: <InventorySvg />,
     customer: <CustomerSvg />,
@@ -58,7 +59,9 @@ const HomePage = () => {
   const handleAddCard = (title: string) => {
     const lower = title.toLowerCase();
 
-    const exists = actionCards.some((card) => card.label.toLowerCase() === lower);
+    const exists = actionCards.some(
+      (card) => card.label.toLowerCase() === lower
+    );
     if (exists) {
       setShowModal(false);
       return;
@@ -124,17 +127,17 @@ const HomePage = () => {
                 <button
                   key={order}
                   onClick={() => handleOrderClick(order)}
-                  className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${selectedOrder === order
+                  className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${
+                    selectedOrder === order
                       ? "bg-(--main) text-white"
                       : "bg-(--main)/50 text-white"
-                    }`}
+                  }`}
                 >
                   {order}
                 </button>
               ))}
             </div>
           )}
-
         </div>
 
         <div className="w-full lg:w-[30%] bg-(--secondary) hidden lg:flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">

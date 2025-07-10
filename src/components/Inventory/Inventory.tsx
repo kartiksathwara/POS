@@ -22,14 +22,12 @@ interface cartItems extends Product {
 interface Customer {
   name?: string;
   phone?: string;
-
 }
 
 const Inventory = () => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
   const categories = ["All", "beauty", "fragrances", "furniture", "groceries"];
-  const { products,setProducts, allProducts} = useFetchProducts()
+  const { products, setProducts, allProducts } = useFetchProducts();
   const [orderNo, setOrderNo] = useState<number>(1);
   const [showMobileCategories, setShowMobileCategories] = useState(false);
   const [cartItems, setCartItems] = useState<cartItems[]>([]);
@@ -44,7 +42,7 @@ const Inventory = () => {
     if (savedCart) {
       setCartItems(JSON.parse(savedCart));
     }
-    
+
     const storedOrderNo = localStorage.getItem("orderNo");
     if (storedOrderNo) {
       setOrderNo(parseInt(storedOrderNo));
@@ -67,18 +65,25 @@ const Inventory = () => {
   };
 
   const increseQty = (id: number) => {
-    const updated = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
+    const updated = cartItems.map((item) =>
+      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+    );
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
-  }
+  };
 
   const decreseQty = (id: number) => {
-    const updated = cartItems.map(item => item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item)
-      .filter(item => item.quantity > 0)
+    const updated = cartItems
+      .map((item) =>
+        item.id === id
+          ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
+          : item
+      )
+      .filter((item) => item.quantity > 0);
 
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
-  }
+  };
 
   const handleClearCart = () => {
     setCartItems([]);
@@ -91,49 +96,26 @@ const Inventory = () => {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
   const selectedDiscount = localStorage.getItem("selectedDiscount") || "18%";
-  const discountReason = localStorage.getItem("discountReason") || "Default Discount";
+  const discountReason =
+    localStorage.getItem("discountReason") || "Default Discount";
   const discountPercent = parseFloat(selectedDiscount.replace("%", ""));
   const discount = subtotal * (discountPercent / 100);
   const tax = (subtotal - discount) * 0.08;
   const total = subtotal - discount + tax;
 
-  // const handleHoldOrder = () => {
-  //     const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
-  //     const holdOrder = {
-  //       orderNo,
-  //       customer: customerDet,
-  //       items: cartItems,
-  //       timestamp: new Date().toISOString(),
-  //       status: "ongoing",
-  //     };
-  
-  //     const heldOrders = JSON.parse(localStorage.getItem("heldOrders") || "[]");
-  
-  //     if (heldOrders.length >= 4) {
-  //       alert("Maximum of 4 orders can be held at a time.");
-  //       return;
-  //     }
-  
-  //     heldOrders.push(holdOrder);
-  //     localStorage.setItem("heldOrders", JSON.stringify(heldOrders));
-  
-  //     dispatch(clearOrderItems());
-  //     localStorage.removeItem("customer");
-  
-  //     const nextOrderNo = orderNo + 1;
-  //     setOrderNo(nextOrderNo);
-  //     localStorage.setItem("orderNo", nextOrderNo.toString());
-  //   };
-
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
 
     const holdOrdersRaw = localStorage.getItem("holdOrders");
-    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+    const holdOrders: HoldOrder[] = holdOrdersRaw
+      ? JSON.parse(holdOrdersRaw)
+      : [];
 
     const possibleIDs = ["001", "002", "003", "004"];
     const usedIDs = holdOrders.map((o) => o.id);
@@ -149,17 +131,11 @@ const Inventory = () => {
       const updatedOrders = [...holdOrders, newOrder];
       localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
       localStorage.setItem("currentOrderID", availableID);
-
-      setCartItems([]);
-      localStorage.removeItem("cart");
     }
-
 
     localStorage.setItem("totalAmount", total.toFixed(2));
     navigate("/bill");
   };
-
-
 
   const handleSearch = (query: string) => {
     if (!query.trim()) {
@@ -174,8 +150,9 @@ const Inventory = () => {
     );
     setProducts(filtered);
   };
+
   type HoldOrder = {
-    id: string; // e.g., '001'
+    id: string;
     cartItems: cartItems[];
     totalAmount: string;
     customer?: Customer;
@@ -183,14 +160,15 @@ const Inventory = () => {
 
   const saveToNextHoldOrderSlot = () => {
     const holdOrdersRaw = localStorage.getItem("holdOrders");
-    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+    const holdOrders: HoldOrder[] = holdOrdersRaw
+      ? JSON.parse(holdOrdersRaw)
+      : [];
 
     const possibleIDs = ["001", "002", "003", "004"];
     const usedIDs = holdOrders.map((o) => o.id);
     const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
 
     if (!availableID) {
-
       return null;
     }
 
@@ -300,7 +278,10 @@ const Inventory = () => {
               >
                 Clear cart
               </button>
-              <button className="bg-(--main) w-full text-white px-4 rounded-md" onClick={handleHoldOrder}>
+              <button
+                className="bg-(--main) w-full text-white px-4 rounded-md"
+                onClick={handleHoldOrder}
+              >
                 Hold this order
               </button>
             </div>
@@ -320,12 +301,23 @@ const Inventory = () => {
                     <div>
                       <h4 className="font-medium text-sm">{item.title}</h4>
                       <div className="flex space-x-1">
-                        <p className=" text-gray-500">${item.price.toFixed(2)}</p>
-                        <button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => decreseQty(item.id)}>
+                        <p className=" text-gray-500">
+                          ${item.price.toFixed(2)}
+                        </p>
+                        <button
+                          className="px-2 bg-gray-200 rounded hover:bg-gray-300"
+                          onClick={() => decreseQty(item.id)}
+                        >
                           -
                         </button>
                         <span className="px-2 text-1">{item.quantity}</span>
-                        <button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => increseQty(item.id)}> + </button>
+                        <button
+                          className="px-2 bg-gray-200 rounded hover:bg-gray-300"
+                          onClick={() => increseQty(item.id)}
+                        >
+                          {" "}
+                          +{" "}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -339,43 +331,43 @@ const Inventory = () => {
               ))}
             </div>
           </div>
-          <div className="text-sm space-y-2">
-            <div className="flex justify-between items-center bg-white rounded-xl px-4 py-2 mb-4">
-              <input
-                type="text"
-                placeholder="Discount"
-                className="bg-white text-sm text-black placeholder-black focus:outline-none w-full"
-              />
-              <button className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2">
-                <Link to="/discount">
-                  ADD
-                </Link>
+          {cartItems.length !== 0 && (
+            <div className="text-sm space-y-2">
+              <div className="flex justify-between items-center bg-white rounded-xl px-4 py-2 mb-4">
+                <input
+                  type="text"
+                  placeholder="Discount"
+                  className="bg-white text-sm text-black placeholder-black focus:outline-none w-full"
+                />
+                <button className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2">
+                  <Link to="/discount">ADD</Link>
+                </button>
+              </div>
+              <div className="flex justify-between">
+                <span>Subtotal • {cartItems.length} items</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-gray-500">
+                <span>Discount (-{discountPercent}%)</span>
+                <span>-${discount.toFixed(2)}</span>
+              </div>
+              <div className="text-xs text-gray-400">{discountReason}</div>
+              <div className="flex justify-between text-gray-500">
+                <span>Tax (+8%)</span>
+                <span>${tax.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between font-bold text-base border-t pt-2 mt-2">
+                <span>Total</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+              <button
+                onClick={handleCheckout}
+                className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center"
+              >
+                CHECKOUT &gt;
               </button>
             </div>
-            <div className="flex justify-between">
-              <span>Subtotal • {cartItems.length} items</span>
-              <span>${subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-500">
-              <span>Discount (-{discountPercent}%)</span>
-              <span>-${discount.toFixed(2)}</span>
-            </div>
-            <div className="text-xs text-gray-400">{discountReason}</div>
-            <div className="flex justify-between text-gray-500">
-              <span>Tax (+8%)</span>
-              <span>${tax.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between font-bold text-base border-t pt-2 mt-2">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-            <button
-              onClick={handleCheckout}
-              className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center"
-            >
-              CHECKOUT &gt;
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </div>

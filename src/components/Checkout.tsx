@@ -89,10 +89,11 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import type { RootState } from "../app/store";
 import { clearOrderItems, removeItemFromOrder, setOrderData } from "../auth/orderSlice";
+import Cart from "./Cart";
+import useFetchProducts from "../hooks/useFetchProducts";
 
 const Checkout = () => {
   const dispatch = useDispatch();
@@ -100,32 +101,33 @@ const Checkout = () => {
     (state: RootState) => state.order
   );
   const [orderNo, setOrderNo] = useState<number>(1);
-  const cartItems = orderData?.items || [];
-  const userData = JSON.parse(localStorage.getItem("User") || "{}");
-  const user = userData.name || "Unknown";
+  const { products } = useFetchProducts();
+  // const cartItems = orderData?.items || [];
+  // const userData = JSON.parse(localStorage.getItem("User") || "{}");
+  // const user = userData.name || "Unknown";
 
-  const handleRemoveItem = (id: number) => {
-    if (!selectedOrder || !orderData) return;
-    dispatch(removeItemFromOrder(id));
+  // const handleRemoveItem = (id: number) => {
+  //   if (!selectedOrder || !orderData) return;
+  //   dispatch(removeItemFromOrder(id));
 
-    const updatedOrder = {
-      ...orderData,
-      items: orderData.items.filter((item) => item.id !== id),
-    };
-    localStorage.setItem(
-      `order-${user}-${selectedOrder}`,
-      JSON.stringify(updatedOrder)
-    );
+  //   const updatedOrder = {
+  //     ...orderData,
+  //     items: orderData.items.filter((item) => item.id !== id),
+  //   };
+  //   localStorage.setItem(
+  //     `order-${user}-${selectedOrder}`,
+  //     JSON.stringify(updatedOrder)
+  //   );
 
-    dispatch(setOrderData(updatedOrder));
-  };
+  //   dispatch(setOrderData(updatedOrder));
+  // };
 
   const handleHoldOrder = () => {
     const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
     const holdOrder = {
       orderNo,
       customer: customerDet,
-      items: cartItems,
+      items: products,
       timestamp: new Date().toISOString(),
       status: "held",
     };
@@ -154,16 +156,6 @@ const Checkout = () => {
       setOrderNo(parseInt(storedOrderNo));
     }
   }, []);
-
-  // return (
-  //   <div className="w-full h-full bg-[var(--secondary)] flex flex-col">
-  //     <div className="flex justify-center gap-3 mb-2">
-  //       <button className="bg-white text-black w-full py-2 px-4 rounded-md">
-  // const handleRemoveItem = (id: number) => {
-  //   const updatedCart = cartItems.filter((item) => item.id !== id);
-  //   setCartItems(updatedCart);
-  //   localStorage.setItem("cart", JSON.stringify(updatedCart));
-  // };
  
   const handleClearCart = () => {
     // setCartItems([]);
@@ -185,7 +177,7 @@ const Checkout = () => {
       </div>
       <hr className="mb-2 opacity-20" />
       <div className="flex-1 overflow-y-auto h-fit flex flex-col gap-3 scrollbar-hide">
-        {cartItems.length === 0 ? (
+        {products.length === 0 ? (
           <div className="flex-grow h-full flex items-center justify-center border-[var(--main)]">
             <div className="text-gray-500 text-center text-sm px-2">
               {selectedOrder
@@ -194,32 +186,33 @@ const Checkout = () => {
             </div>
           </div>
         ) : (
-          cartItems.map((item) => (
-            <div
-              key={item.id}
-              className="flex justify-between items-center bg-white p-3 rounded-lg"
-            >
-              <div className="flex gap-3 items-center">
-                <img
-                  src={item.thumbnail}
-                  alt={item.title}
-                  className="w-12 h-12 rounded-sm object-cover"
-                />
-                <div>
-                  <h4 className="font-medium text-sm">{item.title}</h4>
-                  <p className="text-xs text-gray-500">
-                    ₹{item.price.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => handleRemoveItem(item.id)}
-                className="text-gray-500"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          ))
+          <Cart/>
+          // cartItems.map((item) => (
+          //   <div
+          //     key={item.id}
+          //     className="flex justify-between items-center bg-white p-3 rounded-lg"
+          //   >
+          //     <div className="flex gap-3 items-center">
+          //       <img
+          //         src={item.thumbnail}
+          //         alt={item.title}
+          //         className="w-12 h-12 rounded-sm object-cover"
+          //       />
+          //       <div>
+          //         <h4 className="font-medium text-sm">{item.title}</h4>
+          //         <p className="text-xs text-gray-500">
+          //           ₹{item.price.toFixed(2)}
+          //         </p>
+          //       </div>
+          //     </div>
+          //     <button
+          //       onClick={() => handleRemoveItem(item.id)}
+          //       className="text-gray-500"
+          //     >
+          //       <FaTrash />
+          //     </button>
+          //   </div>
+          // ))
         )}
       </div>
       <hr className="my-2 opacity-20" />

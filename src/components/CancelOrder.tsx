@@ -44,12 +44,8 @@ const CancelOrder: React.FC = () => {
   const [totalAmount, setTotalAmount] = useState("0");
   const [customerData, setCustomerData] = useState<Customer[]>([]);
   const [cartItems, setCartItems] = useState<Product[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | null>(
-    null
-  );
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | null>(null);
   const navigate = useNavigate();
-  const storedUser = localStorage.getItem("customer");
-
   const [newCustomer, setNewCustomer] = useState<Customer>({
     name: "",
     phone: "",
@@ -126,7 +122,7 @@ const CancelOrder: React.FC = () => {
   };
 
   const handleProduct = () => {
-  const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
+    const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
   const orderDetails = {
     orderNo: orderNo,
     customer: customerDet,
@@ -495,7 +491,7 @@ const CancelOrder: React.FC = () => {
             </Link>
             <button
               disabled={
-                cartItems.length === 0 || !storedUser || paymentMethod === null
+                cartItems.length === 0 || !newCustomer.name || paymentMethod === null
               }
               onClick={handleProduct}
               className={`w-full sm:w-1/2 py-2 bg-(--main)/40 text-white rounded px-4 text-sm sm:text-base disabled:bg-(--main)/40 hover:cursor-pointer ${
