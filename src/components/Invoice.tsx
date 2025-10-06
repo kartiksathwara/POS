@@ -193,7 +193,7 @@ const Invoice = () => {
               >
                 <div className="flex gap-3 items-center">
                   <img
-                    src={item.thumbnail}
+                    src={`http://localhost:5000/uploads/${item.thumbnail}`}
                     alt={item.title}
                     className="w-12 h-12 rounded-sm object-cover"
                   />

@@ -15,7 +15,6 @@ import Invoice from "./components/Invoice";
 import Payment from "./components/Payment";
 import { OrderProvider } from "./auth/OrderContext";
 import InventoryPage from "./components/Inventory/InventoryPage";
-import OrderHistoryViewer from "./components/Order/OrderViewer";
 import AddProductForm from "./components/Products/AddProductFrom";
 import HoldOrders from "./components/HoldOrders";
 
@@ -75,7 +74,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/order-history" element={<OrderHistoryViewer />} />
             <Route path="/addproduct" element={<AddProductForm />} />
           </Routes>
         </BrowserRouter>
