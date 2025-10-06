@@ -57,8 +57,11 @@ const Header = () => {
 											>
 												Settings
 											</Link>
-											<Link to="/lock" className="block px-4 py-1.5 text-lg text-(--main) border-b-gray-400">
+											<Link to="/lock" className="block px-4 py-1.5 text-lg border-b-1 text-(--main) border-b-gray-400">
 												Close shop
+											</Link>
+											<Link to="/hold-order" className="block px-4 py-1.5 text-lg text-(--main) border-b-gray-400">
+												Hold Order
 											</Link>
 										</div>
 										<div />

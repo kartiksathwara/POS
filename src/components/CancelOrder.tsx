@@ -4,7 +4,7 @@ import { RiCashLine } from "react-icons/ri";
 import { CiCreditCard1 } from "react-icons/ci";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaChevronDown } from "react-icons/fa6";
+import CustomerDropdown from "../components/CustomerDropdown";
 
 export interface Customer {
   name: string;
@@ -34,13 +34,20 @@ interface HoldOrder {
 }
 
 const CancelOrder: React.FC = () => {
-  const [selectedOrder, setSelectedOrder] = useState(() => {
-    return localStorage.getItem("selectedOrder") || "001";
-  });
+
   const [isvalidate, setIsValidate] = useState(false);
   const [user, setUser] = useState<string | null>(null);
   const [orderNo, setOrderNo] = useState<number>(1);
   const orderNumbers = ["001", "002", "003", "004"];
+  const [selectedOrder, setSelectedOrder] = useState("001");
+
+
+  useEffect(() => {
+    const stored = localStorage.getItem("selectedOrder");
+    if (stored) {
+      setSelectedOrder(stored);
+    }
+  }, []);
   const [totalAmount, setTotalAmount] = useState("0");
   const [customerData, setCustomerData] = useState<Customer[]>([]);
   const [cartItems, setCartItems] = useState<Product[]>([]);
@@ -61,11 +68,12 @@ const CancelOrder: React.FC = () => {
     city: "",
     zip: "",
   });
+
   useEffect(() => {
     const storedOrderNo = localStorage.getItem("orderNo");
-  if (storedOrderNo) {
-    setOrderNo(parseInt(storedOrderNo));
-  }
+    if (storedOrderNo) {
+      setOrderNo(parseInt(storedOrderNo));
+    }
 
     const storedTotal = localStorage.getItem("totalAmount");
     if (storedTotal) {
@@ -113,45 +121,104 @@ const CancelOrder: React.FC = () => {
     }
   }, [selectedOrder]);
 
-
   const handleCancelCart = () => {
+    const existingOrdersRaw = localStorage.getItem("orders");
+    let existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
+
+    const ongoingIndex = existingOrders.findIndex(
+      (order: any) =>
+        order.name === newCustomer.name && order.status === "Ongoing"
+    );
+
+    if (ongoingIndex !== -1) {
+      existingOrders[ongoingIndex].status = "Failed";
+      localStorage.setItem("orders", JSON.stringify(existingOrders));
+    }
     setCartItems([]);
     setTotalAmount("0.00");
-
+    setNewCustomer({
+      name: "",
+      phone: "",
+      email: "",
+      address1: "",
+      address2: "",
+      country: "",
+      state: "",
+      city: "",
+      zip: "",
+    });
     const holdOrdersRaw = localStorage.getItem("holdOrders");
     let holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
 
     holdOrders = holdOrders.filter(order => order.id !== selectedOrder);
     localStorage.setItem("holdOrders", JSON.stringify(holdOrders));
+    localStorage.removeItem("customer");
   };
+
 
   const handleProduct = () => {
-  const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
-  const orderDetails = {
-    orderNo: orderNo,
-    customer: customerDet,
-    items: cartItems,
-    method: paymentMethod,
-    timestamp: new Date().toISOString(),
+    if (!user || cartItems.length === 0 || !paymentMethod) return;
+
+    const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
+
+    const orderDetails = {
+      orderNo: orderNo,
+      customer: customerDet,
+      items: cartItems,
+      method: paymentMethod,
+      totalAmount,
+      timestamp: new Date().toISOString(),
+    };
+
+    localStorage.setItem(`order-${user}-${orderNo}`, JSON.stringify(orderDetails));
+
+    const now = new Date();
+    const date = now.toLocaleDateString("en-US", {
+      year: "numeric", month: "short", day: "2-digit",
+    });
+    const time = now.toLocaleTimeString("en-US", {
+      hour: "2-digit", minute: "2-digit",
+    });
+
+    const existingOrdersRaw = localStorage.getItem("orders");
+    let existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
+
+    const existingIndex = existingOrders.findIndex(
+      (order: any) =>
+        order.name === newCustomer.name && order.status === "Ongoing"
+    );
+    if (existingIndex !== -1) {
+      existingOrders[existingIndex].status = "Paid";
+    } else {
+      const newOrder = {
+        id: String(existingOrders.length + 1).padStart(2, "0"),
+        name: newCustomer.name || "Guest",
+        date,
+        time,
+        status: "Paid",
+      };
+      existingOrders.push(newOrder);
+    }
+
+    localStorage.setItem("orders", JSON.stringify(existingOrders));
+
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    let holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+    holdOrders = holdOrders.filter(order => order.id !== selectedOrder);
+    localStorage.setItem("holdOrders", JSON.stringify(holdOrders));
+
+    const nextOrderNo = orderNo + 1;
+    setOrderNo(nextOrderNo);
+    localStorage.setItem("orderNo", nextOrderNo.toString());
+
+    setIsValidate((prev) => !prev);
+
+    if (paymentMethod === "cash") {
+      navigate("/invoice");
+    } else {
+      navigate("/payment");
+    }
   };
-
-  localStorage.setItem(
-    `order-${user}-${orderNo}`,
-    JSON.stringify(orderDetails)
-  );
-
-  const nextOrderNo = orderNo + 1;
-  setOrderNo(nextOrderNo);
-  localStorage.setItem("orderNo", nextOrderNo.toString());
-
-  setIsValidate((prev) => !prev);
-
-  if (paymentMethod === "cash") {
-    navigate("/invoice");
-  } else {
-    navigate("/payment");
-  }
-};
 
   const handleAddCustomer = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -183,78 +250,6 @@ const CancelOrder: React.FC = () => {
     }
   };
 
-  const CustomerSelectDropdown = ({
-    customers,
-    selectedCustomer,
-    onSelect,
-  }: {
-    customers: Customer[];
-    selectedCustomer: Customer | null;
-    onSelect: (customer: Customer) => void;
-  }) => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-
-    const handleSelect = (customer: Customer) => {
-      setDropdownOpen(false);
-      onSelect(customer);
-    };
-
-    return (
-      <div className="relative w-full">
-        <button
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="w-full px-1 text-left text-lg"
-        >
-          <FaChevronDown
-            className={`absolute ${
-              !dropdownOpen ? null : "rotate-180"
-            } right-0 transition-all`}
-          />
-          {selectedCustomer ? selectedCustomer.name : "Select customer"}
-        </button>
-
-        {dropdownOpen && (
-          <div className="absolute cursor-pointer w-full scrollbar-hide rounded  max-h-64 overflow-auto">
-            <table className="min-w-full text-left text-sm text-gray-700">
-              <thead className="bg-(--main) sticky top-0 w-3xl text-white">
-                <tr>
-                  <th className="px-6 py-4 font-medium">Customer name</th>
-                  <th className="px-6 py-4 font-medium">Phone no.</th>
-                  <th className="px-6 py-4 font-medium">Email</th>
-                  <th className="px-6 py-4 font-medium">Address</th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-(--primary) bg-white">
-                {customers.map((customer, index) => (
-                  <tr
-                    key={index}
-                    className=""
-                    onClick={() => handleSelect(customer)}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {customer.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {customer.phone}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {customer.email}
-                    </td>
-                    <td className="px-6 py-4">
-                      {customer.address1}, {customer.address2}, {customer.city},{" "}
-                      {customer.state}, {customer.country} {customer.zip}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="h-screen">
       <Header />
@@ -272,31 +267,43 @@ const CancelOrder: React.FC = () => {
                   <label className="text-xs text-gray-600">
                     Select Customer
                   </label>
-                  <CustomerSelectDropdown
+                  <CustomerDropdown
                     customers={customerData}
                     selectedCustomer={newCustomer.name ? newCustomer : null}
+
                     onSelect={(customer) => {
                       setNewCustomer(customer);
-                      const updatedCustomer = {
-                        ...customer,
-                        paymentMethod: paymentMethod || null,
-                      };
-                      localStorage.setItem(
-                        "customer",
-                        JSON.stringify(updatedCustomer)
-                      );
+                      localStorage.setItem("customer", JSON.stringify(customer));
 
-                      // Save selected customer to holdOrders
                       const holdOrdersRaw = localStorage.getItem("holdOrders");
                       const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
 
                       const updatedOrders = holdOrders.map(order =>
-                        order.id === selectedOrder
-                          ? { ...order, customer }
-                          : order
+                        order.id === selectedOrder ? { ...order, customer } : order
                       );
-
                       localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+                      const now = new Date();
+                      const date = now.toLocaleDateString("en-US", {
+                        year: "numeric", month: "short", day: "2-digit",
+                      });
+                      const time = now.toLocaleTimeString("en-US", {
+                        hour: "2-digit", minute: "2-digit",
+                      });
+
+                      const existingOrdersRaw = localStorage.getItem("orders");
+                      const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
+                      const existing = existingOrders.find((o: any) => o.id === selectedOrder);
+                      if (!existing) {
+                        const newOrder = {
+                          id: String(existingOrders.length + 1).padStart(2, "0"),
+                          name: customer.name || "Guest",
+                          date,
+                          time,
+                          status: "Ongoing",
+                        };
+                        const updatedOrderList = [...existingOrders, newOrder];
+                        localStorage.setItem("orders", JSON.stringify(updatedOrderList));
+                      }
                     }}
                   />
                 </div>
@@ -440,11 +447,10 @@ const CancelOrder: React.FC = () => {
               <button
                 key={order}
                 onClick={() => setSelectedOrder(order)}
-                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${
-                  selectedOrder === order
-                    ? "bg-(--main) text-white"
-                    : "bg-(--main)/50 text-white"
-                }`}
+                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${selectedOrder === order
+                  ? "bg-(--main) text-white"
+                  : "bg-(--main)/50 text-white"
+                  }`}
               >
                 {order}
               </button>
@@ -498,41 +504,11 @@ const CancelOrder: React.FC = () => {
                 cartItems.length === 0 || !storedUser || paymentMethod === null
               }
               onClick={handleProduct}
-              className={`w-full sm:w-1/2 py-2 bg-(--main)/40 text-white rounded px-4 text-sm sm:text-base disabled:bg-(--main)/40 hover:cursor-pointer ${
-                !isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
-              } `}
-              // disabled={cartItems.length === 0}
-              // onClick={() => {
-              //   const existingOrdersRaw = localStorage.getItem("orders");
-              //   const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
-
-              //   // const nextOrderId = String(existingOrders.length + 1).padStart(1, "0");
-
-              //   const now = new Date();
-              //   const date = now.toLocaleDateString("en-Us", { month: "short", day: "2-digit", year: "numeric" });
-              //   const time = now.toLocaleTimeString("en-Us", { hour: "2-digit", minute: "2-digit" });
-              //   const newOrder = {
-              //     id: String(existingOrders.length + 1).padStart(2, "0"),  // Always 2-digit
-              //     name: newCustomer.name || "N/A",
-              //     date,
-              //     time,
-              //     status: "Ongoing",
-              //   };
-
-              //   const updatedOrders = [...existingOrders, newOrder];
-              //   localStorage.setItem("orders", JSON.stringify(updatedOrders));
-
-              //   handleCancelCart();
-              //   setIsValidate(true);
-              // }}
-
-
-              // className={`w-full py-3 px-4 rounded bg-(--main)/40 text-white text-base font-medium  disabled:bg-(--main)/40 ${!isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
-              //   } `}
+              className={`w-full py-2 bg-(--main)/40 text-white rounded px-4 text-sm sm:text-base disabled:bg-(--main)/40 hover:cursor-pointer ${!isvalidate ? "bg-(--main)/100" : "bg-(--main)/40"
+                } `}
             >
               Validate &gt;
             </button>
-
           </div>
         </div>
       </div>

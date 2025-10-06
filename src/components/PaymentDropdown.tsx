@@ -20,39 +20,55 @@ interface cartItems extends Product {
 
 const PaymentDropdown: React.FC<PaymentDropdownProps> = ({ dropdownOpen, setDropdownOpen }) => {
   const [cartItems, setCartItems] = useState<cartItems[]>([]);  
+  const [subtotal, setSubtotal] = useState(0);
+  const [ discount,setDiscount] = useState(0);
+  const [tax, setTax]= useState(0);
+  const [total, setTotal] = useState(0);
+  const [discountValue, setDiscountValue] = useState("0%");
+  const [discountReason, setDiscountReason] = useState("");
+  const [customer, setCustomer] = useState<any>({});
 
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
-  const selectedDiscount = localStorage.getItem("selectedDiscount") || "18%";
-  const discountReason =
-    localStorage.getItem("discountReason") || "Default Discount";
-  const discountPercent = parseFloat(selectedDiscount.replace("%", ""));
-  const discount = subtotal * (discountPercent / 100);
-  const tax = (subtotal - discount) * 0.08;
-  const total = subtotal - discount + tax;
 
   useEffect(() => {
-      // const storedTotal = localStorage.getItem("totalAmount");
-      // if (storedTotal) {
-      //   setTotalAmount(storedTotal);
-      // }
-  
-      const savedCart = localStorage.getItem("cart");
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
+      const lastOrderRaw = localStorage.getItem("lastOrder");
+      const discountPercent = localStorage.getItem("selectedDiscount") || "18%";
+      const reason = localStorage.getItem("discountReason") || "";
+
+      if (lastOrderRaw) {
+        const lastOrder= JSON.parse(lastOrderRaw);
+        setCartItems(lastOrder.cartItems || []);
+
+       const sub = lastOrder.cartItems.reduce(
+  (acc:number, item:any) => acc + item.price * item.quantity, 0 
+);
+const discountPerc = parseFloat(discountPercent.replace("%", ""));
+const discountAmt = sub * (discountPerc / 100);
+const taxAmt = (sub  - discountAmt) * 0.08; // 8% tax
+const totalAmt = sub - discountAmt + taxAmt;
+
+setSubtotal(sub);
+setDiscount(discountAmt);
+setTax(taxAmt);
+setTotal(totalAmt);
+
+
+        setCustomer(lastOrder.customer || {});
       }
+
+      setDiscountValue(discountPercent);
+      setDiscountReason(reason);
     }, []);
   return (
     <div className="cursor-pointer w-full scrollbar-hide max-h-64 overflow-auto max-w-3xl flex flex-col gap-2 justify-between items-center bg-(--secondary) rounded-xl px-4 py-2 text-gray-800 outline-0">
-      <div className="flex justify-between w-full border-b">
+      <div className="flex justify-between w-full border-b"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+>
+        
         <p>More payment details</p>
         <FaChevronDown
           className={`${
             !dropdownOpen ? null : "rotate-180 translate-y-1"
           } right-0 transition-all`}
-          onClick={() => setDropdownOpen(!dropdownOpen)}
         />
       </div>
       {/* <hr /> */}
@@ -63,7 +79,7 @@ const PaymentDropdown: React.FC<PaymentDropdownProps> = ({ dropdownOpen, setDrop
         </div>
         <div className="flex justify-between text-gray-500">
           <div className="flex flex-col ">
-            <span>Discount (-{discountPercent}%)</span>
+            <span>Discount (-{discountValue})</span>
             <span className="text-xs text-gray-400">{discountReason}</span>
           </div>
           <span>${discount.toFixed(2)}</span>

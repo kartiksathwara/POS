@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../Header";
 import SearchBar from "../SearchBar";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -6,6 +6,7 @@ import { FaTrash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import useFetchProducts from "../../hooks/useFetchProducts";
+
 
 interface Product {
   id: number;
@@ -15,41 +16,54 @@ interface Product {
   category: string;
 }
 
-interface cartItems extends Product {
+interface CartItem extends Product {
   quantity: number;
 }
 
 interface Customer {
   name?: string;
   phone?: string;
+}
 
+interface HoldOrder {
+  id: string;
+  cartItems: CartItem[];
+  totalAmount: string;
+  customer?: Customer;
 }
 
 const Inventory = () => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
   const categories = ["All", "beauty", "fragrances", "furniture", "groceries"];
-  const { products,setProducts, allProducts} = useFetchProducts()
-  const [orderNo, setOrderNo] = useState<number>(1);
+  const { products, setProducts, allProducts } = useFetchProducts()
   const [showMobileCategories, setShowMobileCategories] = useState(false);
-  const [cartItems, setCartItems] = useState<cartItems[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+
+  const [showCustomerInput, setShowCustomerInput] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) setCartItems(JSON.parse(savedCart));
+
+    const selectedOrderRaw = localStorage.getItem("selectedOrder");
+    if (selectedOrderRaw) {
+      try {
+        const selectedOrder: HoldOrder = JSON.parse(selectedOrderRaw);
+        setCartItems(selectedOrder.cartItems || []);
+        localStorage.setItem("cart", JSON.stringify(selectedOrder.cartItems || []));
+        localStorage.removeItem("selectedOrder");
+
+      } catch (err) {
+        console.log("Invalid selectedOrder in localstorage", err);
+      }
+    }
+  }, []);
   const filteredProducts =
     selectedCategory === "All"
       ? products
       : products.filter((product) => product.category === selectedCategory);
-
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
-    }
-    
-    const storedOrderNo = localStorage.getItem("orderNo");
-    if (storedOrderNo) {
-      setOrderNo(parseInt(storedOrderNo));
-    }
-  }, []);
 
   const handleAddToCart = (product: Product) => {
     const existingItem = cartItems.find((item) => item.id === product.id);
@@ -101,34 +115,6 @@ const Inventory = () => {
   const tax = (subtotal - discount) * 0.08;
   const total = subtotal - discount + tax;
 
-  // const handleHoldOrder = () => {
-  //     const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
-  //     const holdOrder = {
-  //       orderNo,
-  //       customer: customerDet,
-  //       items: cartItems,
-  //       timestamp: new Date().toISOString(),
-  //       status: "ongoing",
-  //     };
-  
-  //     const heldOrders = JSON.parse(localStorage.getItem("heldOrders") || "[]");
-  
-  //     if (heldOrders.length >= 4) {
-  //       alert("Maximum of 4 orders can be held at a time.");
-  //       return;
-  //     }
-  
-  //     heldOrders.push(holdOrder);
-  //     localStorage.setItem("heldOrders", JSON.stringify(heldOrders));
-  
-  //     dispatch(clearOrderItems());
-  //     localStorage.removeItem("customer");
-  
-  //     const nextOrderNo = orderNo + 1;
-  //     setOrderNo(nextOrderNo);
-  //     localStorage.setItem("orderNo", nextOrderNo.toString());
-  //   };
-
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
 
@@ -144,20 +130,22 @@ const Inventory = () => {
         id: availableID,
         cartItems,
         totalAmount: total.toFixed(2),
+        customer: { name: customerName || "Guest" },
       };
 
       const updatedOrders = [...holdOrders, newOrder];
       localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
       localStorage.setItem("currentOrderID", availableID);
-
+      localStorage.setItem("lastOrder", JSON.stringify(newOrder));
+      localStorage.setItem("customer", JSON.stringify(newOrder.customer));
       setCartItems([]);
       localStorage.removeItem("cart");
     }
 
-
     localStorage.setItem("totalAmount", total.toFixed(2));
     navigate("/bill");
   };
+
 
 
 
@@ -166,7 +154,6 @@ const Inventory = () => {
       setProducts(allProducts);
       return;
     }
-
     const filtered = allProducts.filter(
       (item) =>
         item.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -174,46 +161,38 @@ const Inventory = () => {
     );
     setProducts(filtered);
   };
-  type HoldOrder = {
-    id: string; // e.g., '001'
-    cartItems: cartItems[];
-    totalAmount: string;
-    customer?: Customer;
-  };
 
-  const saveToNextHoldOrderSlot = () => {
+  const saveToHoldOrder = (customer: string) => {
     const holdOrdersRaw = localStorage.getItem("holdOrders");
     const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
 
-    const possibleIDs = ["001", "002", "003", "004"];
-    const usedIDs = holdOrders.map((o) => o.id);
-    const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
-
-    if (!availableID) {
-
-      return null;
-    }
-
     const newOrder: HoldOrder = {
-      id: availableID,
+      id: Date.now().toString(),
       cartItems,
       totalAmount: total.toFixed(2),
+      customer: { name: customer },
     };
 
     const updatedOrders = [...holdOrders, newOrder];
     localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+
+    window.dispatchEvent(new Event("holdOrdersUpdated"));
+
     setCartItems([]);
     localStorage.removeItem("cart");
-
-    return availableID;
   };
 
   const handleHoldOrder = () => {
-    const id = saveToNextHoldOrderSlot();
-    if (id) {
-    }
+    setShowCustomerInput(true);
   };
 
+  const handleSaveCustomer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customerName.trim()) return;
+    saveToHoldOrder(customerName.trim());
+    setCustomerName("");
+    setShowCustomerInput(false);
+  }
   return (
     <div className="h-screen flex flex-col">
       <Header />
@@ -304,6 +283,25 @@ const Inventory = () => {
                 Hold this order
               </button>
             </div>
+
+            {showCustomerInput && (
+              <form
+                onSubmit={handleSaveCustomer}
+                className="p-4 bg-white rounded-lg mb-3"
+
+              >
+                <input
+                  type="text"
+                  placeholder="Enter Customer Name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="border p-2 rounderd w-full"
+                />
+
+                <button type="submit"
+                  className="mt-2 bg-[var(--main)] text-white px-4 py-2 rounderd-md w-full"> Submit</button>
+              </form>
+            )}
             <hr className="mb-2 opacity-20" />
             <div className="flex-1 overflow-y-auto space-y-3 max-h-[33vh] rounded-lg scrollbar-hide">
               {cartItems.map((item) => (
@@ -346,11 +344,13 @@ const Inventory = () => {
                 placeholder="Discount"
                 className="bg-white text-sm text-black placeholder-black focus:outline-none w-full"
               />
-              <button className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2">
-                <Link to="/discount">
-                  ADD
-                </Link>
-              </button>
+              <Link
+                to="/discount"
+                className="bg-(--buttonbg) text-sm font-semibold px-4 py-1.5 rounded-md ml-2 flex items-center justify-center"
+              >
+                ADD
+              </Link>
+
             </div>
             <div className="flex justify-between">
               <span>Subtotal • {cartItems.length} items</span>

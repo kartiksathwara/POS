@@ -89,7 +89,6 @@ const Order = () => {
                                         className="cursor-pointer"
                                         onClick={() => handleDelete(order.id)}
                                     />
-
                                 </td>
                             </tr>
                         ))}

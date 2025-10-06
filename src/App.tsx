@@ -15,6 +15,7 @@ import Activities from "./components/Activities";
 import Invoice from "./components/Invoice";
 import Payment from "./components/Payment";
 import Order from "./components/Order";
+import HoldOrders from "./components/HoldOrders";
 // import ActionBar from "./components/SlideBar/ActionBar";
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
         <Route path="/bill" element={<CancelOrder />} />
         <Route path="/invoice" element={<Invoice />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/hold-order" element={<HoldOrders/>} />
         <Route path="/most-product" element={<ProtectedRoute><MostProduct /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
