@@ -13,11 +13,17 @@
     "@emailjs/browser": "^4.4.1",
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.7",
+<<<<<<< HEAD
     "emailjs-com": "^3.2.0",
     "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.3",
     "html5-qrcode": "^2.2.7",
     "jspdf": "^3.0.1",
+=======
+    "axios": "^1.10.0",
+    "html5-qrcode": "^2.2.7",
+    "mongoose": "^8.16.2",
+>>>>>>> 5118e53e78ffd9763e9d0b7f6e50d43d3d743203
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icon": "^1.0.0",
@@ -30,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@types/node": "^24.0.10",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",

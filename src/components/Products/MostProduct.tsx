@@ -71,6 +71,7 @@ const MostProduct = () => {
         setCartItems(JSON.parse(savedCart));
       }
     }, []);
+    
   return (
     <div className="h-screen flex flex-col ">
       <Header />
@@ -125,7 +126,7 @@ const MostProduct = () => {
               >
                 <div className="flex items-center gap-4">
                   <img
-                    src={product.thumbnail}
+                  src={`http://localhost:5000/uploads/${product.thumbnail}`}
                     alt={product.title}
                     className="w-16 h-16 rounded-sm object-cover"
                   />

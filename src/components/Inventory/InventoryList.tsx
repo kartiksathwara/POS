@@ -27,7 +27,7 @@ const filteredProducts = products.filter(
                   />
                   <div>
                     <h3 className="font-semibold text-base">{product.title}</h3>
-                    <p className="text-sm text-gray-500">Size - 30 UK</p>
+                    <p className="text-sm text-gray-500">Size - 3 UK</p>
                   </div>
                 </div>
                 <div className="text-sm font-semibold">
