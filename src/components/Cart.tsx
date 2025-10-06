@@ -6,13 +6,13 @@ const Cart = () => {
   const { cart, removeFromCart, increaseQty, decreaseQty  } = useCart();
 
   return (
-    <div className="max-w-xl mx-auto mt-8">
+    <div className="max-w-xl">
       {cart.length === 0 ? (
         <p className="text-center">Cart is empty</p>
       ) : (
         <div className="space-y-3">
           {cart.map((item) => (
-            <div key={item.id} className="flex justify-between items-center p-4 bg-gray-100 rounded">
+            <div key={item._id} className="flex justify-between items-center p-4 bg-gray-100 rounded">
               <div className="flex items-center gap-4">
                 <img src={`http://localhost:5000/uploads/${item.thumbnail}`} className="w-16 h-16 object-cover" />
                 <div>
@@ -21,11 +21,11 @@ const Cart = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => decreaseQty(item.id)}>-</button>
+                <button onClick={() => decreaseQty(item._id)}>-</button>
                 <span>{item.quantity}</span>
-                <button onClick={() => increaseQty(item.id)}>+</button>
+                <button onClick={() => increaseQty(item._id)}>+</button>
               </div>
-              <div onClick={() => removeFromCart(item.id)} className="text-red-500 cursor-pointer">
+              <div onClick={() => removeFromCart(item._id)} className="text-red-500 cursor-pointer">
                 <FaTrash />
               </div>
             </div>

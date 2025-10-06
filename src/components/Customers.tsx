@@ -7,47 +7,22 @@ import Checkout from "./Checkout";
 import TableComp from "./TableComp/TableComp";
 import { IoIosArrowForward } from "react-icons/io";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
-
-export interface Customer {
-  name: string;
-  phone: string;
-  email: string;
-  address1: string;
-  address2: string;
-  country: string;
-  state: string;
-  city: string;
-  zip: string;
-}
-
-const LOCAL_STORAGE_KEY = "customerData";
+import fetchCustomers, { type customers } from "../hooks/fetchCustomers";
 
 const Customers = () => {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const { customers } = fetchCustomers();
+  const [filteredCustomers, setFilteredCustomers] = useState<customers[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const storedCustomers = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (storedCustomers) {
-      const parsed = JSON.parse(storedCustomers);
-      setCustomers(parsed);
-      setFilteredCustomers(parsed);
-    }
-  }, []);
-
-  const handleAddCustomer = (customer: Customer) => {
-    const updatedCustomers = [...customers, customer];
-    setCustomers(updatedCustomers);
-    setFilteredCustomers(updatedCustomers);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedCustomers));
-  };
+    setFilteredCustomers(customers);
+  }, [customers]);
 
   const formattedData = filteredCustomers.map((c) => ({
     ...c,
-    address: `${c.address1}, ${c.address2}, ${c.city}, ${c.state}, ${c.country} ${c.zip}`,
+    address: `${c.address} , ${c.city}, ${c.state}, ${c.country} ${c.zip}`,
   }));
-
+  // console.log(filteredCustomers);
   const handleSearch = (query: string) => {
     if (!query.trim()) {
       setFilteredCustomers(customers);
@@ -58,9 +33,35 @@ const Customers = () => {
     const filtered = customers.filter(
       (item) =>
         item.name.toLowerCase().includes(lowered) ||
-        item.email.toLowerCase().includes(lowered)
+        item.phone.toLowerCase().includes(lowered)
     );
     setFilteredCustomers(filtered);
+  };
+
+  const handleAddCustomer = async (customerData: customers) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/customers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(customerData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Customer added successfully");
+        setIsModalOpen(false);
+        const updatedCustomers = await fetch("http://localhost:5000/api/customers").then(res => res.json());
+  setFilteredCustomers(updatedCustomers);
+      } else {
+        alert(data.error || "Failed to add customer");
+      }
+    } catch (error) {
+      console.error("Add customer failed:", error);
+      alert("Something went wrong while adding customer.");
+    }
   };
 
   const columns = [
@@ -105,7 +106,6 @@ const Customers = () => {
       <AddCustomerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-
         onSave={handleAddCustomer}
       />
     </div>

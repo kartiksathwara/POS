@@ -13,7 +13,7 @@ export interface Activities {
     country: string;
     state: string;
     city: string;
-    zip: string;
+    zip: number;
 }
 
 const Activities = () => {

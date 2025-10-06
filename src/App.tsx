@@ -17,7 +17,6 @@ import { OrderProvider } from "./auth/OrderContext";
 import InventoryPage from "./components/Inventory/InventoryPage";
 import OrderHistoryViewer from "./components/Order/OrderViewer";
 import AddProductForm from "./components/Products/AddProductFrom";
-// import ActionBar from "./components/SlideBar/ActionBar";
 
 function App() {
   return (
@@ -51,7 +50,14 @@ function App() {
               }
             ></Route>
             <Route path="/activities" element={<Activities />} />
-            <Route path="/inventory" element={<InventoryPage />} />
+            <Route
+              path="/inventory"
+              element={
+                <ProtectedRoute>
+                  <InventoryPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/customer" element={<Customers />} />
             <Route path="/discount" element={<DiscountPage />} />
             <Route path="/request" element={<RequestInventory />}></Route>

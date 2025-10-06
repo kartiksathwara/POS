@@ -10,6 +10,22 @@ export const getProducts = async (req, res) => {
   }
 };
 
+export const deleteProducts = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const deletedProduct = await Product.findByIdAndDelete(id);
+
+    if (!deletedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    return res.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    return res.status(500).json({ error: "Failed to delete product" });
+  }
+};
+
 export const addProduct = async (req, res) => {
   try {
     const { title, price, category, quantity } = req.body;
@@ -19,11 +35,11 @@ export const addProduct = async (req, res) => {
       return res.status(400).json({ error: "Please fill all required fields" });
     }
 
-    const lastProduct = await Product.findOne().sort({ id: -1 });
-    const newId = lastProduct ? lastProduct.id + 1 : 1;
+    // const lastProduct = await Product.findOne().sort({ id: -1 });
+    // const newId = lastProduct ? lastProduct.id + 1 : 1;
 
     const newProduct = new Product({
-      id:newId,
+      // id:newId,
       title,
       price,
       thumbnail,

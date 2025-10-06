@@ -10,6 +10,7 @@ import {
 } from "react";
 
 export interface CartItem {
+  _id: string;
   id: number;
   title: string;
   price: number;
@@ -23,9 +24,9 @@ interface CartContextType {
   setCart: Dispatch<SetStateAction<CartItem[]>>;
   subtotal : number;
   addToCart: (item: Omit<CartItem, "quantity">) => void;
-  removeFromCart: (id: number) => void;
-  increaseQty: (id: number) => void;
-  decreaseQty: (id: number) => void;  
+  removeFromCart: (_id: string) => void;
+  increaseQty: (_id: string) => void;
+  decreaseQty: (_id: string) => void;  
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -52,11 +53,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cart]);
 
   const addToCart = (product: Omit<CartItem, "quantity">) => {
-    const exists = cart.find((item) => item.id === product.id);
+    const exists = cart.find((item) => item._id === product._id);
     if (exists) {
       setCart(
         cart.map((item) =>
-          item.id === product.id
+          item._id === product._id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
@@ -71,22 +72,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     [cart]
   );
 
-  const removeFromCart = (id: number) => {
-    setCart(cart.filter((item) => item.id !== id));
+  const removeFromCart = (_id: string) => {
+    setCart(cart.filter((item) => item._id !== _id));
   };
 
-  const increaseQty = (id: number) => {
+  const increaseQty = (_id: string) => {
     setCart(
       cart.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+        item._id === _id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
-  const decreaseQty = (id: number) => {
+  const decreaseQty = (_id:string) => {
     setCart(
       cart.map((item) =>
-        item.id === id && item.quantity > 1
+        item._id === _id && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
       )

@@ -7,6 +7,7 @@ import customerRoutes from "./routes/customerRoutes.js";
 
 dotenv.config();
 const app = express();
+const port = process.env.port || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -22,6 +23,6 @@ mongoose
   })
   .then(() => {
     console.log("connected");
-    app.listen(5000, () => console.log("Server running on port"));
+    app.listen(port, () => console.log("Server running on port"));
   })
   .catch((err) => console.log(err));

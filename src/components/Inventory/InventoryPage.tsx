@@ -11,6 +11,7 @@ import useOrderHistory from "../../hooks/useOrderHistory";
 import { useCart } from "../../auth/cartContext";
 
 interface Product {
+  _id: string;
   id: number;
   title: string;
   price: number;
@@ -127,27 +128,29 @@ const InventoryPage = () => {
           {showMobileCategories && (
             <div className="md:hidden flex flex-col gap-2 px-4 sm:px-6 mt-3">
               <div
-              className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
-              onClick={() => setSelectedCategory("All")}
-            >
-              All
-            </div>
-              {[...new Set(products.map((item) => item.category))].map((category) => (
-                <div
-                  key={category}
-                  className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
-                  onClick={() => setSelectedCategory(category)}
-                >
-                  {category}
-                </div>
-              ))}
+                className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
+                onClick={() => setSelectedCategory("All")}
+              >
+                All
+              </div>
+              {[...new Set(products.map((item) => item.category))].map(
+                (category) => (
+                  <div
+                    key={category}
+                    className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </div>
+                )
+              )}
             </div>
           )}
 
           <div className="overflow-y-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 scrollbar-hide rounded-md pb-4">
             {filteredProducts.map((product) => (
               <ProductCard
-                key={product.id}
+                key={product._id}
                 product={product}
                 onAdd={() => handleAddToCart(product)}
               />
