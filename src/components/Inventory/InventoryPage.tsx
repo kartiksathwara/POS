@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import Header from "../Header";
 import SearchBar from "../SearchBar";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import useFetchProducts from "../../hooks/useFetchProducts";
 import Cart from "../Cart";
 import ProductCard from "../Products/ProductCard";
-import useOrderHistory from "../../hooks/useOrderHistory";
 import { useCart } from "../../auth/cartContext";
 
 interface Product {
@@ -19,13 +18,32 @@ interface Product {
   category: string;
 }
 
+interface CartItem extends Product {
+  quantity: number;
+}
+
+interface Customer {
+  name?: string;
+  phone?: string;
+}
+
+interface HoldOrder {
+  id: string;
+  cartItems: CartItem[];
+  totalAmount: string;
+  customer?: Customer;
+}
+
 const InventoryPage = () => {
-  const { saveOrder } = useOrderHistory();
+  const navigate = useNavigate();
   const { cart, setCart, addToCart } = useCart();
   const { products, setProducts, allProducts } = useFetchProducts();
   const [orderNo, setOrderNo] = useState<number>(1);
   const [showMobileCategories, setShowMobileCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [showCustomerInput, setShowCustomerInput] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+
   const filteredProducts =
     selectedCategory === "All"
       ? products
@@ -40,6 +58,18 @@ const InventoryPage = () => {
     const storedOrderNo = localStorage.getItem("orderNo");
     if (storedOrderNo) {
       setOrderNo(parseInt(storedOrderNo));
+    }
+
+    const selectedOrderRaw = localStorage.getItem("selectedOrder");
+    if (selectedOrderRaw) {
+      try {
+        const selectedOrder: HoldOrder = JSON.parse(selectedOrderRaw);
+        setCart(selectedOrder.cartItems || []);
+        localStorage.setItem("cart", JSON.stringify(selectedOrder.cartItems || []));
+        localStorage.removeItem("selectedOrder");
+      } catch (err) {
+        console.log("Invalid selectedOrder in localstorage", err);
+      }
     }
   }, []);
 
@@ -79,25 +109,82 @@ const InventoryPage = () => {
     setProducts(filtered);
   };
 
-  const handleHoldOrder = () => {
-    if (cart.length === 0) return alert("Cart is empty");
-    saveOrder(cart);
+  // Save order to Hold Orders
+  const saveToHoldOrder = (customer: string) => {
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+    const newOrder: HoldOrder = {
+      id: Date.now().toString(),
+      cartItems: cart,
+      totalAmount: total.toFixed(2),
+      customer: { name: customer },
+    };
+
+    const updatedOrders = [...holdOrders, newOrder];
+    localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+
+    window.dispatchEvent(new Event("holdOrdersUpdated"));
     setCart([]);
-    alert("Order saved!");
+    localStorage.removeItem("cart");
+  };
+
+  // Handle hold order button
+  const handleHoldOrder = () => {
+    setShowCustomerInput(true);
+  };
+
+  const handleSaveCustomer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customerName.trim()) return;
+    saveToHoldOrder(customerName.trim());
+    setCustomerName("");
+    setShowCustomerInput(false);
+  };
+
+  // Handle checkout button
+  const handleCheckout = () => {
+    if (cart.length === 0) return;
+
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+
+    const possibleIDs = ["001", "002", "003", "004"];
+    const usedIDs = holdOrders.map((o) => o.id);
+    const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
+
+    if (availableID) {
+      const newOrder: HoldOrder = {
+        id: availableID,
+        cartItems: cart,
+        totalAmount: total.toFixed(2),
+        customer: { name: customerName || "Guest" },
+      };
+
+      const updatedOrders = [...holdOrders, newOrder];
+      localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+      localStorage.setItem("currentOrderID", availableID);
+      localStorage.setItem("lastOrder", JSON.stringify(newOrder));
+      localStorage.setItem("customer", JSON.stringify(newOrder.customer));
+      setCart([]);
+      localStorage.removeItem("cart");
+    }
+
+    localStorage.setItem("totalAmount", total.toFixed(2));
+    navigate("/bill");
   };
 
   return (
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-col justify-between lg:flex-row flex-1 overflow-hidden">
-        <div className="flex flex-col  w-full lg:w-[70%] overflow-auto p-4 gap-2">
+        <div className="flex flex-col w-full lg:w-[70%] overflow-auto p-4 gap-2">
           <SearchBar onSearch={handleSearch} />
           <div className="flex items-center justify-between px-4 sm:px-6">
             <Link to="/" className="flex items-center">
               <IoIosArrowBack size={20} />
               <span className="text-xl font-bold ml-2">INVENTORY</span>
             </Link>
-
             <button
               className="md:hidden p-2 bg-[#E9DCCF] rounded-lg"
               onClick={() => setShowMobileCategories(!showMobileCategories)}
@@ -125,14 +212,9 @@ const InventoryPage = () => {
               )
             )}
           </div>
+
           {showMobileCategories && (
             <div className="md:hidden flex flex-col gap-2 px-4 sm:px-6 mt-3">
-              <div
-                className="py-2 px-4 bg-[var(--primary)] rounded-lg cursor-pointer text-sm font-medium"
-                onClick={() => setSelectedCategory("All")}
-              >
-                All
-              </div>
               {[...new Set(products.map((item) => item.category))].map(
                 (category) => (
                   <div
@@ -156,6 +238,7 @@ const InventoryPage = () => {
               />
             ))}
           </div>
+
           <Link
             to="/request"
             className="flex items-center gap-1 font-medium text-black px-8 pb-4"
@@ -164,6 +247,8 @@ const InventoryPage = () => {
             <IoIosArrowForward size={20} />
           </Link>
         </div>
+
+        {/* Right Panel */}
         <div className="w-full lg:w-[30%] bg-(--secondary) flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
           <div className="w-full h-full bg-[var(--secondary)] flex flex-col">
             <div className="flex justify-center gap-3 mb-2">
@@ -180,11 +265,35 @@ const InventoryPage = () => {
                 Hold this order
               </button>
             </div>
+
+            {showCustomerInput && (
+              <form
+                onSubmit={handleSaveCustomer}
+                className="p-4 bg-white rounded-lg mb-3"
+              >
+                <input
+                  type="text"
+                  placeholder="Enter Customer Name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="border p-2 rounded w-full"
+                />
+                <button
+                  type="submit"
+                  className="mt-2 bg-[var(--main)] text-white px-4 py-2 rounded-md w-full"
+                >
+                  Submit
+                </button>
+              </form>
+            )}
+
             <hr className="mb-2 opacity-20" />
             <div className="flex-1 overflow-y-auto space-y-3 max-h-[30vh] rounded-lg scrollbar-hide">
               <Cart />
             </div>
           </div>
+
+          {/* Totals */}
           {cart.length !== 0 && (
             <div className="text-sm space-y-2">
               <div className="flex justify-between items-center bg-white rounded-xl px-4 py-2 mb-4">
@@ -215,7 +324,7 @@ const InventoryPage = () => {
                 <span>${total.toFixed(2)}</span>
               </div>
               <button
-                // onClick={handleCheckout}
+                onClick={handleCheckout}
                 className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center"
               >
                 CHECKOUT &gt;
