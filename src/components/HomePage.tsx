@@ -32,12 +32,6 @@ const HomePage = () => {
     setOrderNumbers(orderIds);
   }, []);
 
-  const [selectedOrder, setSelectedOrder] = useState("");
-  const handleOrderClick = (order: string) => {
-    setSelectedOrder(order);
-    localStorage.setItem("selectedOrder", order);
-  };
-
   const [actionCards, setActionCards] = useState<ActionCardType[]>([
     { label: "Inventory", link: "./inventory", icon: <InventorySvg /> },
     { label: "Customer", link: "./customer", icon: <CustomerSvg /> },
@@ -118,26 +112,7 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-          {orderNumbers.length > 0 && (
-            <div className="flex gap-3 items-center p-3 bg-(--secondary)">
-              <span className="text-sm font-semibold text-(--eye-icon)">
-                Order:
-              </span>
-              {orderNumbers.map((order) => (
-                <button
-                  key={order}
-                  onClick={() => handleOrderClick(order)}
-                  className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${
-                    selectedOrder === order
-                      ? "bg-(--main) text-white"
-                      : "bg-(--main)/50 text-white"
-                  }`}
-                >
-                  {order}
-                </button>
-              ))}
-            </div>
-          )}
+          
         </div>
 
         <div className="w-full lg:w-[30%] bg-(--secondary) hidden lg:flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">

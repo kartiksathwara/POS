@@ -38,7 +38,7 @@ const CancelOrder: React.FC = () => {
   const [isvalidate, setIsValidate] = useState(false);
   const [user, setUser] = useState<string | null>(null);
   const [orderNo, setOrderNo] = useState<number>(1);
-  const orderNumbers = ["001", "002", "003", "004"];
+  // const orderNumbers = ["001", "002", "003", "004"];
   const [selectedOrder, setSelectedOrder] = useState("001");
 
 
@@ -435,8 +435,8 @@ const CancelOrder: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-3 items-center p-3 bg-(--secondary)">
-            {/* <OrderNoDisplay/> */}
+          {/* <div className="flex gap-3 items-center p-3 bg-(--secondary)">
+            
             <span className="text-sm font-semibold text-(--eye-icon)">
               Order:
             </span>
@@ -452,7 +452,7 @@ const CancelOrder: React.FC = () => {
                 {order}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
         <div className="w-full lg:w-[32%] p-6 bg-(--secondary) flex flex-col justify-between">
           <div className="font-serif">

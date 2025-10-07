@@ -17,6 +17,7 @@ import { OrderProvider } from "./auth/OrderContext";
 import InventoryPage from "./components/Inventory/InventoryPage";
 import AddProductForm from "./components/Products/AddProductFrom";
 import HoldOrders from "./components/HoldOrders";
+import Order from "./components/Order";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
             <Route path="/invoice" element={<Invoice />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/hold-order" element={<HoldOrders />}/>
+           <Route path="/order" element={<Order/>} /> 
             <Route
               path="/most-product"
               element={
