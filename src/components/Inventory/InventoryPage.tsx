@@ -288,7 +288,7 @@ const InventoryPage = () => {
             )}
 
             <hr className="mb-2 opacity-20" />
-            <div className="flex-1 overflow-y-auto space-y-3 max-h-[30vh] rounded-lg scrollbar-hide">
+            <div className="flex-1 overflow-y-auto space-y-3 rounded-lg scrollbar-hide">
               <Cart />
             </div>
           </div>
