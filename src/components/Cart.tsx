@@ -10,7 +10,7 @@ const Cart = () => {
       {cart.length === 0 ? (
         <p className="text-center">Cart is empty</p>
       ) : (
-        <div className="flex-1 overflow-y-auto space-y-3 max-h-[42vh] rounded-lg scrollbar-hide">
+        <div className="flex-1 overflow-y-auto space-y-3 max-h-full rounded-lg scrollbar-hide">
           {cart.map((item) => (
             <div key={item._id} className="flex justify-between items-center bg-white p-3 rounded-lg">
               <div className="flex gap-3 items-center">

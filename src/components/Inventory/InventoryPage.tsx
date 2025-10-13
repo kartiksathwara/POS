@@ -43,6 +43,7 @@ const InventoryPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showCustomerInput, setShowCustomerInput] = useState(false);
   const [customerName, setCustomerName] = useState("");
+  const [customerphone, setCustomerPhone] = useState("");
 
   const filteredProducts =
     selectedCategory === "All"
@@ -65,12 +66,16 @@ const InventoryPage = () => {
       try {
         const selectedOrder: HoldOrder = JSON.parse(selectedOrderRaw);
         setCart(selectedOrder.cartItems || []);
+        setCustomerName(selectedOrder.customer?.name || "");
+        setCustomerPhone(selectedOrder.customer?.phone || "");
         localStorage.setItem("cart", JSON.stringify(selectedOrder.cartItems || []));
+        localStorage.setItem("currentOrderID", selectedOrder.id);
         localStorage.removeItem("selectedOrder");
       } catch (err) {
         console.log("Invalid selectedOrder in localstorage", err);
       }
     }
+
   }, []);
 
   const handleAddToCart = (product: Product) => {
@@ -109,70 +114,92 @@ const InventoryPage = () => {
     setProducts(filtered);
   };
 
-  // Save order to Hold Orders
-  const saveToHoldOrder = (customer: string) => {
-    const holdOrdersRaw = localStorage.getItem("holdOrders");
-    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+  const saveToHoldOrder = (name: string, phone: string) => {
+  const holdOrdersRaw = localStorage.getItem("holdOrders");
+  const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
 
-    const newOrder: HoldOrder = {
-      id: Date.now().toString(),
-      cartItems: cart,
-      totalAmount: total.toFixed(2),
-      customer: { name: customer },
-    };
+  const existingIds = holdOrders.map(o => parseInt(o.id));
+  let newIdNumber = 1;
+  while (existingIds.includes(newIdNumber)) {
+    newIdNumber++;
+  }
 
-    const updatedOrders = [...holdOrders, newOrder];
-    localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+  const newId = newIdNumber.toString().padStart(3, "0");
 
-    window.dispatchEvent(new Event("holdOrdersUpdated"));
-    setCart([]);
-    localStorage.removeItem("cart");
+  const newOrder: HoldOrder = {
+    id: newId,
+    cartItems: cart,
+    totalAmount: total.toFixed(2),
+    customer: { name, phone },  
   };
 
-  // Handle hold order button
+  const updatedOrders = [...holdOrders, newOrder];
+  localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+
+  window.dispatchEvent(new Event("holdOrdersUpdated"));
+
+  setCart([]);
+  localStorage.removeItem("cart");
+};
+
   const handleHoldOrder = () => {
     setShowCustomerInput(true);
   };
 
   const handleSaveCustomer = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customerName.trim()) return;
-    saveToHoldOrder(customerName.trim());
-    setCustomerName("");
-    setShowCustomerInput(false);
-  };
+  e.preventDefault();
+  if (!customerName.trim() || !customerphone.trim()) return;
 
-  // Handle checkout button
+  saveToHoldOrder(customerName.trim(), customerphone.trim()); 
+  setCustomerPhone("");  
+  setShowCustomerInput(false);
+};
+
   const handleCheckout = () => {
     if (cart.length === 0) return;
 
     const holdOrdersRaw = localStorage.getItem("holdOrders");
     const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
 
-    const possibleIDs = ["001", "002", "003", "004"];
-    const usedIDs = holdOrders.map((o) => o.id);
-    const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
+    const currentOrderID = localStorage.getItem("currentOrderID");
 
-    if (availableID) {
-      const newOrder: HoldOrder = {
-        id: availableID,
-        cartItems: cart,
-        totalAmount: total.toFixed(2),
-        customer: { name: customerName || "Guest" },
-      };
-
-      const updatedOrders = [...holdOrders, newOrder];
+    if (currentOrderID) {
+      const updatedOrders = holdOrders.map((o) =>
+        o.id === currentOrderID
+          ? { ...o, cartItems: cart, totalAmount: total.toFixed(2), customer: { name: customerName || "Guest" } }
+          : o
+      );
       localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
-      localStorage.setItem("currentOrderID", availableID);
-      localStorage.setItem("lastOrder", JSON.stringify(newOrder));
-      localStorage.setItem("customer", JSON.stringify(newOrder.customer));
-      setCart([]);
-      localStorage.removeItem("cart");
+    } else {
+      const possibleIDs = ["001", "002", "003", "004"];
+      const usedIDs = holdOrders.map((o) => o.id);
+      const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
+
+      if (availableID) {
+        const newOrder: HoldOrder = {
+          id: availableID,
+          cartItems: cart,
+          totalAmount: total.toFixed(2),
+          customer: { name: customerName || "Guest" },
+        };
+
+        localStorage.setItem(
+          "holdOrders",
+          JSON.stringify([...holdOrders, newOrder])
+        );
+        localStorage.setItem("currentOrderID", availableID);
+      }
     }
+
+    setCart([]);
+    localStorage.removeItem("cart");
+
+    localStorage.removeItem("currentOrderID");
 
     localStorage.setItem("totalAmount", total.toFixed(2));
     navigate("/bill");
   };
+
 
   return (
     <div className="h-screen flex flex-col">
@@ -247,8 +274,6 @@ const InventoryPage = () => {
             <IoIosArrowForward size={20} />
           </Link>
         </div>
-
-        {/* Right Panel */}
         <div className="w-full lg:w-[30%] bg-(--secondary) flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
           <div className="w-full h-full bg-[var(--secondary)] flex flex-col">
             <div className="flex justify-center gap-3 mb-2">
@@ -276,6 +301,14 @@ const InventoryPage = () => {
                   placeholder="Enter Customer Name"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
+                  className="border p-2 rounded mb-2 w-full"
+                />
+
+                <input
+                  type="text"
+                  placeholder="Enter Customer Number"
+                  value={customerphone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
                   className="border p-2 rounded w-full"
                 />
                 <button
@@ -292,8 +325,6 @@ const InventoryPage = () => {
               <Cart />
             </div>
           </div>
-
-          {/* Totals */}
           {cart.length !== 0 && (
             <div className="text-sm space-y-2">
               <div className="flex justify-between items-center bg-white rounded-xl px-4 py-2 mb-4">

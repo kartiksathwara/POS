@@ -112,7 +112,7 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-          
+
         </div>
 
         <div className="w-full lg:w-[30%] bg-(--secondary) hidden lg:flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">

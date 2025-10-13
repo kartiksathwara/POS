@@ -68,7 +68,8 @@ const HoldOrders = () => {
           <thead>
             <tr>
               <th className="p-3 text-white">Hold ID</th>
-              <th className="p-3 text-white">Customer</th>
+              <th className="p-3 text-white">Customer Name</th>
+              <th className="p-3 text-white">Phone No</th>
               <th className="p-3 text-white">Total Amount</th>
               <th className="p-3 text-white">Actions</th>
             </tr>
@@ -85,6 +86,7 @@ const HoldOrders = () => {
               >
                 <td className="p-3">{order.id}</td>
                 <td className="p-3">{order.customer?.name || "N/A"}</td>
+                <td className="p-3">{order.customer?.phone|| "N/A"}</td>
                 <td className="p-3">${order.totalAmount}</td>
                 <td className="p-3">
                   <FaTrash

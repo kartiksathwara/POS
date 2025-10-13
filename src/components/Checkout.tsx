@@ -97,7 +97,10 @@ const Checkout = () => {
             </div>
           </div>
         ) : (
-          <Cart/>
+          <div className="max-h-full">
+
+            <Cart/>
+          </div>
         )}
       </div>
       <hr className="my-2 opacity-20" />
