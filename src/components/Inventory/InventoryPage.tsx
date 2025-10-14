@@ -115,45 +115,45 @@ const InventoryPage = () => {
   };
 
   const saveToHoldOrder = (name: string, phone: string) => {
-  const holdOrdersRaw = localStorage.getItem("holdOrders");
-  const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
+    const holdOrdersRaw = localStorage.getItem("holdOrders");
+    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
 
-  const existingIds = holdOrders.map(o => parseInt(o.id));
-  let newIdNumber = 1;
-  while (existingIds.includes(newIdNumber)) {
-    newIdNumber++;
-  }
+    const existingIds = holdOrders.map(o => parseInt(o.id));
+    let newIdNumber = 1;
+    while (existingIds.includes(newIdNumber)) {
+      newIdNumber++;
+    }
 
-  const newId = newIdNumber.toString().padStart(3, "0");
+    const newId = newIdNumber.toString().padStart(3, "0");
 
-  const newOrder: HoldOrder = {
-    id: newId,
-    cartItems: cart,
-    totalAmount: total.toFixed(2),
-    customer: { name, phone },  
+    const newOrder: HoldOrder = {
+      id: newId,
+      cartItems: cart,
+      totalAmount: total.toFixed(2),
+      customer: { name, phone },
+    };
+
+    const updatedOrders = [...holdOrders, newOrder];
+    localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
+
+    window.dispatchEvent(new Event("holdOrdersUpdated"));
+
+    setCart([]);
+    localStorage.removeItem("cart");
   };
-
-  const updatedOrders = [...holdOrders, newOrder];
-  localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
-
-  window.dispatchEvent(new Event("holdOrdersUpdated"));
-
-  setCart([]);
-  localStorage.removeItem("cart");
-};
 
   const handleHoldOrder = () => {
     setShowCustomerInput(true);
   };
 
   const handleSaveCustomer = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!customerName.trim() || !customerphone.trim()) return;
+    e.preventDefault();
+    if (!customerName.trim() || !customerphone.trim()) return;
 
-  saveToHoldOrder(customerName.trim(), customerphone.trim()); 
-  setCustomerPhone("");  
-  setShowCustomerInput(false);
-};
+    saveToHoldOrder(customerName.trim(), customerphone.trim());
+    setCustomerPhone("");
+    setShowCustomerInput(false);
+  };
 
   const handleCheckout = () => {
     if (cart.length === 0) return;
@@ -194,10 +194,20 @@ const InventoryPage = () => {
     setCart([]);
     localStorage.removeItem("cart");
 
-    localStorage.removeItem("currentOrderID");
+    const lastOrder = {
+      cartItems: cart,
+      totalAmount: total.toFixed(2),
+      subtotal: subtotal.toFixed(2),
+      discount: discount.toFixed(2),
+      tax: tax.toFixed(2),
+      customer: { name: customerName || "Guest", phone: customerphone || "N/A" },
+    };
 
-    localStorage.setItem("totalAmount", total.toFixed(2));
+    localStorage.setItem("lastOrder", JSON.stringify(lastOrder));
+    localStorage.removeItem("cart");
+    localStorage.removeItem("currentOrderID");
     navigate("/bill");
+
   };
 
 
