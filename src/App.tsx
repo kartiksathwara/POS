@@ -18,6 +18,7 @@ import InventoryPage from "./components/Inventory/InventoryPage";
 import AddProductForm from "./components/Products/AddProductFrom";
 import HoldOrders from "./components/HoldOrders";
 import Order from "./components/Order";
+import AdminProductsPage from "./components/Products/AdminProductsPage";
 
 function App() {
   return (
@@ -77,6 +78,8 @@ function App() {
               }
             />
             <Route path="/addproduct" element={<AddProductForm />} />
+            <Route path="/admin-products" element={<AdminProductsPage />} />
+
           </Routes>
         </BrowserRouter>
       </OrderProvider>

@@ -3,16 +3,15 @@ import TitleBanner from "./TitleBanner";
 import DigitalClock from "./DigitalClock/DigitalClock";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-// import { useAuth } from "../auth/AuthContext";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../app/store";
 import { login } from "../auth/authSlice";
-
 
 type UserDet = {
   name: string;
   email: string;
   password: string;
+  role: "admin" | "user";
 };
 
 const LoginPage = () => {
@@ -20,97 +19,125 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
-  // const { login } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
   const userToken = "POS-token";
 
-  const defaultData: UserDet = {
-    name: "ABCD",
-    email: "abcd@gmail.com",
-    password: "1234",
-  };
+  // SET DEFAULT USERS
+  useEffect(() => {
+    const users: UserDet[] = [
+      {
+        name: "Admin",
+        email: "admin@gmail.com",
+        password: "admin123",
+        role: "admin",
+      },
+      {
+        name: "User",
+        email: "user@gmail.com",
+        password: "1234",
+        role: "user",
+      },
+    ];
+
+    // Only set if not already present
+    if (!localStorage.getItem("Users")) {
+      localStorage.setItem("Users", JSON.stringify(users));
+    }
+  }, []);
 
   const validateEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  useEffect(() => {
-    localStorage.setItem("User", JSON.stringify(defaultData));
-    const storedUser = localStorage.getItem("User");
-    if (storedUser) {
-      const parsedUser: UserDet = JSON.parse(storedUser);
-      console.log("Default User Set:", parsedUser);
-    }
-  }, []);
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
       return;
     }
 
-    const storedUser = localStorage.getItem("User");
-    if (!storedUser) return;
-    const user: UserDet = JSON.parse(storedUser);
-    if (email === user.email && password === user.password) {
-      dispatch(login(userToken));
-      navigate("/lock");
-    } else {
-      console.log("Invalid credential");
+    const storedUsers = localStorage.getItem("Users");
+    if (!storedUsers) {
+      setError("No users found");
+      return;
+    }
+
+    const users: UserDet[] = JSON.parse(storedUsers);
+
+    const foundUser = users.find(
+      (u) => u.email === email && u.password === password
+    );
+
+    if (!foundUser) {
       setError("Invalid credential");
+      return;
+    }
+
+    // LOGIN SUCCESS
+    dispatch(login(userToken));
+
+    // ROLE BASED NAVIGATION
+    if (foundUser.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/lock");
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center sm:justify-start">
       <TitleBanner />
-      <div className="flex flex-col items-center flex-1 w-full pt-28 sm:pt-16 gap-10 sm:gap-10 px-4">
+
+      <div className="flex flex-col items-center flex-1 w-full pt-28 sm:pt-16 gap-10 px-4">
         <div className="text-center">
           <DigitalClock />
         </div>
-        <div className="flex flex-col gap-4">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 ">
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            type="text"
+            placeholder="Email id"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border-2 border-(--main)/50 p-2 rounded-lg w-xs placeholder:font-semibold focus:outline-none"
+          />
+
+          <div className="relative">
             <input
-              type="text"
-              placeholder="Email id"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="border-2 border-(--main)/50 p-2 rounded-lg w-xs placeholder:font-semibold focus:outline-none"
             />
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border-2 border-(--main)/50 p-2 rounded-lg w-xs placeholder:font-semibold focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-6 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                aria-label="Toggle password visibility"
-              >
-                {showPassword ? <IoEye size={20} /> : <IoEyeOff size={20} />}
-              </button>
-            </div>
-            <div className="min-h-[1.25rem]">
-              {error && (
-                <p className="text-red-600 font-medium text-sm ">{error}</p>
-              )}
-            </div>
+
             <button
-              type="submit"
-              className="bg-(--main) border-2 text-white px-16 py-2 text-lg rounded-md hover:cursor-pointer disabled:bg-(--main)/90"
-              disabled={email == "" || password == ""}
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-6 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
             >
-              Login
+              {showPassword ? <IoEye size={20} /> : <IoEyeOff size={20} />}
             </button>
-          </form>
-        </div>
+          </div>
+
+          <div className="min-h-[1.25rem]">
+            {error && (
+              <p className="text-red-600 font-medium text-sm">{error}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="bg-(--main) border-2 text-white px-16 py-2 text-lg rounded-md hover:cursor-pointer disabled:bg-(--main)/90"
+            disabled={email === "" || password === ""}
+          >
+            Login
+          </button>
+        </form>
       </div>
     </div>
   );

@@ -54,3 +54,35 @@ export const addProduct = async (req, res) => {
     res.status(500).json({ error: "Failed to add product" });
   }
 };
+export const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const updateData = {
+      title: req.body.title,
+      price: req.body.price,
+      category: req.body.category,
+      quantity: req.body.quantity,
+    };
+
+    // if new image uploaded
+    if (req.file) {
+      updateData.thumbnail = req.file.filename;
+    }
+
+    const updated = await Product.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(updated);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Update failed" });
+  }
+};
