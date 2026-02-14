@@ -101,7 +101,7 @@ const HoldOrders = () => {
             ))}
             {filteredOrders.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center p-4 text-gray-500 bg-white">
+                <td colSpan={5} className="text-center p-4 text-gray-500 bg-white">
                   No hold orders found
                 </td>
               </tr>

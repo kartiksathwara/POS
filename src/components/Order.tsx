@@ -11,7 +11,7 @@ interface Order {
     name: string;
     date: string;
     time: string;
-    status: "Paid" | "Failed" | "Ongoing";
+    status: "Paid" | "Failed" | "Ongoing" | "Unpaid";
 }
 
 
@@ -19,6 +19,7 @@ const statusStyles: Record<string, string> = {
     Paid: "bg-green-100 text-green-800",
     Failed: "bg-red-100 text-red-800",
     Ongoing: "bg-yellow-100 text-yellow-800",
+    Unpaid: "bg-blue-100 text-blue-800",
 };
 
 const Order = () => {
@@ -64,13 +65,17 @@ const Order = () => {
                     <h1 className="text-xl capitalize font-bold">ORDER</h1>
                 </div>
                 <SearchBar onSearch={handleSearch} />
-                <table className=" bg-(--main) rounded-t-xl text-left">
+                <table className="bg-(--main) rounded-t-xl text-left">
                     <thead>
-                        <th className="p-3 text-white">Order no.</th>
-                        <th className="p-3 text-white">Name</th>
-                        <th className="p-3 text-white">Date & Time.</th>
-                        <th className="p-3 text-white">Status.</th>
+                        <tr>
+                            <th className="p-3 text-white">Order no.</th>
+                            <th className="p-3 text-white">Name</th>
+                            <th className="p-3 text-white">Date & Time.</th>
+                            <th className="p-3 text-white">Status.</th>
+                            <th className="p-3 text-white">Action</th>
+                        </tr>
                     </thead>
+
                     <tbody>
                         {filteredOrders.map((order) => (
                             <tr key={order.id} className="bg-(--bgorder) border-b border-(--primary)">

@@ -6,11 +6,13 @@ import ActionBar from "./SlideBar/ActionBar";
 import ActionCards from "./ActionCards";
 import CustomerSvg from "./SvgCommon/CustomerSvg";
 import DiscountSvg from "./SvgCommon/DiscountSvg";
-import RequestSvg from "./SvgCommon/RequestSvg";
+// import RequestSvg from "./SvgCommon/RequestSvg";
 import DefaultSvg from "./SvgCommon/DefaultSvg";
 import InventorySvg from "./SvgCommon/InventorySvg";
 import AddAction from "./SvgCommon/AddAction";
 import WinterSvg from "./SvgCommon/WinterSvg";
+import HoldOrderSvg from "./SvgCommon/HoldOrderSvg";
+import HoldOrders from "./HoldOrders";
 
 interface ActionCardType {
   label: string;
@@ -36,14 +38,16 @@ const HomePage = () => {
     { label: "Inventory", link: "./inventory", icon: <InventorySvg /> },
     { label: "Customer", link: "./customer", icon: <CustomerSvg /> },
     { label: "Discount", link: "./discount", icon: <DiscountSvg /> },
-    { label: "Request", link: "./request", icon: <RequestSvg /> },
+    // { label: "Request", link: "./request", icon: <RequestSvg /> },
+    { label: "Hold-Order", link: "./hold-order", icon: <HoldOrderSvg /> },
   ]);
 
   const iconMap: Record<string, ReactNode> = {
     inventory: <InventorySvg />,
     customer: <CustomerSvg />,
     discount: <DiscountSvg />,
-    request: <RequestSvg />,
+    // request: <RequestSvg />,
+    HoldOrder: <HoldOrderSvg/>,
   };
 
   const handleSearch = (query: string) => {

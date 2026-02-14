@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import CustomerDropdown from "../components/CustomerDropdown";
 
 export interface Customer {
+  id: string; // NEW
   name: string;
   phone: string;
   email: string;
@@ -17,6 +18,7 @@ export interface Customer {
   city: string;
   zip: string;
 }
+
 
 interface Product {
   id: number;
@@ -32,6 +34,18 @@ interface HoldOrder {
   totalAmount: string;
   customer?: Customer;
 }
+const EMPTY_CUSTOMER: Customer = {
+  id: "",
+  name: "",
+  phone: "",
+  email: "",
+  address1: "",
+  address2: "",
+  country: "",
+  state: "",
+  city: "",
+  zip: "",
+};
 
 const CancelOrder: React.FC = () => {
 
@@ -46,6 +60,7 @@ const CancelOrder: React.FC = () => {
     const stored = localStorage.getItem("selectedOrder");
     if (stored) {
       setSelectedOrder(stored);
+      setNewCustomer(EMPTY_CUSTOMER);
     }
   }, []);
   const [totalAmount, setTotalAmount] = useState("0");
@@ -54,6 +69,7 @@ const CancelOrder: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | null>(null);
   const navigate = useNavigate();
   const [newCustomer, setNewCustomer] = useState<Customer>({
+    id: "",
     name: "",
     phone: "",
     email: "",
@@ -64,6 +80,7 @@ const CancelOrder: React.FC = () => {
     city: "",
     zip: "",
   });
+
 
   useEffect(() => {
     const storedOrderNo = localStorage.getItem("orderNo");
@@ -98,24 +115,32 @@ const CancelOrder: React.FC = () => {
     const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
 
     const activeOrder = holdOrders.find(o => o.id === selectedOrder);
+
     if (activeOrder) {
       setCartItems(activeOrder.cartItems);
       setTotalAmount(activeOrder.totalAmount);
-      setNewCustomer(
-        activeOrder.customer ?? {
-          name: "", phone: "", email: "", address1: "", address2: "",
-          country: "", state: "", city: "", zip: "",
-        }
-      );
+      setNewCustomer(activeOrder?.customer || EMPTY_CUSTOMER);
+
     } else {
       setCartItems([]);
       setTotalAmount("0.00");
+
+      // NO activeOrder here
       setNewCustomer({
-        name: "", phone: "", email: "", address1: "", address2: "",
-        country: "", state: "", city: "", zip: "",
+        id: "",
+        name: "",
+        phone: "",
+        email: "",
+        address1: "",
+        address2: "",
+        country: "",
+        state: "",
+        city: "",
+        zip: "",
       });
     }
   }, [selectedOrder]);
+
 
   const handleCancelCart = () => {
     const existingOrdersRaw = localStorage.getItem("orders");
@@ -133,6 +158,7 @@ const CancelOrder: React.FC = () => {
     setCartItems([]);
     setTotalAmount("0.00");
     setNewCustomer({
+      id: "",
       name: "",
       phone: "",
       email: "",
@@ -153,12 +179,21 @@ const CancelOrder: React.FC = () => {
 
 
   const handleProduct = () => {
-    if (!user || cartItems.length === 0 || !paymentMethod) return;
+    console.log("USER:", user);
+    console.log("CART:", cartItems.length);
+    console.log("PAYMENT:", paymentMethod);
+
+    if (cartItems.length === 0 || !paymentMethod) {
+      alert("Add product & select payment");
+      return;
+    }
+
+    const safeUser = user || "Guest";
 
     const customerDet = JSON.parse(localStorage.getItem("customer") || "{}");
 
     const orderDetails = {
-      orderNo: orderNo,
+      orderNo,
       customer: customerDet,
       items: cartItems,
       method: paymentMethod,
@@ -166,64 +201,94 @@ const CancelOrder: React.FC = () => {
       timestamp: new Date().toISOString(),
     };
 
-    localStorage.setItem(`order-${user}-${orderNo}`, JSON.stringify(orderDetails));
+    /* ---------- SAVE ORDER ---------- */
+
+    const orderKey = `order-${safeUser}-${orderNo}`;
+    localStorage.setItem(orderKey, JSON.stringify(orderDetails));
+
+    // ⭐ IMPORTANT – invoice will read this
+    localStorage.setItem("lastOrderKey", orderKey);
+
+    /* ---------- UPDATE ORDERS LIST ---------- */
 
     const now = new Date();
     const date = now.toLocaleDateString("en-US", {
-      year: "numeric", month: "short", day: "2-digit",
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
     });
     const time = now.toLocaleTimeString("en-US", {
-      hour: "2-digit", minute: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
     const existingOrdersRaw = localStorage.getItem("orders");
     let existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
 
     const existingIndex = existingOrders.findIndex(
-      (order: any) =>
-        order.name === newCustomer.name && order.status === "Ongoing"
+      (o: any) => o.name === newCustomer.name && o.status === "Ongoing"
     );
+
     if (existingIndex !== -1) {
       existingOrders[existingIndex].status = "Paid";
     } else {
-      const newOrder = {
+      existingOrders.push({
         id: String(existingOrders.length + 1).padStart(2, "0"),
         name: newCustomer.name || "Guest",
         date,
         time,
-        status: "Paid",
-      };
-      existingOrders.push(newOrder);
+        status: "Ongoing",
+      });
     }
 
     localStorage.setItem("orders", JSON.stringify(existingOrders));
 
+    /* ---------- REMOVE HOLD ORDER ---------- */
+
     const holdOrdersRaw = localStorage.getItem("holdOrders");
     let holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
-    holdOrders = holdOrders.filter(order => order.id !== selectedOrder);
+    holdOrders = holdOrders.filter((o) => o.id !== selectedOrder);
     localStorage.setItem("holdOrders", JSON.stringify(holdOrders));
+
+    /* ---------- NEXT ORDER NO ---------- */
 
     const nextOrderNo = orderNo + 1;
     setOrderNo(nextOrderNo);
     localStorage.setItem("orderNo", nextOrderNo.toString());
 
-    setIsValidate((prev) => !prev);
+    setIsValidate(prev => !prev);
+
+    /* ---------- NAVIGATION WITH STATE ---------- */
 
     if (paymentMethod === "cash") {
-      navigate("/invoice");
+      navigate("/invoice", { state: orderDetails });
     } else {
-      navigate("/payment");
+      navigate("/payment", { state: orderDetails });
     }
-    
   };
+
+
 
   const handleAddCustomer = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      const updatedCustomers = [...customerData, newCustomer];
+
+      // prevent duplicate email
+      if (customerData.some(c => c.email === newCustomer.email)) {
+        alert("Customer already exists");
+        return;
+      }
+
+      const customerWithId = {
+        ...newCustomer,
+        id: Date.now().toString(), // UNIQUE ID
+      };
+
+      const updatedCustomers = [...customerData, customerWithId];
       setCustomerData(updatedCustomers);
       localStorage.setItem("customerData", JSON.stringify(updatedCustomers));
 
       setNewCustomer({
+        id: "",
         name: "",
         phone: "",
         email: "",
@@ -234,18 +299,9 @@ const CancelOrder: React.FC = () => {
         city: "",
         zip: "",
       });
-      const holdOrdersRaw = localStorage.getItem("holdOrders");
-      const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
-
-      const updatedOrders = holdOrders.map(order =>
-        order.id === selectedOrder
-          ? { ...order, customer: newCustomer }
-          : order
-      );
-
-      localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
     }
   };
+
 
   return (
     <div className="h-screen">
@@ -321,56 +377,51 @@ const CancelOrder: React.FC = () => {
                         setNewCustomer({ ...newCustomer, name: e.target.value })
                       }
                       onKeyDown={handleAddCustomer}
-                      value={newCustomer.name}
-                    ></input>
+                      value={newCustomer.name ?? ""}
+                    />
+
                   </div>
 
                   <div className="flex flex-col border border-(--primary) rounded px-2">
                     <label className="text-xs text-(--form) ">Phone no*</label>
                     <input
-                      className="text-lg font-semibold text-(--main) 2 outline-none"
+                      className="text-lg font-semibold text-(--main) outline-none"
                       placeholder="Phone no"
                       onChange={(e) =>
-                        setNewCustomer({
-                          ...newCustomer,
-                          phone: e.target.value,
-                        })
+                        setNewCustomer({ ...newCustomer, phone: e.target.value })
                       }
                       onKeyDown={handleAddCustomer}
-                      value={newCustomer.phone}
-                    ></input>
+                      value={newCustomer.phone ?? ""}
+                    />
+
                   </div>
                   <div className="flex flex-col border border-(--primary) rounded px-2">
                     <label className="text-xs text-(--form)">Email*</label>
                     <input
-                      className="text-lg font-semibold text-(--main) 2 outline-none"
+                      className="text-lg font-semibold text-(--main) outline-none"
                       placeholder="Email"
                       onChange={(e) =>
-                        setNewCustomer({
-                          ...newCustomer,
-                          email: e.target.value,
-                        })
+                        setNewCustomer({ ...newCustomer, email: e.target.value })
                       }
                       onKeyDown={handleAddCustomer}
-                      value={newCustomer.email}
-                    ></input>
+                      value={newCustomer.email ?? ""}
+                    />
+
                   </div>
                   <div className="flex flex-col border border-(--primary) rounded px-2">
                     <label className="text-xs text-(--form) 1 -2">
                       Address
                     </label>
                     <input
-                      className="text-lg font-semibold text-(--main) 2 outline-none"
+                      className="text-lg font-semibold text-(--main) outline-none"
                       placeholder="Address"
                       onChange={(e) =>
-                        setNewCustomer({
-                          ...newCustomer,
-                          address1: e.target.value,
-                        })
+                        setNewCustomer({ ...newCustomer, address1: e.target.value })
                       }
                       onKeyDown={handleAddCustomer}
-                      value={newCustomer.address1}
-                    ></input>
+                      value={newCustomer.address1 ?? ""}
+                    />
+
                   </div>
                 </div>
               </div>
@@ -436,23 +487,23 @@ const CancelOrder: React.FC = () => {
             </div>
           </div>
           {/* <div className="flex gap-3 items-center p-3 bg-(--secondary)">
-            
-            <span className="text-sm font-semibold text-(--eye-icon)">
-              Order:
-            </span>
-            {orderNumbers.map((order) => (
-              <button
-                key={order}
-                onClick={() => setSelectedOrder(order)}
-                className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${selectedOrder === order
-                  ? "bg-(--main) text-white"
-                  : "bg-(--main)/50 text-white"
-                  }`}
-              >
-                {order}
-              </button>
-            ))}
-          </div> */}
+              
+              <span className="text-sm font-semibold text-(--eye-icon)">
+                Order:
+              </span>
+              {orderNumbers.map((order) => (
+                <button
+                  key={order}
+                  onClick={() => setSelectedOrder(order)}
+                  className={`w-12 h-10 rounded-md text-sm font-semibold transition-all border ${selectedOrder === order
+                    ? "bg-(--main) text-white"
+                    : "bg-(--main)/50 text-white"
+                    }`}
+                >
+                  {order}
+                </button>
+              ))}
+            </div> */}
         </div>
         <div className="w-full lg:w-[32%] p-6 bg-(--secondary) flex flex-col justify-between">
           <div className="font-serif">
@@ -465,11 +516,12 @@ const CancelOrder: React.FC = () => {
             <hr className="mt-3" />
           </div>
           <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] scrollbar-hide">
-            {cartItems.map((item) => (
+            {cartItems.map((item, index) => (
               <div
-                key={item.id}
+                key={`${item.id}-${index}`}
                 className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-3 rounded-lg gap-2"
               >
+
                 <div className="flex gap-3 items-center">
                   <img
                     src={`http://localhost:5000/uploads/${item.thumbnail}`}
@@ -488,8 +540,11 @@ const CancelOrder: React.FC = () => {
                 </div>
               </div>
             ))}
-            {cartItems.length === 0 && <div className="h-screen mt-8"></div>}
+            {cartItems.length === 0 ? (
+              <div className="h-screen mt-8"></div>
+            ) : null}
           </div>
+          {/* console.log(cartItems); */}
           <div className="flex flex-col sm:flex-row justify-between gap-3 w-full mt-10">
             <Link to="/inventory" className="w-full">
               <button className="w-full py-3 px-4 rounded bg-white text-black text-base font-medium border-gray-300 hover:bg-gray-50 transition">
