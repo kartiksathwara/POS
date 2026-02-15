@@ -166,7 +166,7 @@ const Inventory = () => {
 										<p className="text-sm text-gray-500">Size - 30 UK</p>
 									</div>
 								</div>
-								<div className="text-sm font-semibold">${product.price.toFixed(2)}</div>
+								<div className="text-sm font-semibold">₹{product.price.toFixed(2)}</div>
 							</div>
 						))}
 					</div>
@@ -203,7 +203,7 @@ const Inventory = () => {
 										<div>
 											<h4 className="font-medium text-sm">{item.title}</h4>
 											<div className="flex space-x-1">
-												<p className=" text-gray-500">${item.price.toFixed(2)}</p>
+												<p className=" text-gray-500">₹{item.price.toFixed(2)}</p>
 												<button className="px-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => decreseQty(item.id)}>
 													-
 												</button>
@@ -235,24 +235,24 @@ const Inventory = () => {
 						<div className="text-sm space-y-2">
 							<div className="flex justify-between">
 								<span>Subtotal • {cartItems.length} items</span>
-								<span>${subtotal.toFixed(2)}</span>
+								<span>₹{subtotal.toFixed(2)}</span>
 							</div>
 							{/* <div className="flex justify-between text-gray-500">
 								<span>Discount (-18%)</span>
-								<span>-${discount.toFixed(2)}</span>
+								<span>-₹{discount.toFixed(2)}</span>
 							</div> */}
 							<div className="flex justify-between text-gray-500">
 								<span>Discount (-{discountPercent}%)</span>
-								<span>-${discount.toFixed(2)}</span>
+								<span>-₹{discount.toFixed(2)}</span>
 							</div>
 							<div className="text-xs text-gray-400">{discountReason}</div>
 							<div className="flex justify-between text-gray-500">
 								<span>Tax (+8%)</span>
-								<span>${tax.toFixed(2)}</span>
+								<span>₹{tax.toFixed(2)}</span>
 							</div>
 							<div className="flex justify-between font-bold text-base border-t pt-2 mt-2">
 								<span>Total</span>
-								<span>${total.toFixed(2)}</span>
+								<span>₹{total.toFixed(2)}</span>
 							</div>
 							<button onClick={handleCheckout} className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center">
 								CHECKOUT &gt;

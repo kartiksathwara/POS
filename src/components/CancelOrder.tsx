@@ -208,7 +208,7 @@ const CancelOrder: React.FC = () => {
 
     // ⭐ IMPORTANT – invoice will read this
     localStorage.setItem("lastOrderKey", orderKey);
-
+    localStorage.setItem("lastOrder", JSON.stringify(orderDetails));
     /* ---------- UPDATE ORDERS LIST ---------- */
 
     const now = new Date();
@@ -483,6 +483,7 @@ const CancelOrder: React.FC = () => {
                 <span className="flex items-center justify-between w-full">
                   Card <CiCreditCard1 className="text-2xl" />
                 </span>
+                
               </div>
             </div>
           </div>

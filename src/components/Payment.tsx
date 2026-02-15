@@ -50,7 +50,7 @@ const Payment = () => {
   if (lastOrderRaw) {
     const lastOrder = JSON.parse(lastOrderRaw);
 
-    setCartItems(lastOrder.cartItems || []);
+    setCartItems(lastOrder.items || []);
     setTotalAmount(lastOrder.totalAmount || "0");
   }
 }, []);
