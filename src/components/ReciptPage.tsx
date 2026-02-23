@@ -317,8 +317,8 @@ const ReceiptPrint = () => {
   )}&cu=INR`;
 
   return (
-    <div className="hidden print:flex print:justify-center print:bg-white print:p-6">
-      <div className="print:w-[210mm] print:min-h-[297mm] bg-white border border-gray-300 rounded-xl shadow-lg p-10 print:border-none print:shadow-none text-[14px]">
+    <div className="hidden print:flex print:justify-center print:bg-white">
+      <div className="print:w-[210mm] print:min-h-100px bg-white border border-gray-300 rounded-xl shadow-lg print:border-none print:shadow-none text-[14px]">
 
         {/* HEADER */}
         <div className="text-center bg-slate-800 text-white rounded-lg p-6 mb-6">
@@ -371,6 +371,11 @@ const ReceiptPrint = () => {
             <span>Discount ({discountValue})</span>
             <span>- ${discount.toFixed(2)}</span>
           </div>
+          {discountReason && (
+            <div>
+              {discountReason}🎉
+            </div>
+          )}
 
           <div className="flex justify-between">
             <span>Tax (8%)</span>
@@ -396,14 +401,10 @@ const ReceiptPrint = () => {
         </div>
 
         {/* FOOTER */}
-        {discountReason && (
-          <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mt-6 text-center">
-            🎉 {discountReason}
-          </div>
-        )}
 
-        <div className="text-center mt-8 text-gray-600">
-          <p className="font-bold text-black text-lg">Thank You!</p>
+
+        <div className="text-center bg-slate-800 text-white rounded-lg p-6 pb-11 mb-6  mt-8">
+          <p className="font-bold text-white text-lg">Thank You!</p>
           <p>Visit Again</p>
         </div>
 

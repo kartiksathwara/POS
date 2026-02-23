@@ -48,12 +48,23 @@ const Lock = () => {
     }
   };
 
-  const handleLogout = () => {
-    navigate("/login");
-    dispatch(logout())
-    // logout();
-  };
+  // const handleLogout = () => {
+  //   navigate("/login");
+  //   dispatch(logout())
+  //   // logout();
+  // };
 
+  const handleLogout = () => {
+  // 🔥 REMOVE TOKEN FIRST
+  localStorage.removeItem("POS-token");
+  localStorage.removeItem("POS-role");
+
+  // 🔥 CLEAR REDUX
+  dispatch(logout());
+
+  // 🔥 NAVIGATE WITH REPLACE
+  navigate("/login", { replace: true });
+};
   useEffect(() => {
     if (pin.length === 4) {
       if (pin === CORRECT_PIN) {
