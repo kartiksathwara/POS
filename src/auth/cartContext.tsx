@@ -52,20 +52,37 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product: Omit<CartItem, "quantity">) => {
-    const exists = cart.find((item) => item._id === product._id);
+  // const addToCart = (product: Omit<CartItem, "quantity">) => {
+  //   const exists = cart.find((item) => item._id === product._id);
+  //   if (exists) {
+  //     setCart(
+  //       cart.map((item) =>
+  //         item._id === product._id
+  //           ? { ...item, quantity: item.quantity + 1 }
+  //           : item
+  //       )
+  //     );
+  //   } else {
+  //     setCart([...cart, { ...product, quantity: 1 }]);
+  //   }
+  // };
+const addToCart = (product: Omit<CartItem, "quantity">) => {
+  setCart((prevCart) => {
+    const exists = prevCart.find(
+      (item) => item._id === product._id
+    );
+
     if (exists) {
-      setCart(
-        cart.map((item) =>
-          item._id === product._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
+      return prevCart.map((item) =>
+        item._id === product._id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       );
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
     }
-  };
+
+    return [...prevCart, { ...product, quantity: 1 }];
+  });
+};
 
   const subtotal = useMemo(
     () => cart.reduce((sum, i) => sum + i.price * i.quantity, 0),
