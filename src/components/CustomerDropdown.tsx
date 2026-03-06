@@ -86,21 +86,99 @@
 
 
 
+// import React, { useState } from "react";
+// import { FaChevronDown } from "react-icons/fa6";
+
+// export interface Customer {
+//   id: string; // NEW
+//   name: string;
+//   phone: string;
+//   email: string;
+//   address1: string;
+//   address2: string;
+//   country: string;
+//   state: string;
+//   city: string;
+//   zip: string;
+// }
+
+// interface CustomerDropdownProps {
+//   customers: Customer[];
+//   selectedCustomer: Customer | null;
+//   onSelect: (customer: Customer) => void;
+// }
+
+// const CustomerDropdown: React.FC<CustomerDropdownProps> = ({
+//   customers,
+//   selectedCustomer,
+//   onSelect,
+// }) => {
+//   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+//   const handleSelect = (customer: Customer) => {
+//     setDropdownOpen(false);
+//     onSelect(customer);
+//   };
+
+//   return (
+//     <div className="relative w-full">
+//       <button
+//         onClick={() => setDropdownOpen(!dropdownOpen)}
+//         className="w-full px-1 text-left text-lg relative"
+//       >
+//         {selectedCustomer ? selectedCustomer.name : "Select customer"}
+//         <FaChevronDown
+//           className={`absolute right-0 top-1/2 -translate-y-1/2 transition-all ${dropdownOpen ? "rotate-180" : ""
+//             }`}
+//         />
+//       </button>
+
+//       {dropdownOpen && (
+//         <div className="absolute cursor-pointer w-full max-h-64 overflow-auto bg-white shadow-lg z-50 scrollbar-hide rounded">
+//           <table className="min-w-full text-left text-sm text-gray-700">
+//             <thead className="bg-gray-800 sticky top-0 text-white">
+//               <tr>
+//                 <th className="px-6 py-4 font-medium">Customer name</th>
+//                 <th className="px-6 py-4 font-medium">Phone no.</th>
+//                 <th className="px-6 py-4 font-medium">Email</th>
+//                 <th className="px-6 py-4 font-medium">Address</th>
+//               </tr>
+//             </thead>
+
+//             <tbody className="divide-y divide-gray-200">
+//               {customers.map((customer) => (
+//                 <tr
+//                   key={`${customer.id}-${customer.email}-${customer.phone}`}
+//                   onClick={() => handleSelect(customer)}
+//                   className="hover:bg-gray-100 cursor-pointer"
+//                 >
+//                   <td className="px-6 py-4">{customer.name}</td>
+//                   <td className="px-6 py-4">{customer.phone}</td>
+//                   <td className="px-6 py-4">{customer.email}</td>
+//                   <td className="px-6 py-4">
+//                     {customer.address1}, {customer.address2},{" "}
+//                     {customer.city}, {customer.state},{" "}
+//                     {customer.country} {customer.zip}
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+
+
+//           </table>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CustomerDropdown;
+
+
+
 import React, { useState } from "react";
 import { FaChevronDown } from "react-icons/fa6";
-
-export interface Customer {
-  id: string; // NEW
-  name: string;
-  phone: string;
-  email: string;
-  address1: string;
-  address2: string;
-  country: string;
-  state: string;
-  city: string;
-  zip: string;
-}
+import type { Customer } from "../api/apiServices";
 
 interface CustomerDropdownProps {
   customers: Customer[];
@@ -134,21 +212,21 @@ const CustomerDropdown: React.FC<CustomerDropdownProps> = ({
       </button>
 
       {dropdownOpen && (
-        <div className="absolute cursor-pointer w-full max-h-64 overflow-auto bg-white shadow-lg z-50 scrollbar-hide rounded">
+        <div className="absolute cursor-pointer w-full max-h-64 overflow-auto bg-white shadow-lg z-50 rounded">
           <table className="min-w-full text-left text-sm text-gray-700">
             <thead className="bg-gray-800 sticky top-0 text-white">
               <tr>
-                <th className="px-6 py-4 font-medium">Customer name</th>
-                <th className="px-6 py-4 font-medium">Phone no.</th>
-                <th className="px-6 py-4 font-medium">Email</th>
-                <th className="px-6 py-4 font-medium">Address</th>
+                <th className="px-6 py-4">Customer name</th>
+                <th className="px-6 py-4">Phone no.</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Address</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-200">
-              {customers.map((customer) => (
+            <tbody>
+              {customers.map((customer, index) => (
                 <tr
-                  key={`${customer.id}-${customer.email}-${customer.phone}`}
+                  key={customer._id || customer.phone || index}
                   onClick={() => handleSelect(customer)}
                   className="hover:bg-gray-100 cursor-pointer"
                 >
@@ -156,15 +234,12 @@ const CustomerDropdown: React.FC<CustomerDropdownProps> = ({
                   <td className="px-6 py-4">{customer.phone}</td>
                   <td className="px-6 py-4">{customer.email}</td>
                   <td className="px-6 py-4">
-                    {customer.address1}, {customer.address2},{" "}
-                    {customer.city}, {customer.state},{" "}
+                    {customer.address}, {customer.city}, {customer.state},{" "}
                     {customer.country} {customer.zip}
                   </td>
                 </tr>
               ))}
             </tbody>
-
-
           </table>
         </div>
       )}
@@ -173,10 +248,6 @@ const CustomerDropdown: React.FC<CustomerDropdownProps> = ({
 };
 
 export default CustomerDropdown;
-
-
-
-
 
 
 // import Header from "./Header";

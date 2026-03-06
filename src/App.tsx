@@ -53,7 +53,7 @@ function App() {
             ></Route>
             <Route path="/activities" element={<Activities />} />
             <Route
-              path="/inventory"
+              path="/inventory/:id?"
               element={
                 <ProtectedRoute>
                   <InventoryPage />

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
-import type { customers } from "../hooks/fetchCustomers";
+import type { Customer } from "../api/apiServices";
 
 interface AddCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (customer: customers) => void;
+  onSave: (customer: Customer) => void;
 }
 
 const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
@@ -21,7 +21,7 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
     country: "",
     state: "",
     city: "",
-    zip: "",
+    zip: "" as string | number,
   });
 
   const handleChange = (
@@ -53,7 +53,7 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
       country: form.country,
       state: form.state,
       city: form.city,
-      zip: form.zip,
+      zip: form.zip ? Number(form.zip) : undefined,
     };
     onSave(customerData);
     handleClear();
@@ -213,7 +213,14 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
                 name="zip"
                 type="number"
                 value={form.zip}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    zip: e.target.value
+                      ? Number(e.target.value)
+                      : "",
+                  })
+                }
                 placeholder="Zip/Pin code"
                 className="input p-2 pl-4 pt-7 focus:outline-0"
               />

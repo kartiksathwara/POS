@@ -392,6 +392,200 @@
 
 
 
+// import { useEffect, useState } from "react";
+// import { DndProvider, useDrag, useDrop } from "react-dnd";
+// import { HTML5Backend } from "react-dnd-html5-backend";
+// import Header from "../Header";
+// import SearchBar from "../SearchBar";
+// import { BsThreeDotsVertical } from "react-icons/bs";
+// import { Link, useNavigate, useParams } from "react-router-dom";
+// import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+// import useFetchProducts from "../../hooks/useFetchProducts";
+// import Cart from "../Cart";
+// import ProductCard from "../Products/ProductCard";
+// import { useCart } from "../../auth/cartContext";
+// import {
+//   createHoldOrder,
+//   getSingleHoldOrder,
+//   deleteHoldOrder,
+// } from "../../api/apiServices";
+
+// const ItemType = "PRODUCT";
+
+// interface Product {
+//   _id: string;
+//   id: number;
+//   title: string;
+//   price: number;
+//   thumbnail: string;
+//   category: string;
+// }
+
+// // interface CartItem extends Product {
+// //   quantity: number;
+// // }
+
+// // interface Customer {
+// //   name?: string;
+// //   phone?: string;
+// // }
+
+// const DraggableWrapper: React.FC<{
+//   product: Product;
+//   children: React.ReactNode;
+// }> = ({ product, children }) => {
+//   const [{ isDragging }, drag] = useDrag(() => ({
+//     type: ItemType,
+//     item: product,
+//     collect: (monitor) => ({
+//       isDragging: monitor.isDragging(),
+//     }),
+//   }));
+
+//   return (
+//     <div
+//       ref={(node) => {
+//         if (node) drag(node);
+//       }}
+//       style={{ opacity: isDragging ? 0.85 : 1, cursor: "grab" }}
+//     >
+//       {children}
+//     </div>
+//   );
+// };
+
+// const CartDropWrapper: React.FC<{
+//   onDrop: (item: Product) => void;
+//   children: React.ReactNode;
+// }> = ({ onDrop, children }) => {
+//   const [{ isOver }, drop] = useDrop(() => ({
+//     accept: ItemType,
+//     drop: (item: Product) => onDrop(item),
+//     collect: (monitor) => ({
+//       isOver: monitor.isOver(),
+//     }),
+//   }));
+
+//   return (
+//     <div
+//       ref={(node) => {
+//         if (node) drop(node);
+//       }}
+//       className="flex-1 overflow-y-auto space-y-3 rounded-lg scrollbar-hide"
+//       style={{ backgroundColor: isOver ? "#f3f4f6" : "transparent" }}
+//     >
+//       {children}
+//     </div>
+//   );
+// };
+
+// const InventoryPage = () => {
+//   const navigate = useNavigate();
+//   const { id } = useParams<{ id?: string }>();
+
+//   const { cart, setCart, addToCart } = useCart();
+//   const { products, setProducts, allProducts } = useFetchProducts();
+
+//   const [showMobileCategories, setShowMobileCategories] = useState(false);
+//   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+//   const [showCustomerInput, setShowCustomerInput] = useState(false);
+//   const [customerName, setCustomerName] = useState("");
+//   const [customerphone, setCustomerPhone] = useState("");
+
+//   const filteredProducts =
+//     selectedCategory === "All"
+//       ? products
+//       : products.filter((p) => p.category === selectedCategory);
+
+//   /* ===== Resume Hold Order ===== */
+//   useEffect(() => {
+//     const loadOrder = async () => {
+//       if (!id) {
+//         // 🔥 Reset everything if no hold order
+//         setCart([]);
+//         setCustomerName("");
+//         setCustomerPhone("");
+//         return;
+//       }
+//       try {
+//         const data = await getSingleHoldOrder(id);
+//         setCart(data.cartItems);
+//         setCustomerName(data.customer?.name || "");
+//         setCustomerPhone(data.customer?.phone || "");
+//       } catch (err) {
+//         console.log(err);
+//       }
+//     };
+
+//     loadOrder();
+//   }, [id, setCart]);
+
+//   /* ===== Cart ===== */
+//   const handleAddToCart = (product: Product) => addToCart(product);
+//   const handleDropToCart = (product: Product) => addToCart(product);
+//   const handleClearCart = () => setCart([]);
+
+//   const subtotal = cart.reduce(
+//     (acc, item) => acc + item.price * item.quantity,
+//     0
+//   );
+//   const discountReason = "Default Discount";
+//   const discountPercent = 18;
+//   const discount = subtotal * (discountPercent / 100);
+//   const tax = (subtotal - discount) * 0.08;
+//   const total = subtotal - discount + tax;
+
+//   const handleSearch = (query: string) => {
+//     if (!query.trim()) {
+//       setProducts(allProducts);
+//       return;
+//     }
+
+//     const filtered = allProducts.filter(
+//       (item) =>
+//         item.title.toLowerCase().includes(query.toLowerCase()) ||
+//         item.category.toLowerCase().includes(query.toLowerCase())
+//     );
+//     setProducts(filtered);
+//   };
+
+//   /* ===== Hold Order ===== */
+//   const handleHoldOrder = () => {
+//     setShowCustomerInput(true);
+//   };
+
+//   const saveToHoldOrder = async (name: string, phone: string) => {
+//     try {
+//       await createHoldOrder({
+//         cartItems: cart,
+//         totalAmount: total.toFixed(2),
+//         customer: { name, phone },
+//       });
+
+//       setCart([]);
+//       setShowCustomerInput(false);
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
+
+//   const handleSaveCustomer = (e: React.FormEvent) => {
+//     e.preventDefault();
+//     if (!customerName.trim() || !customerphone.trim()) return;
+//     saveToHoldOrder(customerName.trim(), customerphone.trim());
+//   };
+
+//   /* ===== Checkout ===== */
+//   const handleCheckout = async () => {
+//     if (cart.length === 0) return;
+
+//     if (id) {
+//       await deleteHoldOrder(id);
+//     }
+
+//     setCart([]);
+//     navigate("/bill");
+//   };
 
 import { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -399,13 +593,18 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import Header from "../Header";
 import SearchBar from "../SearchBar";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import useFetchProducts from "../../hooks/useFetchProducts";
 import Cart from "../Cart";
 import ProductCard from "../Products/ProductCard";
 import { useCart } from "../../auth/cartContext";
-
+import {
+  createHoldOrder,
+  getSingleHoldOrder,
+  // deleteHoldOrder,
+} from "../../api/apiServices";
+// import { createOrder } from "../../api/apiServices";
 
 const ItemType = "PRODUCT";
 
@@ -416,22 +615,6 @@ interface Product {
   price: number;
   thumbnail: string;
   category: string;
-}
-
-interface CartItem extends Product {
-  quantity: number;
-}
-
-interface Customer {
-  name?: string;
-  phone?: string;
-}
-
-interface HoldOrder {
-  id: string;
-  cartItems: CartItem[];
-  totalAmount: string;
-  customer?: Customer;
 }
 
 const DraggableWrapper: React.FC<{
@@ -458,7 +641,6 @@ const DraggableWrapper: React.FC<{
   );
 };
 
-
 const CartDropWrapper: React.FC<{
   onDrop: (item: Product) => void;
   children: React.ReactNode;
@@ -483,73 +665,73 @@ const CartDropWrapper: React.FC<{
     </div>
   );
 };
+
 const InventoryPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
+
   const { cart, setCart, addToCart } = useCart();
   const { products, setProducts, allProducts } = useFetchProducts();
-  const [orderNo, setOrderNo] = useState<number>(1);
+
   const [showMobileCategories, setShowMobileCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showCustomerInput, setShowCustomerInput] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerphone, setCustomerPhone] = useState("");
 
+  /* 🔥 Only added for coupon */
+  const [discountPercent, setDiscountPercent] = useState<number>(18);
+  const [discountReason, setDiscountReason] = useState<string>("Default Discount");
+
+  /* Apply coupon when coming from Discount page */
+  useEffect(() => {
+    const state: any = location.state;
+
+    if (state?.discountPercent) {
+      setDiscountPercent(Number(state.discountPercent));
+      setDiscountReason(state.discountReason || "Coupon Applied");
+
+      // Clear state so it doesn't reapply repeatedly
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state]);
+
   const filteredProducts =
     selectedCategory === "All"
       ? products
-      : products.filter((product) => product.category === selectedCategory);
+      : products.filter((p) => p.category === selectedCategory);
 
+  /* ===== Resume Hold Order ===== */
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
+    if (!id) return; // ✅ do nothing for normal order
 
-    const storedOrderNo = localStorage.getItem("orderNo");
-    if (storedOrderNo) {
-      setOrderNo(parseInt(storedOrderNo));
-    }
-
-    const selectedOrderRaw = localStorage.getItem("selectedOrder");
-    if (selectedOrderRaw) {
+    const loadOrder = async () => {
       try {
-        const selectedOrder: HoldOrder = JSON.parse(selectedOrderRaw);
-        setCart(selectedOrder.cartItems || []);
-        setCustomerName(selectedOrder.customer?.name || "");
-        setCustomerPhone(selectedOrder.customer?.phone || "");
-        localStorage.setItem("cart", JSON.stringify(selectedOrder.cartItems || []));
-        localStorage.setItem("currentOrderID", selectedOrder.id);
-        localStorage.removeItem("selectedOrder");
+        const data = await getSingleHoldOrder(id);
+        setCart(data.cartItems);
+        setCustomerName(data.customer?.name || "");
+        setCustomerPhone(data.customer?.phone || "");
+        setDiscountPercent(data.discountPercent || 18);
+        setDiscountReason(data.discountReason || "Default Discount");
       } catch (err) {
-        console.log("Invalid selectedOrder in localstorage", err);
+        console.log(err);
       }
-    }
+    };
 
-  }, []);
+    loadOrder();
+  }, [id]);
 
-
-  const handleAddToCart = (product: Product) => {
-    addToCart(product);
-  };
-
-  const handleDropToCart = (product: Product) => {
-    addToCart(product);
-  };
-
-  const handleClearCart = () => {
-    setCart([]);
-    localStorage.removeItem("cart");
-  };
+  /* ===== Cart ===== */
+  const handleAddToCart = (product: Product) => addToCart(product);
+  const handleDropToCart = (product: Product) => addToCart(product);
+  const handleClearCart = () => setCart([]);
 
   const subtotal = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
-  const selectedDiscount = localStorage.getItem("selectedDiscount") || "18%";
-  const discountReason =
-    localStorage.getItem("discountReason") || "Default Discount";
-  const discountPercent = parseFloat(selectedDiscount.replace("%", ""));
   const discount = subtotal * (discountPercent / 100);
   const tax = (subtotal - discount) * 0.08;
   const total = subtotal - discount + tax;
@@ -568,102 +750,48 @@ const InventoryPage = () => {
     setProducts(filtered);
   };
 
-  const saveToHoldOrder = (name: string, phone: string) => {
-    const holdOrdersRaw = localStorage.getItem("holdOrders");
-    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
-
-    const existingIds = holdOrders.map(o => parseInt(o.id));
-    let newIdNumber = 1;
-    while (existingIds.includes(newIdNumber)) {
-      newIdNumber++;
-    }
-
-    const newId = newIdNumber.toString().padStart(3, "0");
-
-    const newOrder: HoldOrder = {
-      id: newId,
-      cartItems: cart,
-      totalAmount: total.toFixed(2),
-      customer: { name, phone },
-    };
-
-    const updatedOrders = [...holdOrders, newOrder];
-    localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
-
-    window.dispatchEvent(new Event("holdOrdersUpdated"));
-
-    setCart([]);
-    localStorage.removeItem("cart");
-  };
-
+  /* ===== Hold Order ===== */
   const handleHoldOrder = () => {
     setShowCustomerInput(true);
+  };
+
+  const saveToHoldOrder = async (name: string, phone: string) => {
+    try {
+      await createHoldOrder({
+        cartItems: cart,
+        subtotal,
+        discountPercent,
+        discountReason,
+        discountAmount: discount,
+        tax,
+        totalAmount: total,
+        customer: { name, phone },
+      });
+
+      setCart([]);
+      setShowCustomerInput(false);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleSaveCustomer = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerName.trim() || !customerphone.trim()) return;
-
     saveToHoldOrder(customerName.trim(), customerphone.trim());
-    setCustomerPhone("");
-    setShowCustomerInput(false);
   };
 
+  /* ===== Checkout ===== */
   const handleCheckout = () => {
-    if (cart.length === 0) return;
+  if (cart.length === 0) return;
 
-    const holdOrdersRaw = localStorage.getItem("holdOrders");
-    const holdOrders: HoldOrder[] = holdOrdersRaw ? JSON.parse(holdOrdersRaw) : [];
-
-    const currentOrderID = localStorage.getItem("currentOrderID");
-
-    if (currentOrderID) {
-      const updatedOrders = holdOrders.map((o) =>
-        o.id === currentOrderID
-          ? { ...o, cartItems: cart, totalAmount: total.toFixed(2), customer: { name: customerName || "Guest" } }
-          : o
-      );
-      localStorage.setItem("holdOrders", JSON.stringify(updatedOrders));
-    } else {
-      const possibleIDs = ["001", "002", "003", "004"];
-      const usedIDs = holdOrders.map((o) => o.id);
-      const availableID = possibleIDs.find((id) => !usedIDs.includes(id));
-
-      if (availableID) {
-        const newOrder: HoldOrder = {
-          id: availableID,
-          cartItems: cart,
-          totalAmount: total.toFixed(2),
-          customer: { name: customerName || "Guest" },
-        };
-
-        localStorage.setItem(
-          "holdOrders",
-          JSON.stringify([...holdOrders, newOrder])
-        );
-        localStorage.setItem("currentOrderID", availableID);
-      }
-    }
-
-    setCart([]);
-    localStorage.removeItem("cart");
-
-    const lastOrder = {
+  navigate("/bill", {
+    state: {
       cartItems: cart,
-      totalAmount: total.toFixed(2),
-      subtotal: subtotal.toFixed(2),
-      discount: discount.toFixed(2),
-      tax: tax.toFixed(2),
-      customer: { name: customerName || "Guest", phone: customerphone || "N/A" },
-    };
-
-    localStorage.setItem("lastOrder", JSON.stringify(lastOrder));
-    localStorage.removeItem("cart");
-    localStorage.removeItem("currentOrderID");
-    navigate("/bill");
-
-  };
-
+      totalAmount: total,
+    },
+  });
+};
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-screen flex flex-col">
