@@ -782,15 +782,32 @@ const InventoryPage = () => {
   };
 
   /* ===== Checkout ===== */
+  // const handleCheckout = () => {
+  //   if (cart.length === 0) return;
+
+  //   navigate("/bill", {
+  //     state: {
+  //       cartItems: cart,
+  //       totalAmount: total,
+  //       discountPercent,
+  //       discountReason,
+  //     },
+  //   });
+  // };
   const handleCheckout = () => {
   if (cart.length === 0) return;
 
-  navigate("/bill", {
-    state: {
-      cartItems: cart,
-      totalAmount: total,
-    },
-  });
+  const orderData = {
+    cartItems: cart,
+    subtotal,
+    discountPercent,
+    discountReason,
+    discountAmount: discount,
+    tax,
+    totalAmount: total
+  };
+
+  navigate("/bill", { state: orderData });
 };
   return (
     <DndProvider backend={HTML5Backend}>

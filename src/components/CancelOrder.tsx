@@ -1014,13 +1014,8 @@ const CancelOrder: React.FC = () => {
           setSelectedCustomer(data.customer);
         }
 
-      } else if (stateData.cartItems) {
-
-        setOrderData({
-          cartItems: stateData.cartItems,
-          totalAmount: stateData.totalAmount,
-        });
-
+      } else if (stateData) {
+        setOrderData(stateData);
       }
 
     };
@@ -1119,7 +1114,12 @@ const CancelOrder: React.FC = () => {
       }
 
       if (paymentMethod === "cash") {
-        navigate("/invoice");
+        navigate("/invoice", {
+          state: {
+            ...orderData,
+            customer: selectedCustomer
+          }
+        });
       } else {
         navigate("/payment");
       }
@@ -1450,8 +1450,8 @@ const CancelOrder: React.FC = () => {
               }
               onClick={handleProduct}
               className={`w-full py-2 text-white rounded px-4 text-sm sm:text-base ${orderData?.cartItems?.length && selectedCustomer && paymentMethod
-                  ? "bg-(--main)"
-                  : "bg-(--main)/40 cursor-not-allowed"
+                ? "bg-(--main)"
+                : "bg-(--main)/40 cursor-not-allowed"
                 }`}
             >
               Validate &gt;
