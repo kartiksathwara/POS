@@ -116,7 +116,7 @@
 
 
 import { useEffect, useState } from "react";
-import Header from "../Header";
+import AdminHeader from "./AdminHeader";
 
 const AdminProductsPage = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -193,8 +193,8 @@ const AdminProductsPage = () => {
 
   return (
     <div className="h-screen flex flex-col bg-secondary">
-      <Header />
-
+      
+      <AdminHeader />
       <div className="flex-1 overflow-y-auto p-6">
 
         <h2 className="text-2xl font-semibold mb-4 text-gray-800">

@@ -587,6 +587,9 @@
 //     navigate("/bill");
 //   };
 
+
+
+
 import { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -604,7 +607,7 @@ import {
   getSingleHoldOrder,
   // deleteHoldOrder,
 } from "../../api/apiServices";
-// import { createOrder } from "../../api/apiServices";
+import { createOrder } from "../../api/apiServices";
 
 const ItemType = "PRODUCT";
 
@@ -679,7 +682,7 @@ const InventoryPage = () => {
   const [showCustomerInput, setShowCustomerInput] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerphone, setCustomerPhone] = useState("");
-
+  const [creatingOrder, setCreatingOrder] = useState(false);
   /* 🔥 Only added for coupon */
   const [discountPercent, setDiscountPercent] = useState<number>(18);
   const [discountReason, setDiscountReason] = useState<string>("Default Discount");
@@ -701,6 +704,16 @@ const InventoryPage = () => {
     selectedCategory === "All"
       ? products
       : products.filter((p) => p.category === selectedCategory);
+
+  useEffect(() => {
+
+    const state: any = location.state;
+
+    if (state?.cartItems) {
+      setCart(state.cartItems);
+    }
+
+  }, [location.state]);
 
   /* ===== Resume Hold Order ===== */
   useEffect(() => {
@@ -757,6 +770,7 @@ const InventoryPage = () => {
 
   const saveToHoldOrder = async (name: string, phone: string) => {
     try {
+
       await createHoldOrder({
         cartItems: cart,
         subtotal,
@@ -766,10 +780,12 @@ const InventoryPage = () => {
         tax,
         totalAmount: total,
         customer: { name, phone },
+        status: "Ongoing"
       });
 
       setCart([]);
       setShowCustomerInput(false);
+
     } catch (err) {
       console.log(err);
     }
@@ -794,21 +810,33 @@ const InventoryPage = () => {
   //     },
   //   });
   // };
-  const handleCheckout = () => {
-  if (cart.length === 0) return;
 
-  const orderData = {
-    cartItems: cart,
-    subtotal,
-    discountPercent,
-    discountReason,
-    discountAmount: discount,
-    tax,
-    totalAmount: total
+
+  const handleCheckout = async () => {
+
+    if (creatingOrder || cart.length === 0) return;
+
+    setCreatingOrder(true);
+
+    try {
+
+      const order = await createOrder({
+        customer: null,
+        cartItems: cart,
+        totalAmount: total,
+        paymentMethod: null,
+        status: "Ongoing"
+      });
+
+      setCart([]);   // clear cart immediately
+
+      navigate("/bill", { state: order });
+
+    } catch (err) {
+      console.log(err);
+    }
+
   };
-
-  navigate("/bill", { state: orderData });
-};
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-screen flex flex-col">
@@ -968,11 +996,18 @@ const InventoryPage = () => {
                   <span>Total</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
-                <button
+                {/* <button
                   onClick={handleCheckout}
                   className="bg-(--main) w-full text-white font-semibold py-2 rounded-md block cursor-pointer text-center"
                 >
                   CHECKOUT &gt;
+                </button> */}
+                <button
+                  disabled={creatingOrder || cart.length === 0}
+                  onClick={handleCheckout}
+                  className="bg-(--main) w-full text-white font-semibold py-2 rounded-md"
+                >
+                  {creatingOrder ? "Processing..." : "CHECKOUT >"}
                 </button>
               </div>
             )}

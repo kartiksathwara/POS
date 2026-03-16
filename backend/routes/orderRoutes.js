@@ -39,57 +39,189 @@
 // export default router;
 
 
+// import express from "express";
+// import Order from "../models/Order.js";
+// import Customer from "../models/Customer.js";
+
+// const router = express.Router();
+
+// // CREATE ORDER
+// router.post("/", async (req, res) => {
+//   try {
+//     const { customer, cartItems, totalAmount, paymentMethod, status } = req.body;
+
+//     if (!customer) {
+//       return res.status(400).json({ error: "Customer required" });
+//     }
+
+//     const order = new Order({
+//       customer,
+//       cartItems: cartItems || [],
+//       totalAmount: totalAmount || 0,
+//       paymentMethod,
+//       status,
+//     });
+
+//     const savedOrder = await order.save();
+
+//     if (totalAmount) {
+//       await Customer.findByIdAndUpdate(customer, {
+//         $inc: { loyaltyPoints: Math.floor(totalAmount / 100) },
+//       });
+//     }
+
+//     res.status(201).json(savedOrder);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
+
+// // GET ALL ORDERS
+// router.get("/", async (req, res) => {
+//   const orders = await Order.find().populate("customer");
+//   res.json(orders);
+// });
+
+// // DELETE ORDER
+// router.delete("/:id", async (req, res) => {
+//   try {
+//     await Order.findByIdAndDelete(req.params.id);
+//     res.json({ message: "Order deleted" });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+// export default router;
+
+
+
+
 import express from "express";
 import Order from "../models/Order.js";
 import Customer from "../models/Customer.js";
 
 const router = express.Router();
 
-// CREATE ORDER
+/* ================= CREATE ORDER ================= */
+
 router.post("/", async (req, res) => {
   try {
+
     const { customer, cartItems, totalAmount, paymentMethod, status } = req.body;
-
-    if (!customer) {
-      return res.status(400).json({ error: "Customer required" });
+ if (!cartItems || cartItems.length === 0) {
+      return res.status(400).json({ message: "Cart cannot be empty" });
     }
-
     const order = new Order({
-      customer,
+      customer: customer || null,
       cartItems: cartItems || [],
       totalAmount: totalAmount || 0,
-      paymentMethod,
-      status,
+      paymentMethod: paymentMethod || null,
+      status: status || "Ongoing"
     });
 
     const savedOrder = await order.save();
 
-    if (totalAmount) {
+    /* Loyalty points only if customer exists */
+
+    if (customer && totalAmount) {
+
       await Customer.findByIdAndUpdate(customer, {
-        $inc: { loyaltyPoints: Math.floor(totalAmount / 100) },
+        $inc: { loyaltyPoints: Math.floor(totalAmount / 100) }
       });
+
     }
 
     res.status(201).json(savedOrder);
+
   } catch (err) {
+
     res.status(400).json({ error: err.message });
+
   }
 });
 
-// GET ALL ORDERS
-router.get("/", async (req, res) => {
-  const orders = await Order.find().populate("customer");
-  res.json(orders);
-});
 
-// DELETE ORDER
-router.delete("/:id", async (req, res) => {
+/* ================= GET ALL ORDERS ================= */
+
+router.get("/", async (req, res) => {
+
   try {
-    await Order.findByIdAndDelete(req.params.id);
-    res.json({ message: "Order deleted" });
+
+    const orders = await Order
+      .find()
+      .populate("customer", "name phone email")
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+
+});
+
+
+/* ================= GET SINGLE ORDER ================= */
+
+router.get("/:id", async (req, res) => {
+
+  try {
+
+    const order = await Order
+      .findById(req.params.id)
+      .populate("customer");
+
+    res.json(order);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
+});
+
+
+/* ================= UPDATE ORDER STATUS ================= */
+
+router.patch("/:id", async (req, res) => {
+  try {
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    Object.assign(order, req.body);
+
+    const updated = await order.save();
+
+    const populated = await updated.populate("customer", "name phone");
+
+    res.json(populated);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+/* ================= DELETE ORDER ================= */
+
+router.delete("/:id", async (req, res) => {
+
+  try {
+
+    await Order.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "Order deleted" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
 });
 
 export default router;
+

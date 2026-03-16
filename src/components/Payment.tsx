@@ -285,6 +285,9 @@ import { VscSend } from "react-icons/vsc";
 import { IoMdPrint } from "react-icons/io";
 import PaymentDropdown from "./PaymentDropdown";
 import ReceiptPrint from "./ReciptPage";
+import { updateOrderStatus } from "../api/apiServices";
+import { useCart } from "../auth/cartContext";
+
 
 interface Product {
   id?: number;
@@ -302,11 +305,34 @@ const Payment = () => {
   const [totalAmount, setTotalAmount] = useState("0");
   const [email, setEmail] = useState("");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [statusUpdated, setStatusUpdated] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { setCart } = useCart();
 
   const orderData: any = location.state;
+
+  useEffect(() => {
+
+    if (!orderData) return;
+
+    setCartItems(orderData.cartItems || []);
+    setTotalAmount(orderData.totalAmount || "0");
+
+    if (orderData._id) {
+      updateOrderStatus(orderData._id, "Paid")
+        .then(() => setStatusUpdated(true))
+        .catch(console.error);
+    }
+
+  }, []);
+
+  const handleNewOrder = () => {
+    setCart([]);
+    navigate("/");
+  };
 
   const handleEmailClick = () => {
     if (!email || !email.includes("@")) {
@@ -315,18 +341,10 @@ const Payment = () => {
     }
 
     window.location.href = `mailto:${email}`;
+
+
   };
 
-  const handleNewOrder = () => {
-    navigate("/");
-  };
-
-  useEffect(() => {
-    if (!orderData) return;
-
-    setCartItems(orderData.cartItems || []);
-    setTotalAmount(orderData.totalAmount || "0");
-  }, [orderData]);
 
   return (
     <>
@@ -336,9 +354,8 @@ const Payment = () => {
         <Header />
 
         <div
-          className={`flex flex-col items-center w-full flex-1 h-[calc(100% - 4rem)] ${
-            dropdownOpen ? "" : "justify-between"
-          }`}
+          className={`flex flex-col items-center w-full flex-1 h-[calc(100% - 4rem)] ${dropdownOpen ? "" : "justify-between"
+            }`}
         >
           <div className="flex flex-col justify-between gap-5 p-10 w-3xl">
 

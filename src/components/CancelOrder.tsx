@@ -955,7 +955,6 @@ import React, { useEffect, useState } from "react";
 import {
   Link,
   useNavigate,
-  useParams,
   useLocation,
 } from "react-router-dom";
 
@@ -964,22 +963,23 @@ import CustomerDropdown from "../components/CustomerDropdown";
 import {
   getOrderCustomers,
   createOrderCustomer,
-  createOrder,
   getSingleOrder,
+  updateOrder,
   updateOrderStatus,
 } from "../api/apiServices";
-
 import type { Customer } from "../api/apiServices";
 
 const CancelOrder: React.FC = () => {
 
-  const { id } = useParams<{ id?: string }>();
+  const [creatingOrder, setCreatingOrder] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const stateData: any = location.state || {};
+  const orderDataFromState: any = location.state;
+  const orderId = orderDataFromState?._id;
 
-  const [orderData, setOrderData] = useState<any>(null);
+  const [orderData, setOrderData] = useState<any>(orderDataFromState);
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] =
     useState<Customer | null>(null);
@@ -1002,27 +1002,27 @@ const CancelOrder: React.FC = () => {
 
   useEffect(() => {
 
+    if (!orderId) return;
+
     const loadOrder = async () => {
-
-      if (id) {
-
-        const data = await getSingleOrder(id);
-
+      try {
+        const data = await getSingleOrder(orderId);
         setOrderData(data);
 
         if (data.customer) {
           setSelectedCustomer(data.customer);
         }
-
-      } else if (stateData) {
-        setOrderData(stateData);
+      } catch (err) {
+        console.log(err);
       }
+
 
     };
 
     loadOrder();
 
-  }, [id]);
+  }, [orderId]);
+
 
   /* ================= LOAD ORDER CUSTOMERS ================= */
 
@@ -1090,50 +1090,73 @@ const CancelOrder: React.FC = () => {
 
   const handleProduct = async () => {
 
+    if (creatingOrder) return;
+
     if (!paymentMethod) {
       alert("Select payment method");
       return;
     }
 
+    if (!selectedCustomer?._id) {
+      alert("Please select a customer");
+      return;
+    }
+
     try {
 
-      if (!id) {
+      setCreatingOrder(true);
 
-        await createOrder({
-          customer: selectedCustomer,
-          cartItems: orderData.cartItems,
-          totalAmount: orderData.totalAmount,
-          paymentMethod,
-          status: "Paid",
-        });
-
-      } else {
-
-        await updateOrderStatus(id, "Paid");
-
-      }
+      await updateOrder(orderId, {
+        customer: selectedCustomer._id,
+        paymentMethod,
+        status: "Unpaid"
+      });
 
       if (paymentMethod === "cash") {
+
         navigate("/invoice", {
           state: {
             ...orderData,
-            customer: selectedCustomer
+            customer: selectedCustomer,
+            _id: orderId
           }
         });
+
       } else {
-        navigate("/payment");
+
+        navigate("/payment", {
+          state: {
+            ...orderData,
+            customer: selectedCustomer,
+            _id: orderId
+          }
+        });
+
       }
 
     } catch (err) {
       console.log(err);
+    } finally {
+      setCreatingOrder(false);
     }
-
   };
 
-  const handleCancelCart = () => {
-    navigate("/inventory");
-  };
+  const handleCancelCart = async () => {
 
+    try {
+
+      if (orderId) {
+        await updateOrderStatus(orderId, "Failed");
+      }
+
+      navigate("/inventory");
+
+    } catch (err) {
+      console.log(err);
+    }
+    console.log("selectedCustomer:", selectedCustomer);
+console.log("orderId:", orderId);
+  };
   return (
 
     <div className="h-screen">
@@ -1378,7 +1401,7 @@ const CancelOrder: React.FC = () => {
             ))}
 
           </div> */}
-          <div className="flex-1 overflow-y-auto py-4 space-y-3 max-h-[60vh] scrollbar-hide">
+          <div className="flex-1 overflow-y-auto space-y-3 max-h-[60vh] scrollbar-hide">
 
             {orderData?.cartItems?.map((item: any, index: number) => {
 
@@ -1437,13 +1460,21 @@ const CancelOrder: React.FC = () => {
           <div className="flex gap-3">
 
             <Link to="/inventory" className="w-full">
-              <button className="w-full py-3 px-4 rounded bg-white text-black">
+              <button
+                onClick={() =>
+                  navigate("/inventory", {
+                    state: { cartItems: orderData.cartItems }
+                  })
+                }
+                className="w-full py-3 px-4 rounded bg-white text-black"
+              >
                 Back
               </button>
             </Link>
 
             <button
               disabled={
+                creatingOrder ||
                 !orderData?.cartItems?.length ||
                 !selectedCustomer ||
                 !paymentMethod

@@ -296,6 +296,15 @@ export interface Customer {
   zip?: number;
 }
 
+export interface Order {
+  _id: string
+  customer?: Customer | null
+  cartItems: CartItem[]
+  totalAmount: number
+  paymentMethod: "cash" | "card"
+  status: "Paid" | "Failed" | "Ongoing" | "Unpaid"
+  createdAt: string
+}
 /* =====================================================
    HELPER
 ===================================================== */
@@ -345,6 +354,7 @@ export const createHoldOrder = async (data: {
   tax: number;
   totalAmount: number;
   customer: { name: string; phone: string };
+  status?: "Ongoing" | "Unpaid" | "Paid" | "Failed";
 }) => {
   const response = await fetch(`${BASE_URL}/hold-orders`, {
     method: "POST",
@@ -356,7 +366,6 @@ export const createHoldOrder = async (data: {
   if (!response.ok) throw new Error(result.message);
   return result;
 };
-
 export const getHoldOrders = async (): Promise<HoldOrder[]> => {
   const response = await fetch(`${BASE_URL}/hold-orders`, {
     headers: getAuthHeader(),
@@ -416,7 +425,8 @@ export const deleteCoupon = async (id: string) => {
    ORDER APIs
 ===================================================== */
 
-export const createOrder = async (data: any) => {
+export const createOrder = async (data: any): Promise<Order> => {
+
   const response = await fetch(`${BASE_URL}/orders`, {
     method: "POST",
     headers: getAuthHeader(),
@@ -424,29 +434,47 @@ export const createOrder = async (data: any) => {
   });
 
   const result = await response.json();
-  if (!response.ok) throw new Error(result.message);
+
+  if (!response.ok) {
+    throw new Error(result.message || "Create order failed");
+  }
+
   return result;
 };
 
-export const getOrders = async () => {
+export const getOrders = async (): Promise<Order[]> => {
+
   const response = await fetch(`${BASE_URL}/orders`, {
     headers: getAuthHeader(),
   });
 
-  return response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Fetch orders failed");
+  }
+
+  return data;
 };
 
 export const updateOrderStatus = async (
   id: string,
-  status: string
-) => {
+  status: "Paid" | "Failed" | "Ongoing" | "Unpaid"
+): Promise<Order> => {
+
   const response = await fetch(`${BASE_URL}/orders/${id}`, {
     method: "PATCH",
     headers: getAuthHeader(),
     body: JSON.stringify({ status }),
   });
 
-  return response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Update order failed");
+  }
+
+  return data;
 };
 
 /* =====================================================
@@ -478,15 +506,21 @@ export const createCustomer = async (data: Customer) => {
 };
 
 
-export const getSingleOrder = async (id: string) => {
+export const getSingleOrder = async (id: string): Promise<Order> => {
+
   const response = await fetch(`${BASE_URL}/orders/${id}`, {
     headers: getAuthHeader(),
   });
 
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message);
+
+  if (!response.ok) {
+    throw new Error(data.message || "Fetch order failed");
+  }
+
   return data;
 };
+
 
 export const deleteCustomer = async (id: string) => {
   const res = await fetch(`${BASE_URL}/customers/${id}`, {
@@ -551,4 +585,36 @@ export const deleteOrderCustomer = async (id: string) => {
   }
 
   return result;
+};
+export const updateOrder = async (id: string, data: any) => {
+
+  const response = await fetch(`${BASE_URL}/orders/${id}`, {
+    method: "PATCH",
+    headers: getAuthHeader(),
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+if (!response.ok) {
+  console.error("Update order error:", result);
+  throw new Error(result.message || "Update order failed");
+}
+  return result;
+};
+
+export const deleteOrder = async (id: string) => {
+
+  const response = await fetch(`${BASE_URL}/orders/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeader()
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Delete order failed");
+  }
+
+  return data;
 };

@@ -553,7 +553,7 @@
 
 
 import { useState } from "react";
-import Header from "../Header";
+import AdminHeader from "./AdminHeader";
 
 const AddProductForm = () => {
   const [form, setForm] = useState<any>({
@@ -609,7 +609,7 @@ const AddProductForm = () => {
 
   return (
     <>
-      <Header />
+      <AdminHeader />
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex flex-col lg:flex-row gap-8">
 

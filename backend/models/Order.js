@@ -4,13 +4,35 @@ const orderSchema = new mongoose.Schema(
   {
     customer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
-      required: true,
+      ref: "OrderCustomer",
+      default: null
     },
-    cartItems: Array,
-    totalAmount: Number,
-    paymentMethod: String,
-    status: String,
+
+    cartItems: [
+      {
+        title: String,
+        price: Number,
+        quantity: Number,
+        thumbnail: String
+      }
+    ],
+
+    totalAmount: {
+      type: Number,
+      required: true
+    },
+
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "card"],
+    },
+
+    status: {
+      type: String,
+      enum: ["Paid", "Failed", "Ongoing", "Unpaid"],
+      default: "Unpaid"
+    }
+
   },
   { timestamps: true }
 );
