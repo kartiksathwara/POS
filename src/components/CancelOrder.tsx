@@ -1155,7 +1155,7 @@ const CancelOrder: React.FC = () => {
       console.log(err);
     }
     console.log("selectedCustomer:", selectedCustomer);
-console.log("orderId:", orderId);
+    console.log("orderId:", orderId);
   };
   return (
 

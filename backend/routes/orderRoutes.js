@@ -108,13 +108,31 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
 
-    const { customer, cartItems, totalAmount, paymentMethod, status } = req.body;
- if (!cartItems || cartItems.length === 0) {
+    const {
+      customer,
+      cartItems,
+      subtotal,
+      discountPercent,
+      discountReason,
+      discountAmount,
+      tax,
+      totalAmount,
+      paymentMethod,
+      status
+    } = req.body;
+    if (!cartItems || cartItems.length === 0) {
       return res.status(400).json({ message: "Cart cannot be empty" });
     }
     const order = new Order({
       customer: customer || null,
       cartItems: cartItems || [],
+
+      subtotal: subtotal || 0,
+      discountPercent: discountPercent || 0,
+      discountReason: discountReason || "",
+      discountAmount: discountAmount || 0,
+      tax: tax || 0,
+
       totalAmount: totalAmount || 0,
       paymentMethod: paymentMethod || null,
       status: status || "Ongoing"

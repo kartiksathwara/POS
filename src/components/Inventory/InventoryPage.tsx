@@ -823,6 +823,13 @@ const InventoryPage = () => {
       const order = await createOrder({
         customer: null,
         cartItems: cart,
+
+        subtotal,
+        discountPercent,
+        discountReason,
+        discountAmount: discount,
+        tax,
+
         totalAmount: total,
         paymentMethod: null,
         status: "Ongoing"
