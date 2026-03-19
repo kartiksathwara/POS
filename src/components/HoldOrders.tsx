@@ -337,7 +337,18 @@ const HoldOrders = () => {
       .toLowerCase()
       .includes(searchTerm)
   );
+  const handleSelectOrder = async (order: HoldOrder) => {
+  try {
+    navigate(`/inventory/${order._id}`);
 
+    await deleteHoldOrder(order._id);
+
+    setOrders((prev) => prev.filter((o) => o._id !== order._id));
+
+  } catch (err) {
+    console.log(err);
+  }
+};
   return (
     <div className="w-full">
       <Header />
@@ -368,7 +379,10 @@ const HoldOrders = () => {
               <tr
                 key={order._id}
                 className="bg-[var(--bgorder)] border-b border-[var(--primary)] cursor-pointer"
-                onClick={() => navigate(`/inventory/${order._id}`)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelectOrder(order);
+                }}
               >
                 <td className="p-3">{order.orderId}</td>
                 <td className="p-3">{order.customer?.name || "N/A"}</td>

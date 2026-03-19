@@ -549,7 +549,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "./Header";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegSquare } from "react-icons/fa";
 import { FaUser } from "react-icons/fa6";
 
@@ -564,7 +564,7 @@ interface Product {
 const Invoice = () => {
 
   const location = useLocation();
-
+  const navigate = useNavigate();
   const orderData: any = location.state;
 
   useEffect(() => {
@@ -616,11 +616,13 @@ const Invoice = () => {
   // };
 
   const handleCancelOrder = () => {
-    window.location.href = "/inventory";
+    navigate("/inventory");
   };
 
   const handleBack = () => {
-    window.location.href = "/inventory";
+    navigate("/bill", {
+      state: orderData
+    });
   };
 
   return (
@@ -750,14 +752,12 @@ const Invoice = () => {
 
           <div className="flex flex-col sm:flex-row justify-between gap-3 w-full mt-10">
 
-            <Link to="/inventory" className="w-full sm:w-1/2">
               <button
-                className="w-full py-3 px-4 rounded bg-white text-black text-base font-medium border border-gray-300 hover:bg-gray-50 transition"
+                className="w-full py-3 px-4 sm:w-1/2 rounded bg-white text-black text-base font-medium border border-gray-300 hover:bg-gray-50 transition"
                 onClick={handleBack}
               >
                 Back
               </button>
-            </Link>
 
             {/* <Link
               to="/payment"
@@ -772,16 +772,16 @@ const Invoice = () => {
               </button>
             </Link> */}
             <Link
-  to="/payment"
-  state={orderData}
-  className="w-full sm:w-1/2"
->
-  <button
-    className="w-full py-3 text-white rounded px-4 text-sm sm:text-base bg-(--main)"
-  >
-    Validate  &gt;
-  </button>
-</Link>
+              to="/payment"
+              state={orderData}
+              className="w-full sm:w-1/2"
+            >
+              <button
+                className="w-full py-3 text-white rounded px-4 text-sm sm:text-base bg-(--main)"
+              >
+                Validate  &gt;
+              </button>
+            </Link>
           </div>
 
         </div>

@@ -953,7 +953,6 @@ import { RiCashLine } from "react-icons/ri";
 import { CiCreditCard1 } from "react-icons/ci";
 import React, { useEffect, useState } from "react";
 import {
-  Link,
   useNavigate,
   useLocation,
 } from "react-router-dom";
@@ -1124,7 +1123,7 @@ const CancelOrder: React.FC = () => {
 
       } else {
 
-        navigate("/payment", {
+        navigate("/card-payment", {
           state: {
             ...orderData,
             customer: selectedCustomer,
@@ -1459,18 +1458,16 @@ const CancelOrder: React.FC = () => {
 
           <div className="flex gap-3">
 
-            <Link to="/inventory" className="w-full">
-              <button
-                onClick={() =>
-                  navigate("/inventory", {
-                    state: { cartItems: orderData.cartItems }
-                  })
-                }
-                className="w-full py-3 px-4 rounded bg-white text-black"
-              >
-                Back
-              </button>
-            </Link>
+            <button
+              onClick={() =>
+                navigate("/inventory", {
+                  state: { cartItems: orderData.cartItems }
+                })
+              }
+              className="w-full py-3 px-4 rounded bg-white text-black"
+            >
+              Back
+            </button>
 
             <button
               disabled={

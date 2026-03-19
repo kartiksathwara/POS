@@ -19,6 +19,7 @@ import AddProductForm from "./components/admin/AddProductFrom";
 import HoldOrders from "./components/HoldOrders";
 import AdminProductsPage from "./components/admin/AdminProductsPage";
 import OrdersPage from "./components/OrdersPage";
+import PaymentPage from "./components/Cardpage";
 
 function App() {
   return (
@@ -79,6 +80,7 @@ function App() {
             />
             <Route path="/addproduct" element={<AddProductForm />} />
             <Route path="/admin-products" element={<AdminProductsPage />} />
+            <Route path="/card-payment" element={<PaymentPage />} />
 
           </Routes>
         </BrowserRouter>
