@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext";
 import ProtectedRoute from "./components/protectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import HomePage from "./components/HomePage";
 import Settingpage from "./components/Settingpage";
 import RequestInventory from "./components/RequestInventory";
@@ -20,6 +21,8 @@ import HoldOrders from "./components/HoldOrders";
 import AdminProductsPage from "./components/admin/AdminProductsPage";
 import OrdersPage from "./components/OrdersPage";
 import PaymentPage from "./components/Cardpage";
+import AdminRegister from "./components/AdminRegister";
+import CreateUser from "./components/admin/CreateUser";
 
 function App() {
   return (
@@ -36,6 +39,8 @@ function App() {
               }
             ></Route>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/admin-register" element={<AdminRegister />} />
+
             <Route
               path="/lock"
               element={
@@ -81,7 +86,14 @@ function App() {
             <Route path="/addproduct" element={<AddProductForm />} />
             <Route path="/admin-products" element={<AdminProductsPage />} />
             <Route path="/card-payment" element={<PaymentPage />} />
-
+              <Route
+              path="/create-user"
+              element={
+                <AdminRoute>
+                  <CreateUser />
+                </AdminRoute>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </OrderProvider>

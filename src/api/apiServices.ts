@@ -256,6 +256,7 @@ export interface LoginResponse {
   token: string;
   role: "admin" | "user";
   name: string;
+  userId: string;
 }
 
 export interface CartItem {
@@ -617,4 +618,38 @@ export const deleteOrder = async (id: string) => {
   }
 
   return data;
+};
+
+
+
+
+
+
+
+
+
+// api/apiServices.ts
+
+export const registerAdmin = async (data: any) => {
+  const res = await fetch(`${BASE_URL}/auth/admin-register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.message);
+  return result;
+};
+
+export const createUser = async (data: any) => {
+  const res = await fetch(`${BASE_URL}/auth/create-user`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.message);
+  return result;
 };

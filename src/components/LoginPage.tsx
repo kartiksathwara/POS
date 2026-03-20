@@ -213,34 +213,64 @@ const LoginPage = () => {
     return regex.test(email);
   };
 
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+
+  //   if (!validateEmail(email)) {
+  //     setError("Please enter a valid email address.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const data = await loginUser({ email, password });
+
+  //     // ✅ STORE TOKEN
+  //     localStorage.setItem("POS-token", data.token);
+  //     localStorage.setItem("POS-role", data.role);
+  //     localStorage.setItem("POS-userId", data.userId);
+  //     // ✅ UPDATE REDUX
+  //     dispatch(login(data.token));
+
+  //     // ✅ ROLE BASED NAVIGATION (REPLACE HISTORY)
+  //     if (data.role === "admin") {
+  //       navigate("/admin-products", { replace: true });
+  //     } else {
+  //       navigate("/lock", { replace: true });
+  //     }
+  //   } catch (error: any) {
+  //     setError(error.message);
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
+  if (!validateEmail(email)) {
+    setError("Please enter a valid email address.");
+    return;
+  }
+
+  try {
+    const data = await loginUser({ email, password });
+
+    // ✅ STORE DATA
+    localStorage.setItem("POS-token", data.token);
+    localStorage.setItem("POS-role", data.role);
+    localStorage.setItem("POS-userId", data.userId);
+    localStorage.setItem("isLocked", "false"); // 🔥 IMPORTANT
+
+    dispatch(login(data.token));
+
+    // ✅ NAVIGATION
+    if (data.role === "admin") {
+      navigate("/admin-products", { replace: true });
+    } else {
+      navigate("/lock", { replace: true });
     }
-
-    try {
-      const data = await loginUser({ email, password });
-
-      // ✅ STORE TOKEN
-      localStorage.setItem("POS-token", data.token);
-      localStorage.setItem("POS-role", data.role);
-
-      // ✅ UPDATE REDUX
-      dispatch(login(data.token));
-
-      // ✅ ROLE BASED NAVIGATION (REPLACE HISTORY)
-      if (data.role === "admin") {
-        navigate("/admin-products", { replace: true });
-      } else {
-        navigate("/lock", { replace: true });
-      }
-    } catch (error: any) {
-      setError(error.message);
-    }
-  };
+  } catch (error: any) {
+    setError(error.message);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center sm:justify-start">
