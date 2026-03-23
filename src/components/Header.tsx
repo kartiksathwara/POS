@@ -51,9 +51,9 @@ const Header = () => {
                       <Link to="/order" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Orders
                       </Link>
-                      <Link to="/activities" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
+                      {/* <Link to="/activities" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Activities
-                      </Link>
+                      </Link> */}
                       <Link to="/request" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Request Inventory
                       </Link>
@@ -63,9 +63,19 @@ const Header = () => {
                       <Link to="/lock" className="block px-4 py-1.5 text-lg border-b text-(--main) border-gray-400">
                         Close shop
                       </Link>
-                      <Link to="/hold-order" className="block px-4 py-1.5 text-lg text-(--main)">
+                      <Link to="/hold-order" className="block w-full text-left px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Hold Order
                       </Link>
+                      <button
+                        onClick={() => {
+                          localStorage.clear(); 
+                          window.location.href = "/login";  
+                        }}
+                        className="block w-full text-left px-4 py-3 text-lg text-(--main) border-b border-gray-400 cursor-pointer"
+                      >
+                        Logout
+                      </button>
+
                     </div>
                   </div>
                 </div>

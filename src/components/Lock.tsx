@@ -302,15 +302,12 @@
 import { useEffect, useState } from "react";
 import { FaBackspace, FaAngleRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { logout } from "../auth/authSlice";
-import type { AppDispatch } from "../app/store";
 import TitleBanner from "./TitleBanner";
-
+import { getCurrentUser } from "../api/apiServices";
 const Lock = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
 
+  const [userName, setUserName] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
@@ -386,6 +383,19 @@ const Lock = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [pin]);
 
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const user = await getCurrentUser();
+        setUserName(user.name);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    loadUser();
+  }, []);
+
   // ✅ BUTTON INPUT
   const handleClick = (num: number) => {
     if (pin.length < 4) {
@@ -395,12 +405,7 @@ const Lock = () => {
 
   // ✅ LOGOUT
   const handleLogout = () => {
-    localStorage.removeItem("POS-token");
-    localStorage.removeItem("POS-role");
-    localStorage.removeItem("POS-userId");
-
-    dispatch(logout());
-    navigate("/login", { replace: true });
+    navigate("/logout");
   };
 
   // ✅ FORMAT DATE
@@ -432,7 +437,9 @@ const Lock = () => {
         {/* USER */}
         <div className="font-bold">
           <div className="text-[16px] text-(--eye-icon)">Welcome back</div>
-          <div className="text-[22px] text-(--main)">User</div>
+          <div className="text-[22px] text-(--main)">
+            {userName || "User"}
+          </div>
         </div>
 
         {/* PIN INPUT */}

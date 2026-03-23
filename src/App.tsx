@@ -23,6 +23,7 @@ import OrdersPage from "./components/OrdersPage";
 import PaymentPage from "./components/Cardpage";
 import AdminRegister from "./components/AdminRegister";
 import CreateUser from "./components/admin/CreateUser";
+import Logout from "./components/Logout";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/logout" element={<Logout />} />
             <Route path="/customer" element={<Customers />} />
             <Route path="/discount" element={<DiscountPage />} />
             <Route path="/request" element={<RequestInventory />}></Route>
@@ -74,7 +76,7 @@ function App() {
             <Route path="/invoice" element={<Invoice />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/hold-order" element={<HoldOrders />} />
-            <Route path="/order" element={<OrdersPage />}/>
+            <Route path="/order" element={<OrdersPage />} />
             <Route
               path="/most-product"
               element={
@@ -84,9 +86,16 @@ function App() {
               }
             />
             <Route path="/addproduct" element={<AddProductForm />} />
-            <Route path="/admin-products" element={<AdminProductsPage />} />
+            <Route
+              path="/admin-products"
+              element={
+                <ProtectedRoute>
+                  <AdminProductsPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/card-payment" element={<PaymentPage />} />
-              <Route
+            <Route
               path="/create-user"
               element={
                 <AdminRoute>

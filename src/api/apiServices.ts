@@ -311,7 +311,7 @@ export interface Order {
 ===================================================== */
 
 const getAuthHeader = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("POS-token");
 
   return {
     "Content-Type": "application/json",
@@ -551,11 +551,17 @@ export const deleteCustomer = async (id: string) => {
 
 //   return data;
 // };
+// export const getOrderCustomers = async () => {
+//   const res = await fetch(`${BASE_URL}/ordercustomers`);
+//   return res.json();
+// };
+
 export const getOrderCustomers = async () => {
-  const res = await fetch(`${BASE_URL}/ordercustomers`);
+  const res = await fetch(`${BASE_URL}/ordercustomers`, {
+    headers: getAuthHeader(), // 🔥 ADD THIS
+  });
   return res.json();
 };
-
 export const createOrderCustomer = async (data: Customer) => {
 
   const res = await fetch(`${BASE_URL}/ordercustomers`, {
@@ -652,4 +658,18 @@ export const createUser = async (data: any) => {
   const result = await res.json();
   if (!res.ok) throw new Error(result.message);
   return result;
+};
+
+export const getCurrentUser = async () => {
+  const res = await fetch(`${BASE_URL}/auth/me`, {
+    headers: getAuthHeader(),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
 };

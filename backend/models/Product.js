@@ -11,4 +11,4 @@ const productSchema = new mongoose.Schema({
   quantity: { type: Number, default: 1 },
 });
 
-export default mongoose.model("Product", productSchema);
+export default mongoose.model("Product", productSchema);                           

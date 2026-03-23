@@ -30,7 +30,7 @@ const AdminHeader = () => {
         <div className="text-white">
           <div className="flex items-center text-xl text-white relative">
 
-          
+
             <div className="relative" ref={menuRef}>
               <button
                 className="flex items-center gap-2 px-0 py-2 rounded-xl transition"
@@ -43,13 +43,22 @@ const AdminHeader = () => {
               {menuopen && (
                 <div className="absolute lg:right-0 -right-6 w-56 rounded-xl border shadow-xl overflow-hidden z-50 bg-(--primary) transition-all duration-300">
                   <div className="bg-(--primary)">
-                    
+
 
                     <div className="p-2.5">
                       <Link to="/addproduct" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Add Product
                       </Link>
-                      
+                      <button
+                        onClick={() => {
+                          localStorage.clear(); 
+                          window.location.href = "/login";  
+                        }}
+                        className="block w-full text-left px-4 py-3 text-lg text-(--main) border-b border-gray-400"
+                      >
+                        Logout
+                      </button>
+
                     </div>
                   </div>
                 </div>
