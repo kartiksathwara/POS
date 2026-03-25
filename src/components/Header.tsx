@@ -54,9 +54,9 @@ const Header = () => {
                       {/* <Link to="/activities" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Activities
                       </Link> */}
-                      <Link to="/request" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
+                      {/* <Link to="/request" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Request Inventory
-                      </Link>
+                      </Link> */}
                       <Link to="/setting" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Settings
                       </Link>

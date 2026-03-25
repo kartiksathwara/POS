@@ -287,7 +287,11 @@ const HoldOrders = () => {
   const [orders, setOrders] = useState<HoldOrder[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-
+  const formatPrice = (value: number | string) =>
+    Number(value).toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   /* ===== Fetch Hold Orders ===== */
   useEffect(() => {
     fetchOrders();
@@ -338,17 +342,17 @@ const HoldOrders = () => {
       .includes(searchTerm)
   );
   const handleSelectOrder = async (order: HoldOrder) => {
-  try {
-    navigate(`/inventory/${order._id}`);
+    try {
+      navigate(`/inventory/${order._id}`);
 
-    await deleteHoldOrder(order._id);
+      await deleteHoldOrder(order._id);
 
-    setOrders((prev) => prev.filter((o) => o._id !== order._id));
+      setOrders((prev) => prev.filter((o) => o._id !== order._id));
 
-  } catch (err) {
-    console.log(err);
-  }
-};
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="w-full">
       <Header />
@@ -387,7 +391,7 @@ const HoldOrders = () => {
                 <td className="p-3">{order.orderId}</td>
                 <td className="p-3">{order.customer?.name || "N/A"}</td>
                 <td className="p-3">{order.customer?.phone || "N/A"}</td>
-                <td className="p-3">${order.totalAmount}</td>
+                <td className="p-3">₹{formatPrice(order.totalAmount)}</td>
 
                 <td className="p-3">
                   <FaTrash

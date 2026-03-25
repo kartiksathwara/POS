@@ -1430,6 +1430,11 @@ const cardBrand = (n: string): "visa" | "mastercard" | "amex" | null => {
   if (/^3[47]/.test(raw)) return "amex";
   return null;
 };
+const formatPrice = (value: number | string) =>
+  Number(value).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
 /* ─────────────────── BRAND BADGES ─────────────────── */
 const VisaBadge = ({ dim = false }: { dim?: boolean }) => (
@@ -1644,14 +1649,14 @@ const CardPage: React.FC = () => {
           <FaCheckCircle className="text-green-500 text-5xl" />
         </div>
         <h2 className="text-2xl font-bold text-(--main)">Payment Successful!</h2>
-        <p className="text-gray-500 text-sm">Redirecting to invoice…</p>
+        <p className="text-gray-500 text-sm">Thanks For Card Payment</p>
         <style>{`@keyframes pop { from { transform: scale(0.5); opacity:0 } to { transform: scale(1); opacity:1 } }`}</style>
       </div>
     );
   }
 
   const brand = cardBrand(cardNumber);
-  const totalAmount = Number(orderData?.totalAmount || 0).toFixed(2);
+  const totalAmount = formatPrice(orderData?.totalAmount || 0);
 
   return (
     <div className="h-screen overflow-hidden bg-(--pin-button)">
@@ -1678,7 +1683,7 @@ const CardPage: React.FC = () => {
             </div>
             <div className="text-right">
               <p className="text-xs text-gray-400 uppercase tracking-wider">Total Due</p>
-              <p className="text-2xl font-extrabold text-(--main)">${totalAmount}</p>
+              <p className="text-2xl font-extrabold text-(--main)">₹{totalAmount}</p>
             </div>
           </div>
 
@@ -1845,11 +1850,11 @@ const CardPage: React.FC = () => {
                     )}
                     <div>
                       <h4 className="font-medium text-sm">{title}</h4>
-                      <p className="text-xs text-gray-500">${item.price} × {item.quantity}</p>
+                      <p className="text-xs text-gray-500">₹{formatPrice(item.price)} × {item.quantity}</p>
                     </div>
                   </div>
                   <div className="text-sm font-semibold">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ₹{formatPrice(item.price * item.quantity)}
                   </div>
                 </div>
               );
@@ -1886,7 +1891,7 @@ const CardPage: React.FC = () => {
               ) : (
                 <>
                   <FaLock className="text-xs" />
-                  Pay ${totalAmount}
+                  Pay ₹{totalAmount}
                 </>
               )}
             </button>

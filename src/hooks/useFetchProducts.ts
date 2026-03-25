@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 interface Product {
-  _id: Key | null | undefined;
+  _id: string;
   id: number;
   title: string;
   price: number;

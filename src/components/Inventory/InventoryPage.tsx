@@ -597,7 +597,7 @@ import Header from "../Header";
 import SearchBar from "../SearchBar";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
 import useFetchProducts from "../../hooks/useFetchProducts";
 import Cart from "../Cart";
 import ProductCard from "../Products/ProductCard";
@@ -911,13 +911,13 @@ const InventoryPage = () => {
               ))}
             </div>
 
-            <Link
+            {/* <Link
               to="/request"
               className="flex items-center gap-1 font-medium text-black px-8 pb-4"
             >
               <span>Request Inventory</span>
               <IoIosArrowForward size={20} />
-            </Link>
+            </Link> */}
           </div>
 
           <div className="w-full lg:w-[30%] bg-(--secondary) flex flex-col justify-between max-h-full p-4 overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-200">
@@ -988,20 +988,28 @@ const InventoryPage = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Subtotal • {cart.length} items</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{Number(subtotal).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                  })}</span>
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Discount (-{discountPercent}%)</span>
-                  <span>-${discount.toFixed(2)}</span>
+                  <span>-₹{Number(discount).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                  })}</span>
                 </div>
                 <div className="text-xs text-gray-400">{discountReason}</div>
                 <div className="flex justify-between text-gray-500">
                   <span>Tax (+8%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹{Number(tax).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                  })}</span>
                 </div>
                 <div className="flex justify-between font-bold text-base border-t pt-2 mt-2">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>₹{Number(total).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                  })}</span>
                 </div>
                 {/* <button
                   onClick={handleCheckout}

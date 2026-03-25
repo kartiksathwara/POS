@@ -346,7 +346,7 @@ const Inventory = () => {
                       <h4 className="font-medium text-sm">{item.title}</h4>
                       <div className="flex space-x-1">
                         <p className=" text-gray-500">
-                          ${item.price.toFixed(2)}
+                          ₹{item.price.toFixed(2)}
                         </p>
                         <button
                           className="px-2 bg-gray-200 rounded hover:bg-gray-300"

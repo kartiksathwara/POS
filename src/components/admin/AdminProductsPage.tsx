@@ -154,10 +154,23 @@ const AdminProductsPage = () => {
   };
 
   const handleEditChange = (e: any) => {
-    if (e.target.name === "thumbnail") {
-      setEditProduct({ ...editProduct, thumbnail: e.target.files[0] });
-    } else {
-      setEditProduct({ ...editProduct, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target;
+
+    if (name === "thumbnail") {
+      setEditProduct({ ...editProduct, thumbnail: files[0] });
+    }
+    else if (name === "price") {
+      const rawValue = value.replace(/,/g, "");
+
+      if (/^\d*$/.test(rawValue)) {
+        setEditProduct({
+          ...editProduct,
+          price: rawValue, // store clean value
+        });
+      }
+    }
+    else {
+      setEditProduct({ ...editProduct, [name]: value });
     }
   };
 
@@ -193,7 +206,7 @@ const AdminProductsPage = () => {
 
   return (
     <div className="h-screen flex flex-col bg-secondary">
-      
+
       <AdminHeader />
       <div className="flex-1 overflow-y-auto p-6">
 
@@ -226,7 +239,9 @@ const AdminProductsPage = () => {
                 {p.title}
               </h3>
               <p className="text-sm text-gray-500">{p.category}</p>
-              <p className="text-blue-600 font-bold">₹{p.price}</p>
+              <p className="text-blue-600 font-bold">
+  ₹{Number(p.price).toLocaleString("en-IN")}
+</p>
 
               {/* EDIT */}
               <div className="flex gap-2 mt-3">
@@ -284,7 +299,23 @@ const AdminProductsPage = () => {
               <input
                 key={field}
                 name={field}
-                value={editProduct[field]}
+
+                type={
+                  field === "price"
+                    ? "text"
+                    : field === "quantity"
+                      ? "number"
+                      : "text"
+                }
+
+                value={
+                  field === "price"
+                    ? editProduct.price
+                      ? Number(editProduct.price).toLocaleString("en-IN")
+                      : ""
+                    : editProduct[field]
+                }
+
                 onChange={handleEditChange}
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                 className="w-full border px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"

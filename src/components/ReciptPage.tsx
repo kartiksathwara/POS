@@ -162,7 +162,11 @@ const ReceiptPrint = ({ orderData }: any) => {
   const [discountValue, setDiscountValue] = useState("0%");
   const [discountReason, setDiscountReason] = useState("");
   const [customer, setCustomer] = useState<any>({});
-
+  const formatPrice = (value: number | string) =>
+  Number(value).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
   useEffect(() => {
     if (!orderData) return;
 
@@ -185,9 +189,7 @@ const ReceiptPrint = ({ orderData }: any) => {
     setDiscountReason(orderData.discountReason || "");
   }, [orderData]);
 
-  const upiLink = `upi://pay?pa=${SHOP_UPI}&pn=DKC Pvt Ltd&am=${total.toFixed(
-    2
-  )}&cu=INR`;
+  const upiLink = `upi://pay?pa=${SHOP_UPI}&pn=DKC Pvt Ltd&am=${Number(total).toFixed(2)}&cu=INR`;
 
   return (
     <div className="hidden print:flex print:justify-center print:bg-white">
@@ -227,7 +229,7 @@ const ReceiptPrint = ({ orderData }: any) => {
                 <td className="py-2">{item.title}</td>
                 <td className="text-right">{item.quantity}</td>
                 <td className="text-right font-medium">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  ₹{formatPrice(item.price * item.quantity)}
                 </td>
               </tr>
             ))}
@@ -239,12 +241,12 @@ const ReceiptPrint = ({ orderData }: any) => {
 
           <div className="flex justify-between">
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>₹{formatPrice(subtotal)}</span>
           </div>
 
           <div className="flex justify-between text-green-600">
             <span>Discount ({discountValue})</span>
-            <span>- ${discount.toFixed(2)}</span>
+            <span>- ₹{formatPrice(discount)}</span>
           </div>
 
           {discountReason && (
@@ -255,12 +257,12 @@ const ReceiptPrint = ({ orderData }: any) => {
 
           <div className="flex justify-between">
             <span>Tax (8%)</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>- ₹{formatPrice(tax)}</span>
           </div>
 
           <div className="flex justify-between font-bold text-xl border-t pt-3 mt-3">
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>₹{formatPrice(total)}</span>
           </div>
 
         </div>

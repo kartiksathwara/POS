@@ -18,7 +18,9 @@ const Cart = () => {
                 <div className="">
                   <h4 className="font-medium text-sm truncate w-40">{item.title}</h4>
                   <div className="flex space-x-1 items-center">
-                    <p className="text-gray-500 w-20">${item.price.toFixed(2)}</p>
+                    <p className="text-gray-500 w-20">₹{Number(item.price).toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+        })}</p>
                     <div className="flex items-center gap-4 pl-2">
                       <button
                         className="px-2 bg-gray-200 rounded hover:bg-gray-300"

@@ -244,6 +244,11 @@ const PaymentDropdown: React.FC<PaymentDropdownProps> = ({
   const discountPercent = orderData?.discountPercent ?? 0;
   const discountReason = orderData?.discountReason ?? "";
 
+  const formatPrice = (value: number | string) =>
+  Number(value).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
   return (
     <div className="cursor-pointer w-full max-h-64 overflow-auto flex flex-col gap-2 bg-(--secondary) rounded-xl px-4 py-2">
 
@@ -261,7 +266,7 @@ const PaymentDropdown: React.FC<PaymentDropdownProps> = ({
 
         <div className="flex justify-between">
           <span>Subtotal • {cartItems.length} items</span>
-          <span>${subtotal.toFixed(2)}</span>
+          <span>₹{formatPrice(subtotal)}</span>
         </div>
 
         <div className="flex justify-between text-gray-500">
@@ -271,17 +276,17 @@ const PaymentDropdown: React.FC<PaymentDropdownProps> = ({
               {discountReason}
             </span>
           </div>
-          <span>-${discount.toFixed(2)}</span>
+          <span>-₹{formatPrice(discount)}</span>
         </div>
 
         <div className="flex justify-between text-gray-500">
           <span>Tax (+8%)</span>
-          <span>${tax.toFixed(2)}</span>
+          <span>₹{formatPrice(tax)}</span>
         </div>
 
         <div className="flex justify-between font-bold text-base">
           <span>Total</span>
-          <span>${total.toFixed(2)}</span>
+          <span>₹{formatPrice(total)}</span>
         </div>
 
       </div>

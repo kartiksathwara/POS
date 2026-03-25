@@ -27,8 +27,12 @@ const ProductCard = ({ product, onAdd }: ProductCardProps) => {
           <p className="text-sm text-gray-500">Size - 0 UK</p>
         </div>
       </div>
-      
-      <div className="text-sm font-semibold">${product.price.toFixed(2)}</div>
+
+      <div className="text-sm font-semibold">
+        ₹{Number(product.price).toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+        })}
+      </div>
     </div>
   );
 };

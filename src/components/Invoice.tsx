@@ -596,19 +596,22 @@ const Invoice = () => {
   /* -------- MANUAL CASH INPUT -------- */
 
   const handleManualChange = (value: number | string) => {
-
     const inputValue = typeof value === "number" ? value.toString() : value;
-    setManualAmount(inputValue);
 
-    const input = parseFloat(inputValue);
-    const total = parseFloat(totalAmount);
+    const rawValue = inputValue.replace(/,/g, "");
 
-    if (!isNaN(input)) {
-      setRemainingAmount(input - total);
-    } else {
-      setRemainingAmount(null);
+    if (/^\d*$/.test(rawValue)) {
+      setManualAmount(rawValue);
+
+      const input = parseFloat(rawValue);
+      const total = parseFloat(totalAmount);
+
+      if (!isNaN(input)) {
+        setRemainingAmount(input - total);
+      } else {
+        setRemainingAmount(null);
+      }
     }
-
   };
 
   // const handleValidate = () => {
@@ -641,7 +644,10 @@ const Invoice = () => {
             <div className="w-full flex flex-col gap-4 bg-(--bgorder) p-5 rounded-xl">
 
               <div className="flex justify-between items-center text-2xl font-semibold">
-                ${Number(totalAmount).toFixed(2)}
+                ₹{Number(totalAmount).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
 
                 <p className="flex items-center gap-2 text-sm bg-(--buttonbg) p-1 rounded-md">
                   <FaRegSquare size={10} />
@@ -666,17 +672,21 @@ const Invoice = () => {
                   onClick={() => handleManualChange(amount)}
                   className="bg-[var(--secondary)] py-3 w-full text-center rounded-lg hover:bg-(--eye-icon)"
                 >
-                  ${amount}
+                  ₹{amount.toLocaleString("en-IN")}
                 </button>
               ))}
 
             </div>
 
             <input
-              type="number"
+              type="text"
               placeholder="Add manually"
               className="w-full rounded px-3 py-2 outline-0 bg-[var(--secondary)]"
-              value={manualAmount}
+              value={
+                manualAmount
+                  ? Number(manualAmount).toLocaleString("en-IN")
+                  : ""
+              }
               onChange={(e) => handleManualChange(e.target.value)}
             />
 
@@ -684,7 +694,10 @@ const Invoice = () => {
               <span className="font-semibold">Change</span>
               <span>
                 {remainingAmount !== null
-                  ? `$${remainingAmount.toFixed(2)}`
+                  ? `₹${Number(remainingAmount).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`
                   : "—"}
               </span>
             </div>
@@ -734,9 +747,13 @@ const Invoice = () => {
                     </h4>
 
                     <p className="text-xs text-gray-500">
-                      ${item.price.toFixed(2)} * {item.quantity} =
+                      ₹{Number(item.price).toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })} * {item.quantity} =
                       <span>
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ₹{Number(item.price * item.quantity).toLocaleString("en-IN", {
+                          minimumFractionDigits: 2,
+                        })}
                       </span>
                     </p>
 
@@ -752,12 +769,12 @@ const Invoice = () => {
 
           <div className="flex flex-col sm:flex-row justify-between gap-3 w-full mt-10">
 
-              <button
-                className="w-full py-3 px-4 sm:w-1/2 rounded bg-white text-black text-base font-medium border border-gray-300 hover:bg-gray-50 transition"
-                onClick={handleBack}
-              >
-                Back
-              </button>
+            <button
+              className="w-full py-3 px-4 sm:w-1/2 rounded bg-white text-black text-base font-medium border border-gray-300 hover:bg-gray-50 transition"
+              onClick={handleBack}
+            >
+              Back
+            </button>
 
             {/* <Link
               to="/payment"

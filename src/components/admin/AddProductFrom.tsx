@@ -327,8 +327,8 @@
 //     quantity: "",
 //   });
 //   const { products, setProducts } = useFetchProducts();
- 
-  
+
+
 //   const [showEditModal, setShowEditModal] = useState(false);
 
 //   const handleChange = (e: any) => {
@@ -373,9 +373,9 @@
 //     }
 //   };
 
-  
 
- 
+
+
 
 //   const handleEditChange = (e: any) => {
 //     if (e.target.name === "thumbnail") {
@@ -483,7 +483,7 @@
 //         </form>
 
 //         {/* PRODUCT LIST */}
-        
+
 //       </div>
 
 //       {/* EDIT MODAL */}
@@ -563,12 +563,29 @@ const AddProductForm = () => {
     category: "",
     quantity: "",
   });
+  const formatIndianCurrency = (value: string) => {
+    if (!value) return "";
 
+    const number = value.replace(/,/g, "");
+    return Number(number).toLocaleString("en-IN");
+  };
   const handleChange = (e: any) => {
-    if (e.target.name === "thumbnail") {
-      setForm({ ...form, thumbnail: e.target.files[0] });
-    } else {
-      setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target;
+
+    if (name === "thumbnail") {
+      setForm({ ...form, thumbnail: files[0] });
+    }
+    else if (name === "price") {
+      const rawValue = value.replace(/,/g, "");
+      if (!isNaN(rawValue)) {
+        setForm({
+          ...form,
+          price: formatIndianCurrency(rawValue),
+        });
+      }
+    }
+    else {
+      setForm({ ...form, [name]: value });
     }
   };
 
@@ -577,7 +594,7 @@ const AddProductForm = () => {
 
     const formData = new FormData();
     formData.append("title", form.title);
-    formData.append("price", form.price);
+    formData.append("price", form.price.replace(/,/g, ""));
     formData.append("category", form.category);
     formData.append("quantity", form.quantity);
     formData.append("thumbnail", form.thumbnail);
@@ -631,9 +648,11 @@ const AddProductForm = () => {
                   <input
                     name={field}
                     type={
-                      field === "price" || field === "quantity"
-                        ? "number"
-                        : "text"
+                      field === "price"
+                        ? "text"
+                        : field === "quantity"
+                          ? "number"
+                          : "text"
                     }
                     value={form[field]}
                     placeholder={`Enter ${field}`}

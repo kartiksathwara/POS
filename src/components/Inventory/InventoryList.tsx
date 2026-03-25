@@ -31,7 +31,7 @@ const filteredProducts = products.filter(
                   </div>
                 </div>
                 <div className="text-sm font-semibold">
-                  ${product.price}
+                  ₹{product.price}
                 </div>
               </div>
             ))}

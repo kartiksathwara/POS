@@ -369,7 +369,10 @@ const Payment = () => {
               </h2>
 
               <p className="text-gray-700 text-xl font-medium">
-                <b>${Number(totalAmount).toFixed(2)}</b>
+                <b>₹{Number(totalAmount).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}</b>
               </p>
             </div>
 

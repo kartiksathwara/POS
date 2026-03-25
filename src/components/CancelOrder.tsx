@@ -997,6 +997,13 @@ const CancelOrder: React.FC = () => {
   const [paymentMethod, setPaymentMethod] =
     useState<"cash" | "card" | null>(null);
 
+
+    const formatPrice = (value: number | string) =>
+  Number(value).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
   /* ================= LOAD ORDER ================= */
 
   useEffect(() => {
@@ -1173,10 +1180,7 @@ const CancelOrder: React.FC = () => {
             <div className="bg-(--pin-button) flex flex-col gap-3 p-2 rounded-2xl">
 
               <div className="text-2xl font-semibold">
-                $
-                {orderData
-                  ? Number(orderData.totalAmount).toFixed(2)
-                  : "0.00"}
+                ₹{formatPrice(orderData?.totalAmount || 0)}
               </div>
 
               {/* CUSTOMER SECTION */}
@@ -1438,14 +1442,14 @@ const CancelOrder: React.FC = () => {
                       </h4>
 
                       <p className="text-xs text-gray-500">
-                        ${item.price} × {item.quantity}
+                       ₹{formatPrice(item.price)}
                       </p>
                     </div>
 
                   </div>
 
                   <div>
-                    ${(item.price * item.quantity).toFixed(2)}
+                   ₹{formatPrice(item.price * item.quantity)}
                   </div>
 
                 </div>
