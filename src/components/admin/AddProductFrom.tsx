@@ -570,6 +570,7 @@ const AddProductForm = () => {
     return Number(number).toLocaleString("en-IN");
   };
   const handleChange = (e: any) => {
+
     const { name, value, files } = e.target;
 
     if (name === "thumbnail") {
@@ -582,6 +583,15 @@ const AddProductForm = () => {
           ...form,
           price: formatIndianCurrency(rawValue),
         });
+      }
+    }
+    else if (name === "quantity") {
+      const qty = Number(value);
+
+      setForm({ ...form, quantity: value });
+
+      if (qty > 0 && qty <= 10) {
+        alert("⚠️ Low Stock Warning! Quantity is very low.");
       }
     }
     else {

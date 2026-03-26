@@ -139,6 +139,7 @@ import {
   type Dispatch,
   type ReactNode,
   type SetStateAction,
+  useRef,
 } from "react";
 
 export interface CartItem {
@@ -172,8 +173,13 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const addLock = useRef(false);
 
   const addToCart = (product: Omit<CartItem, "quantity">) => {
+    if (addLock.current) return;
+
+    addLock.current = true;
+
     setCart((prev) => {
       const exists = prev.find((item) => item._id === product._id);
 
@@ -187,6 +193,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       return [...prev, { ...product, quantity: 1 }];
     });
+
+    setTimeout(() => {
+      addLock.current = false;
+    }, 200);
   };
 
   const removeFromCart = (_id: string) => {

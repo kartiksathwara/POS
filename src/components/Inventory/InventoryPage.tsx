@@ -590,7 +590,7 @@
 
 
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Header from "../Header";
@@ -650,7 +650,10 @@ const CartDropWrapper: React.FC<{
 }> = ({ onDrop, children }) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemType,
-    drop: (item: Product) => onDrop(item),
+    drop: (item: Product) => {
+      if (!item) return;
+      onDrop(item);
+    },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
@@ -686,6 +689,7 @@ const InventoryPage = () => {
   /* 🔥 Only added for coupon */
   const [discountPercent, setDiscountPercent] = useState<number>(18);
   const [discountReason, setDiscountReason] = useState<string>("Default Discount");
+const isProcessing = useRef(false);
 
   /* Apply coupon when coming from Discount page */
   useEffect(() => {
@@ -736,7 +740,9 @@ const InventoryPage = () => {
   }, [id]);
 
   /* ===== Cart ===== */
-  const handleAddToCart = (product: Product) => addToCart(product);
+  const handleAddToCart = (product: Product) => {
+    addToCart(product);
+  };
   const handleDropToCart = (product: Product) => addToCart(product);
   const handleClearCart = () => setCart([]);
 
@@ -812,37 +818,66 @@ const InventoryPage = () => {
   // };
 
 
+  // const handleCheckout = async () => {
+
+  //   if (creatingOrder || cart.length === 0) return;
+
+  //   setCreatingOrder(true);
+
+  //   try {
+
+  //     const order = await createOrder({
+  //       customer: null,
+  //       cartItems: cart,
+
+  //       subtotal,
+  //       discountPercent,
+  //       discountReason,
+  //       discountAmount: discount,
+  //       tax,
+
+  //       totalAmount: total,
+  //       paymentMethod: null,
+  //       status: "Ongoing"
+  //     });
+
+  //     setCart([]);   // clear cart immediately
+
+  //     navigate("/bill", { state: order });
+
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+
+  // };
+
   const handleCheckout = async () => {
+    if (isProcessing.current || cart.length === 0) return;
 
-    if (creatingOrder || cart.length === 0) return;
-
-    setCreatingOrder(true);
+    isProcessing.current = true; // 🔒 LOCK
 
     try {
-
       const order = await createOrder({
         customer: null,
         cartItems: cart,
-
         subtotal,
         discountPercent,
         discountReason,
         discountAmount: discount,
         tax,
-
         totalAmount: total,
         paymentMethod: null,
-        status: "Ongoing"
+        status: "Ongoing",
       });
 
-      setCart([]);   // clear cart immediately
-
+      setCart([]);
       navigate("/bill", { state: order });
 
     } catch (err) {
       console.log(err);
+    } finally {
+      isProcessing.current = false; // 🔓 UNLOCK
     }
-
   };
   return (
     <DndProvider backend={HTML5Backend}>
@@ -901,14 +936,43 @@ const InventoryPage = () => {
             )}
 
             <div className="overflow-y-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 scrollbar-hide rounded-md pb-4">
-              {filteredProducts.map((product) => (
-                <DraggableWrapper key={product._id} product={product}>
-                  <ProductCard
-                    product={product}
-                    onAdd={() => handleAddToCart(product)}
-                  />
-                </DraggableWrapper>
-              ))}
+              {filteredProducts.map((product: any) => {
+
+                const percent =
+                  product.initialStock > 0
+                    ? (product.quantity / product.initialStock) * 100
+                    : 0;
+
+                return (
+                  <DraggableWrapper key={product._id} product={product}>
+
+                    <div className="relative">
+
+                      {/* PRODUCT CARD */}
+                      <ProductCard
+                        product={product}
+                        onAdd={() => handleAddToCart(product)}
+                      />
+
+                      {/* ❌ OUT OF STOCK */}
+                      {product.quantity === 0 && (
+                        <div className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded">
+                          Out of Stock
+                        </div>
+                      )}
+
+                      {/* ⚠ LOW STOCK */}
+                      {product.quantity > 0 && percent <= 10 && (
+                        <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">
+                          Low Stock ({percent.toFixed(0)}%)
+                        </div>
+                      )}
+
+                    </div>
+
+                  </DraggableWrapper>
+                );
+              })}
             </div>
 
             {/* <Link
@@ -1018,7 +1082,7 @@ const InventoryPage = () => {
                   CHECKOUT &gt;
                 </button> */}
                 <button
-                  disabled={creatingOrder || cart.length === 0}
+                  disabled={isProcessing.current || cart.length === 0}
                   onClick={handleCheckout}
                   className="bg-(--main) w-full text-white font-semibold py-2 rounded-md"
                 >

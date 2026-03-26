@@ -16,7 +16,10 @@ const ProductCard = ({ product, onAdd }: ProductCardProps) => {
     <div
       className="flex h-24 justify-between items-center p-4 rounded-md bg-gray-100 shadow-sm hover:shadow-md"
     >
-      <div onClick={onAdd} className="flex items-center gap-4 cursor-pointer">
+      <div onClick={(e) => {
+        e.stopPropagation();
+        onAdd();
+      }} className="flex items-center gap-4 cursor-pointer">
         <img
           src={`http://localhost:5000/uploads/${product.thumbnail}`}
           alt={product.title}

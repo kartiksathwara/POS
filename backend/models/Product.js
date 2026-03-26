@@ -9,6 +9,7 @@ const productSchema = new mongoose.Schema({
   description: String,
   category: String,
   quantity: { type: Number, default: 1 },
+  initialStock: { type: Number, default: 1 },
 });
 
 export default mongoose.model("Product", productSchema);                           

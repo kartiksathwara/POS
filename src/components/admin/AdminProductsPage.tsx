@@ -240,8 +240,8 @@ const AdminProductsPage = () => {
               </h3>
               <p className="text-sm text-gray-500">{p.category}</p>
               <p className="text-blue-600 font-bold">
-  ₹{Number(p.price).toLocaleString("en-IN")}
-</p>
+                ₹{Number(p.price).toLocaleString("en-IN")}
+              </p>
 
               {/* EDIT */}
               <div className="flex gap-2 mt-3">

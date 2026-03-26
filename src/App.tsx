@@ -24,6 +24,7 @@ import PaymentPage from "./components/Cardpage";
 import AdminRegister from "./components/AdminRegister";
 import CreateUser from "./components/admin/CreateUser";
 import Logout from "./components/Logout";
+import StockPage from "./components/admin/StockPage";
 
 function App() {
   return (
@@ -86,6 +87,7 @@ function App() {
               }
             />
             <Route path="/addproduct" element={<AddProductForm />} />
+            <Route path="/stock-check" element={<StockPage />} />
             <Route
               path="/admin-products"
               element={

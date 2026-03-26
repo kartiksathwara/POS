@@ -251,7 +251,7 @@ import express from "express";
 import Order from "../models/Order.js";
 import Customer from "../models/Customer.js";
 import { protect } from "../middleware/authMiddleware.js";
-
+import Product from "../models/Product.js";
 const router = express.Router();
 
 /* ================= CREATE ORDER ================= */
@@ -346,7 +346,6 @@ router.get("/:id", protect, async (req, res) => {
 
 
 /* ================= UPDATE ORDER ================= */
-
 router.patch("/:id", protect, async (req, res) => {
   try {
     const order = await Order.findOne({
@@ -358,15 +357,45 @@ router.patch("/:id", protect, async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
+    // 🚫 PREVENT DOUBLE STOCK REDUCTION
+    if (order.status === "Paid" && req.body.status === "Paid") {
+      return res.json(order); // already processed
+    }
+
+    const isBecomingPaid =
+      req.body.status === "Paid" && order.status !== "Paid";
+
+    // update fields
     Object.assign(order, req.body);
 
-    const updated = await order.save();
+    const updatedOrder = await order.save();
 
-    const populated = await updated.populate("customer", "name phone");
+    // 🔥 REDUCE STOCK ONLY ONCE
+    if (isBecomingPaid) {
+      for (const item of order.cartItems) {
+
+        const product = await Product.findById(item._id);
+
+        if (!product) continue;
+
+        if (product.quantity < item.quantity) {
+          return res.status(400).json({
+            error: `Not enough stock for ${product.title}`
+          });
+        }
+
+        await Product.findByIdAndUpdate(item._id, {
+          $inc: { quantity: -item.quantity }
+        });
+      }
+    }
+
+    const populated = await updatedOrder.populate("customer", "name phone");
 
     res.json(populated);
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 });

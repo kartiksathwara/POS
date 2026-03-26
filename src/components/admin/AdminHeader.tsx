@@ -49,6 +49,9 @@ const AdminHeader = () => {
                       <Link to="/addproduct" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
                         Add Product
                       </Link>
+                      <Link to="/stock-check" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
+                        Stock Check
+                      </Link>
                       <button
                         onClick={() => {
                           localStorage.clear(); 

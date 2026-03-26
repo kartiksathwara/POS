@@ -35,20 +35,18 @@ export const addProduct = async (req, res) => {
       return res.status(400).json({ error: "Please fill all required fields" });
     }
 
-    // const lastProduct = await Product.findOne().sort({ id: -1 });
-    // const newId = lastProduct ? lastProduct.id + 1 : 1;
-
     const newProduct = new Product({
-      // id:newId,
       title,
       price,
       thumbnail,
       category,
-      quantity,
+      quantity: Number(quantity),
+      initialStock: Number(quantity), // 🔥 ADD THIS
     });
 
     const savedProduct = await newProduct.save();
     res.status(201).json(savedProduct);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to add product" });
@@ -57,32 +55,56 @@ export const addProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    const { quantity, action, title, price, category } = req.body;
 
-    const updateData = {
-      title: req.body.title,
-      price: req.body.price,
-      category: req.body.category,
-      quantity: req.body.quantity,
-    };
+    const updateData = {};
 
-    // if new image uploaded
+    // ✅ NORMAL FIELD UPDATE
+    if (title) updateData.title = title;
+    if (price) updateData.price = price;
+    if (category) updateData.category = category;
+
+    // ✅ STOCK FIX (ATOMIC)
+    if (quantity !== undefined) {
+      const qty = Number(quantity);
+
+      if (!qty || qty <= 0) {
+        return res.status(400).json({ error: "Invalid quantity" });
+      }
+
+      if (action === "add") {
+        updateData.$inc = { quantity: qty };
+      } 
+      
+      else if (action === "remove") {
+        updateData.$inc = { quantity: -qty };
+      } 
+      
+      else if (action === "set") {
+        updateData.quantity = qty;
+        updateData.initialStock = qty;
+      }
+    }
+
+    // ✅ IMAGE UPDATE
     if (req.file) {
       updateData.thumbnail = req.file.filename;
     }
 
-    const updated = await Product.findByIdAndUpdate(
+    const updatedProduct = await Product.findByIdAndUpdate(
       id,
       updateData,
       { new: true }
     );
 
-    if (!updated) {
+    if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    res.json(updated);
+    res.json(updatedProduct);
+
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ error: "Update failed" });
   }
 };
