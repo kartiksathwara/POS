@@ -644,7 +644,7 @@ const StockPage = () => {
                     {[
                         { label: "In Stock", val: products.length - lowStockCount - outOfStockCount, icon: <RiCheckboxCircleFill />, color: "#10b981", filter: "All" },
                         { label: "Low Warning", val: lowStockCount, icon: <RiAlertFill />, color: "#f59e0b", filter: "Low" },
-                        { label: "Depleted", val: outOfStockCount, icon: <RiCloseCircleFill />, color: "#ef4444", filter: "Out" },
+                        { label: "Out Of Stock", val: outOfStockCount, icon: <RiCloseCircleFill />, color: "#ef4444", filter: "Out" },
                     ].map((item) => (
                         <button
                             key={item.label}

@@ -149,14 +149,15 @@ export interface CartItem {
   price: number;
   thumbnail: string;
   category: string;
-  quantity: number;
+  quantity: number; // cart quantity
+  stock: number;    // ✅ actual available stock
 }
 
 interface CartContextType {
   cart: CartItem[];
   setCart: Dispatch<SetStateAction<CartItem[]>>;
   subtotal: number;
-  addToCart: (item: Omit<CartItem, "quantity">) => void;
+  addToCart: (item: Omit<CartItem, "quantity"> & { stock: number }) => void;
   removeFromCart: (_id: string) => void;
   increaseQty: (_id: string) => void;
   decreaseQty: (_id: string) => void;
@@ -175,7 +176,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const addLock = useRef(false);
 
-  const addToCart = (product: Omit<CartItem, "quantity">) => {
+  const addToCart = (product: Omit<CartItem, "quantity"> & { stock: number }) => {
     if (addLock.current) return;
 
     addLock.current = true;
@@ -183,7 +184,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCart((prev) => {
       const exists = prev.find((item) => item._id === product._id);
 
+      // 🛑 OUT OF STOCK
+      if (product.stock === 0) {
+        alert("Out of stock!");
+        return prev;
+      }
+
+      // 🛑 ALREADY IN CART
       if (exists) {
+        if (exists.quantity >= product.stock) {
+          alert("Stock limit reached!");
+          return prev;
+        }
+
         return prev.map((item) =>
           item._id === product._id
             ? { ...item, quantity: item.quantity + 1 }
@@ -191,6 +204,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         );
       }
 
+      // ✅ ADD NEW
       return [...prev, { ...product, quantity: 1 }];
     });
 
@@ -205,11 +219,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const increaseQty = (_id: string) => {
     setCart((prev) =>
-      prev.map((item) =>
-        item._id === _id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
+      prev.map((item) => {
+        if (item._id === _id) {
+          if (item.quantity >= item.stock) {
+            alert("Stock limit reached!");
+            return item;
+          }
+          return { ...item, quantity: item.quantity + 1 };
+        }
+        return item;
+      })
     );
   };
 

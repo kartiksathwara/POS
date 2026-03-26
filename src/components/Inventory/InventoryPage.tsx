@@ -618,6 +618,8 @@ interface Product {
   price: number;
   thumbnail: string;
   category: string;
+  quantity: number;      // ✅ add this
+  initialStock?: number; // ✅ optional (used in UI)
 }
 
 const DraggableWrapper: React.FC<{
@@ -689,7 +691,7 @@ const InventoryPage = () => {
   /* 🔥 Only added for coupon */
   const [discountPercent, setDiscountPercent] = useState<number>(18);
   const [discountReason, setDiscountReason] = useState<string>("Default Discount");
-const isProcessing = useRef(false);
+  const isProcessing = useRef(false);
 
   /* Apply coupon when coming from Discount page */
   useEffect(() => {
@@ -714,7 +716,12 @@ const isProcessing = useRef(false);
     const state: any = location.state;
 
     if (state?.cartItems) {
-      setCart(state.cartItems);
+      setCart(
+        state.cartItems.map((item: any) => ({
+          ...item,
+          stock: item.stock ?? item.quantity, // fallback
+        }))
+      );
     }
 
   }, [location.state]);
@@ -726,7 +733,12 @@ const isProcessing = useRef(false);
     const loadOrder = async () => {
       try {
         const data = await getSingleHoldOrder(id);
-        setCart(data.cartItems);
+       setCart(
+  data.cartItems.map((item: any) => ({
+    ...item,
+    stock: item.stock ?? item.quantity, // ✅ fallback
+  }))
+);
         setCustomerName(data.customer?.name || "");
         setCustomerPhone(data.customer?.phone || "");
         setDiscountPercent(data.discountPercent || 18);
@@ -741,9 +753,16 @@ const isProcessing = useRef(false);
 
   /* ===== Cart ===== */
   const handleAddToCart = (product: Product) => {
-    addToCart(product);
+    addToCart({
+      ...product,
+      stock: product.quantity,
+    });
   };
-  const handleDropToCart = (product: Product) => addToCart(product);
+  const handleDropToCart = (product: Product) =>
+    addToCart({
+      ...product,
+      stock: product.quantity,
+    });
   const handleClearCart = () => setCart([]);
 
   const subtotal = cart.reduce(
@@ -951,7 +970,12 @@ const isProcessing = useRef(false);
                       {/* PRODUCT CARD */}
                       <ProductCard
                         product={product}
-                        onAdd={() => handleAddToCart(product)}
+                        onAdd={() =>
+                          handleAddToCart({
+                            ...product,
+                            stock: product.quantity,
+                          })
+                        }
                       />
 
                       {/* ❌ OUT OF STOCK */}
