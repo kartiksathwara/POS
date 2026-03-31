@@ -42,6 +42,7 @@ import holdOrderRoutes from "./routes/holdOrderRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import orderCustomerRoutes from "./routes/orderCustomerRoutes.js";
+import adminDashboardRoutes from "./routes/adminDashboard.js";
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -56,6 +57,7 @@ app.use("/api/auth", authRoutes);  // ✅ ADD THIS
 app.use("/api/hold-orders", holdOrderRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/ordercustomers", orderCustomerRoutes);
+app.use("/api/admin-dashboard", adminDashboardRoutes);
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {

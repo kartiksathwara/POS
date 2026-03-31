@@ -1,77 +1,111 @@
 import { useState, useEffect, useRef } from "react";
-import { FaAngleDown, FaUser } from "react-icons/fa";
+import {
+  FaBars,
+  FaAngleDown,
+  FaUser,
+  FaPlus,
+  FaBoxes,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const AdminHeader = () => {
-  const [menuopen, setMenuOpen] = useState(false);
+type Props = {
+  sidebarOpen: boolean;
+  setSidebarOpen: (val: boolean) => void;
+};
+
+const AdminHeader = ({ sidebarOpen, setSidebarOpen }: Props) => {
+  const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
   return (
-    <div>
-      <header className="bg-(--main) w-full p-8 py-3 font-semibold text-2xl flex justify-between">
+    <header className="relative z-40 bg-[#3D2314] w-full px-7 py-3.5 flex justify-between items-center border-b border-white/10 shadow">
+
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="text-white text-lg"
+        >
+          <FaBars />
+        </button>
+
         <Link to="/admin-products">
-          <div className="text-white">DKC</div>
-        </Link>
-
-        <div className="text-white">
-          <div className="flex items-center text-xl text-white relative">
-
-
-            <div className="relative" ref={menuRef}>
-              <button
-                className="flex items-center gap-2 px-0 py-2 rounded-xl transition"
-                onClick={() => setMenuOpen(!menuopen)}
-              >
-                <FaUser />
-                <FaAngleDown className={`transition-transform ${menuopen ? "rotate-180" : ""}`} />
-              </button>
-
-              {menuopen && (
-                <div className="absolute lg:right-0 -right-6 w-56 rounded-xl border shadow-xl overflow-hidden z-50 bg-(--primary) transition-all duration-300">
-                  <div className="bg-(--primary)">
-
-
-                    <div className="p-2.5">
-                      <Link to="/addproduct" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
-                        Add Product
-                      </Link>
-                      <Link to="/stock-check" className="block px-4 py-3 text-lg text-(--main) border-b border-gray-400">
-                        Stock Check
-                      </Link>
-                      <button
-                        onClick={() => {
-                          localStorage.clear(); 
-                          window.location.href = "/login";  
-                        }}
-                        className="block w-full text-left px-4 py-3 text-lg text-(--main) border-b border-gray-400"
-                      >
-                        Logout
-                      </button>
-
-                    </div>
-                  </div>
-                </div>
-              )}
-
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C8A882] to-[#8B6F5E] flex items-center justify-center text-white font-bold">
+              D
             </div>
+            <span className="text-[#FAF6F1] font-bold text-lg">DKC</span>
           </div>
+        </Link>
+      </div>
+
+      <div className="flex items-center gap-4">
+
+        <div className="hidden md:flex items-center gap-1.5 bg-[#C8A882]/10 border border-[#C8A882]/20 rounded-full px-3 py-1">
+          <span className="text-[#C8A882] text-xs">
+            {new Date().toLocaleDateString("en-IN")}
+          </span>
         </div>
-      </header>
-    </div>
+
+        <div className="relative z-50" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 text-white"
+          >
+            <FaUser />
+            <FaAngleDown />
+          </button>
+
+          {menuOpen && (
+            <div className="absolute right-0 top-[110%] w-52 rounded-2xl border border-[#C8A882]/20 shadow-xl bg-[#2a1709] overflow-hidden z-50">
+
+              <div className="px-4 py-3 bg-[#3D2314] border-b border-white/10">
+                <p className="text-[#FAF6F1] text-xs font-bold">
+                  Admin Account
+                </p>
+              </div>
+
+              <div className="p-2">
+                <Link
+                  to="/addproduct"
+                  className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-[#E9DCCF]/75 hover:bg-[#C8A882]/15"
+                >
+                  <FaPlus /> Add Product
+                </Link>
+
+                <Link
+                  to="/stock-check"
+                  className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-[#E9DCCF]/75 hover:bg-[#C8A882]/15"
+                >
+                  <FaBoxes /> Stock Check
+                </Link>
+
+                <button
+                  onClick={() => {
+                    localStorage.clear();
+                    window.location.href = "/login";
+                  }}
+                  className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm text-red-400 hover:bg-red-500/10"
+                >
+                  <FaSignOutAlt /> Logout
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
   );
 };
 

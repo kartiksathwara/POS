@@ -201,7 +201,7 @@ const LoginPage = () => {
 
   if (token && role) {
     if (role === "admin") {
-      navigate("/admin-products", { replace: true });
+      navigate("/admin-dashboard", { replace: true });
     } else {
       navigate("/lock", { replace: true });
     }
@@ -263,7 +263,7 @@ const LoginPage = () => {
 
     // ✅ NAVIGATION
     if (data.role === "admin") {
-      navigate("/admin-products", { replace: true });
+      navigate("/admin-dashboard", { replace: true });
     } else {
       navigate("/lock", { replace: true });
     }

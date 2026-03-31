@@ -311,7 +311,7 @@ export interface Order {
 ===================================================== */
 
 const getAuthHeader = () => {
-  const token = localStorage.getItem("POS-token");
+  const token = localStorage.getItem("token");
 
   return {
     "Content-Type": "application/json",
@@ -673,3 +673,63 @@ export const getCurrentUser = async () => {
 
   return data;
 };
+
+export const getUsers = async () => {
+  const res = await fetch(`${BASE_URL}/auth/users`, {
+    headers: getAuthHeader(),
+  });
+
+  const text = await res.text();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    console.error("API ERROR RESPONSE:", text);
+    throw new Error("Invalid JSON (API issue)");
+  }
+};
+
+export const deleteUser = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/auth/users/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeader(),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+};
+
+export const verifyAdmin = async (password: string) => {
+  const res = await fetch(`${BASE_URL}/auth/verify-admin`, {
+    method: "POST",
+    headers: getAuthHeader(),
+    body: JSON.stringify({ password }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+};
+
+export const getAdminDashboard = async () => {
+  const token = localStorage.getItem("POS-token");
+
+  const res = await fetch("http://localhost:5000/api/admin-dashboard", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const text = await res.text();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    console.error("❌ NOT JSON:", text);
+    throw new Error("Backend not returning JSON");
+  }
+};
+
+
+
