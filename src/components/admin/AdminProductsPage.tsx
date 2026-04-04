@@ -399,6 +399,7 @@
 
 import { useEffect, useState } from "react";
 import AdminHeader from "./AdminHeader";
+import AdminSidebar from "./AdminSidebar";
 
 const COLORS = ["#5C4033", "#8B6F5E", "#C8A882", "#E9DCCF", "#A0856C"];
 
@@ -407,6 +408,7 @@ const AdminProductsPage = () => {
   const [search, setSearch] = useState("");
   const [editProduct, setEditProduct] = useState<any>(null);
   const [showEdit, setShowEdit] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const fetchProducts = async () => {
     const res = await fetch("http://localhost:5000/api/products");
     const data = await res.json();
@@ -472,10 +474,27 @@ const AdminProductsPage = () => {
   return (
     <div className="flex min-h-screen bg-[#FAF6F1] font-sans">
 
-      <div className="flex-1 flex flex-col">
+      {/* ✅ SIDEBAR */}
+      <AdminSidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-<AdminHeader />
-        <main className="flex-1 px-7 py-7 overflow-y-auto flex flex-col gap-5">
+      {/* ✅ MAIN CONTENT */}
+      <div
+        className={`
+          flex-1 flex flex-col transition-all duration-300
+          ${sidebarOpen ? "ml-[240px]" : "ml-0"}
+        `}
+      >
+        {/* ✅ HEADER */}
+        <AdminHeader
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
+
+        {/* ✅ PAGE */}
+        <main className="flex-1 px-7 py-7 overflow-y-auto flex flex-col gap-6">
 
           {/* ── TOP BAR ── */}
           <div className="flex justify-between items-center bg-white rounded-2xl px-6 py-4 shadow-sm border border-[#EFE8DF]">
@@ -591,104 +610,106 @@ const AdminProductsPage = () => {
       </div>
 
       {/* ════ EDIT MODAL ════ */}
-      {showEdit && editProduct && (
-        <div className="fixed inset-0 bg-[#3D2314]/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-[420px] shadow-[0_24px_60px_rgba(61,35,20,0.25)] border border-[#EFE8DF] overflow-hidden">
+      {
+        showEdit && editProduct && (
+          <div className="fixed inset-0 bg-[#3D2314]/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+            <div className="bg-white rounded-2xl w-[420px] shadow-[0_24px_60px_rgba(61,35,20,0.25)] border border-[#EFE8DF] overflow-hidden">
 
-            <div className="bg-gradient-to-r from-[#3D2314] to-[#5C4033] px-6 py-5 flex items-center justify-between">
-              <div>
-                <h3 className="text-[#FAF6F1] font-bold text-base">Edit Product</h3>
-                <p className="text-[#C8A882] text-xs mt-0.5 truncate max-w-[260px]">
-                  {editProduct.title}
-                </p>
-              </div>
-              <button
-                onClick={() => setShowEdit(false)}
-                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-[#E9DCCF] flex items-center justify-center text-lg transition-colors"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdate} className="p-6 space-y-4">
-              {editProduct.thumbnail && (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-full h-36 bg-[#FAF6F1] rounded-xl border border-[#EFE8DF] flex items-center justify-center overflow-hidden">
-                    <img
-                      src={
-                        editProduct.thumbnail instanceof File
-                          ? URL.createObjectURL(editProduct.thumbnail)
-                          : `http://localhost:5000/uploads/${editProduct.thumbnail}`
-                      }
-                      className="h-full object-contain p-2"
-                      alt="Preview"
-                    />
-                  </div>
-                  <p className="text-[10px] text-[#A0856C] tracking-wide uppercase font-medium">
-                    Current Image
+              <div className="bg-gradient-to-r from-[#3D2314] to-[#5C4033] px-6 py-5 flex items-center justify-between">
+                <div>
+                  <h3 className="text-[#FAF6F1] font-bold text-base">Edit Product</h3>
+                  <p className="text-[#C8A882] text-xs mt-0.5 truncate max-w-[260px]">
+                    {editProduct.title}
                   </p>
                 </div>
-              )}
+                <button
+                  onClick={() => setShowEdit(false)}
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-[#E9DCCF] flex items-center justify-center text-lg transition-colors"
+                >
+                  ×
+                </button>
+              </div>
 
-              {["title", "price", "category", "quantity"].map((field) => (
-                <div key={field}>
+              <form onSubmit={handleUpdate} className="p-6 space-y-4">
+                {editProduct.thumbnail && (
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-full h-36 bg-[#FAF6F1] rounded-xl border border-[#EFE8DF] flex items-center justify-center overflow-hidden">
+                      <img
+                        src={
+                          editProduct.thumbnail instanceof File
+                            ? URL.createObjectURL(editProduct.thumbnail)
+                            : `http://localhost:5000/uploads/${editProduct.thumbnail}`
+                        }
+                        className="h-full object-contain p-2"
+                        alt="Preview"
+                      />
+                    </div>
+                    <p className="text-[10px] text-[#A0856C] tracking-wide uppercase font-medium">
+                      Current Image
+                    </p>
+                  </div>
+                )}
+
+                {["title", "price", "category", "quantity"].map((field) => (
+                  <div key={field}>
+                    <label className="block text-[11px] text-[#A0856C] font-semibold tracking-widest uppercase mb-1.5">
+                      {field}
+                    </label>
+                    <input
+                      name={field}
+                      type={field === "quantity" ? "number" : "text"}
+                      value={
+                        field === "price"
+                          ? editProduct.price
+                            ? Number(editProduct.price).toLocaleString("en-IN")
+                            : ""
+                          : editProduct[field]
+                      }
+                      onChange={handleEditChange}
+                      placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                      className="w-full border-[1.5px] border-[#E9DCCF] px-4 py-2.5 rounded-xl text-sm text-[#3D2314] bg-[#FAF6F1] outline-none focus:border-[#C8A882] focus:ring-2 focus:ring-[#C8A882]/20 transition-all placeholder-[#C8A882]/60"
+                    />
+                  </div>
+                ))}
+
+                <div>
                   <label className="block text-[11px] text-[#A0856C] font-semibold tracking-widest uppercase mb-1.5">
-                    {field}
+                    Change Image
                   </label>
                   <input
-                    name={field}
-                    type={field === "quantity" ? "number" : "text"}
-                    value={
-                      field === "price"
-                        ? editProduct.price
-                          ? Number(editProduct.price).toLocaleString("en-IN")
-                          : ""
-                        : editProduct[field]
-                    }
+                    type="file"
+                    name="thumbnail"
                     onChange={handleEditChange}
-                    placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                    className="w-full border-[1.5px] border-[#E9DCCF] px-4 py-2.5 rounded-xl text-sm text-[#3D2314] bg-[#FAF6F1] outline-none focus:border-[#C8A882] focus:ring-2 focus:ring-[#C8A882]/20 transition-all placeholder-[#C8A882]/60"
-                  />
-                </div>
-              ))}
-
-              <div>
-                <label className="block text-[11px] text-[#A0856C] font-semibold tracking-widest uppercase mb-1.5">
-                  Change Image
-                </label>
-                <input
-                  type="file"
-                  name="thumbnail"
-                  onChange={handleEditChange}
-                  className="block w-full text-sm text-[#5C4033]
+                    className="block w-full text-sm text-[#5C4033]
                     file:mr-3 file:py-2 file:px-4
                     file:rounded-lg file:border-0
                     file:text-xs file:font-semibold
                     file:bg-[#E9DCCF] file:text-[#5C4033]
                     hover:file:bg-[#C8A882]/40 cursor-pointer"
-                />
-              </div>
+                  />
+                </div>
 
-              <div className="flex gap-3 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setShowEdit(false)}
-                  className="flex-1 py-3 rounded-xl text-sm font-semibold bg-[#FAF6F1] text-[#8B6F5E] border border-[#E9DCCF] hover:bg-[#E9DCCF]/50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-[#5C4033] to-[#3D2314] text-white hover:from-[#3D2314] hover:to-[#2a1709] shadow-[0_4px_14px_rgba(61,35,20,0.3)] transition-all"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
+                <div className="flex gap-3 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowEdit(false)}
+                    className="flex-1 py-3 rounded-xl text-sm font-semibold bg-[#FAF6F1] text-[#8B6F5E] border border-[#E9DCCF] hover:bg-[#E9DCCF]/50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-[#5C4033] to-[#3D2314] text-white hover:from-[#3D2314] hover:to-[#2a1709] shadow-[0_4px_14px_rgba(61,35,20,0.3)] transition-all"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

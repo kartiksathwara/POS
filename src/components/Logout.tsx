@@ -11,7 +11,7 @@ const Logout = () => {
 
         localStorage.clear(); // 🔥 safest
 
-        window.location.href = "/login";
+        window.location.href = "/";
     }, []);
 
     return null;

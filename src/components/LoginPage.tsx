@@ -196,17 +196,22 @@ const LoginPage = () => {
 
   // 🔥 BLOCK LOGIN PAGE IF ALREADY LOGGED IN
   useEffect(() => {
-  const token = localStorage.getItem("POS-token");
-  const role = localStorage.getItem("POS-role");
+    const token = localStorage.getItem("POS-token");
+    const role = localStorage.getItem("POS-role");
+    const isLocked = localStorage.getItem("isLocked");
 
-  if (token && role) {
-    if (role === "admin") {
-      navigate("/admin-dashboard", { replace: true });
-    } else {
-      navigate("/lock", { replace: true });
+    if (token && role) {
+      if (role === "admin") {
+        navigate("/admin-dashboard", { replace: true });
+      } else {
+        if (isLocked === "true") {
+          navigate("/lock", { replace: true });
+        } else {
+          navigate("/home", { replace: true });
+        }
+      }
     }
-  }
-}, [navigate]);
+  }, []);
 
   const validateEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -243,34 +248,36 @@ const LoginPage = () => {
   // };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validateEmail(email)) {
-    setError("Please enter a valid email address.");
-    return;
-  }
-
-  try {
-    const data = await loginUser({ email, password });
-
-    // ✅ STORE DATA
-    localStorage.setItem("POS-token", data.token);
-    localStorage.setItem("POS-role", data.role);
-    localStorage.setItem("POS-userId", data.userId);
-    localStorage.setItem("isLocked", "false"); // 🔥 IMPORTANT
-
-    dispatch(login(data.token));
-
-    // ✅ NAVIGATION
-    if (data.role === "admin") {
-      navigate("/admin-dashboard", { replace: true });
-    } else {
-      navigate("/lock", { replace: true });
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
     }
-  } catch (error: any) {
-    setError(error.message);
-  }
-};
+
+    try {
+      const data = await loginUser({ email, password });
+
+      // ✅ STORE DATA
+      localStorage.setItem("POS-token", data.token);
+      localStorage.setItem("POS-role", data.role);
+      localStorage.setItem("POS-userId", data.userId);
+      localStorage.setItem("isLocked", "false"); // 🔥 IMPORTANT
+
+      dispatch(login(data.token));
+
+      // ✅ NAVIGATION
+      if (data.role === "admin") {
+        localStorage.setItem("isLocked", "false");
+        navigate("/admin-dashboard", { replace: true });
+      } else {
+        localStorage.setItem("isLocked", "true"); // 🔥 FIX
+        navigate("/lock", { replace: true });
+      }
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center sm:justify-start">

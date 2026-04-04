@@ -341,7 +341,10 @@ const Lock = () => {
 
       // ✅ SUCCESS
       setError("");
-      navigate("/");
+      localStorage.setItem("isLocked", "false");
+
+      navigate("/", { replace: true });
+
     } catch (err) {
       setError("Server error");
       setPin("");
@@ -350,6 +353,13 @@ const Lock = () => {
     }
   };
 
+  useEffect(() => {
+    const role = localStorage.getItem("POS-role");
+
+    if (role === "admin") {
+      navigate("/admin-dashboard", { replace: true });
+    }
+  }, []);
   // ✅ AUTO VERIFY WHEN 4 DIGITS
   useEffect(() => {
     if (pin.length === 4) {

@@ -94,7 +94,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }: Props) => {
                 <button
                   onClick={() => {
                     localStorage.clear();
-                    window.location.href = "/login";
+                    window.location.href = "/";
                   }}
                   className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm text-red-400 hover:bg-red-500/10"
                 >

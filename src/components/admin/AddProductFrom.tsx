@@ -1149,6 +1149,7 @@
 
 import { useState, useRef } from "react";
 import AdminHeader from "./AdminHeader";
+import AdminSidebar from "./AdminSidebar";
 const CATEGORIES = [
   "Electronics", "Clothing", "Accessories", "Footwear",
   "Home & Living", "Books", "Sports", "Beauty", "Toys", "Other"
@@ -1195,7 +1196,7 @@ const AddProductForm = () => {
   const [success, setSuccess] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const formatPrice = (v: string) => {
     const n = v.replace(/,/g, "");
     return isNaN(Number(n)) ? v : Number(n).toLocaleString("en-IN");
@@ -1255,8 +1256,21 @@ const AddProductForm = () => {
   /* ── SUCCESS SCREEN ── */
   if (success) return (
     <div className="flex min-h-screen bg-[#FAF6F1] font-sans">
-      <div className="flex-1 flex flex-col">
-        <AdminHeader />
+      <AdminSidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+      <div
+        className={`
+          flex-1 flex flex-col transition-all duration-300
+          ${sidebarOpen ? "ml-[240px]" : "ml-0"}
+        `}
+      >
+        {/* ✅ HEADER */}
+        <AdminHeader
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C8A882] to-[#5C4033] flex items-center justify-center mx-auto mb-5 shadow-[0_8px_32px_rgba(92,64,51,0.3)]">
@@ -1278,9 +1292,27 @@ const AddProductForm = () => {
 
   return (
     <div className="flex min-h-screen bg-[#FAF6F1] font-sans">
-      <div className="flex-1 flex flex-col">
-        <AdminHeader />
 
+      {/* ✅ SIDEBAR */}
+      <AdminSidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
+      {/* ✅ MAIN CONTENT */}
+      <div
+        className={`
+      flex-1 flex flex-col transition-all duration-300
+      ${sidebarOpen ? "ml-[240px]" : "ml-0"}
+    `}
+      >
+        {/* ✅ HEADER */}
+        <AdminHeader
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
+
+        {/* ✅ PAGE */}
         <main className="flex-1 px-7 py-7 overflow-y-auto flex flex-col gap-6">
 
           {/* ── Top stepper bar ── */}

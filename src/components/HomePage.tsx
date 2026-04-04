@@ -35,11 +35,11 @@ const HomePage = () => {
   }, []);
 
   const [actionCards, setActionCards] = useState<ActionCardType[]>([
-    { label: "Inventory", link: "./inventory", icon: <InventorySvg /> },
-    { label: "Customer", link: "./customer", icon: <CustomerSvg /> },
-    { label: "Discount", link: "./discount", icon: <DiscountSvg /> },
+    { label: "Inventory", link: "/inventory", icon: <InventorySvg /> },
+    { label: "Customer", link: "/customer", icon: <CustomerSvg /> },
+    { label: "Discount", link: "/discount", icon: <DiscountSvg /> },
     // { label: "Request", link: "./request", icon: <RequestSvg /> },
-    { label: "Hold-Order", link: "./hold-order", icon: <HoldOrderSvg /> },
+    { label: "Hold-Order", link: "/hold-order", icon: <HoldOrderSvg /> },
   ]);
 
   const iconMap: Record<string, ReactNode> = {
@@ -47,7 +47,8 @@ const HomePage = () => {
     customer: <CustomerSvg />,
     discount: <DiscountSvg />,
     // request: <RequestSvg />,
-    HoldOrder: <HoldOrderSvg/>,
+    // HoldOrder: <HoldOrderSvg/>,
+    "hold-order": <HoldOrderSvg />,
   };
 
   const handleSearch = (query: string) => {
@@ -74,7 +75,7 @@ const HomePage = () => {
       ...prev,
       {
         label: title,
-        link: `./${lower}`,
+        link: `/${lower}`,
         icon,
       },
     ]);

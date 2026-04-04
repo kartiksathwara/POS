@@ -26,22 +26,54 @@ import CreateUser from "./components/admin/CreateUser";
 import Logout from "./components/Logout";
 import StockPage from "./components/admin/StockPage";
 import AdminDashboard from "./components/admin/AdminDashboard";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import AdminOrders from "./components/admin/Adminorders";
+import AdminReport from "./components/admin/AdminReport";
 
 function App() {
+  const AppRedirect = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const token = localStorage.getItem("POS-token");
+      const role = localStorage.getItem("POS-role");
+      const isLocked = localStorage.getItem("isLocked");
+      const path = window.location.pathname;
+
+      if (!token) return;
+
+      // 🔥 Prevent redirect loop
+      if (path !== "/login") return;
+
+      if (role === "admin") {
+        navigate("/admin-dashboard", { replace: true });
+      } else {
+        if (isLocked === "true") {
+          navigate("/lock", { replace: true });
+        } else {
+          navigate("/home", { replace: true });
+        }
+      }
+    }, []);
+
+    return null;
+  };
   return (
     <AuthProvider>
       <OrderProvider>
         <BrowserRouter>
+          <AppRedirect />
           <Routes>
             <Route
-              path="/"
+              path="/home"
               element={
                 <ProtectedRoute>
                   <HomePage />
                 </ProtectedRoute>
               }
             ></Route>
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<LoginPage />} />
             <Route path="/admin-register" element={<AdminRegister />} />
 
             <Route
@@ -52,14 +84,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <HomePage />
-                </ProtectedRoute>
-              }
-            ></Route>
             <Route path="/activities" element={<Activities />} />
             <Route
               path="/inventory/:id?"
@@ -89,12 +113,37 @@ function App() {
             />
             <Route path="/addproduct" element={<AddProductForm />} />
             <Route path="/stock-check" element={<StockPage />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route
+              path="/admin-dashboard"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/admin-products"
               element={
                 <ProtectedRoute>
                   <AdminProductsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin-orders"
+              element={
+                <ProtectedRoute>
+                  <AdminOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin-reports"
+              element={
+                <ProtectedRoute>
+                  <AdminReport />
                 </ProtectedRoute>
               }
             />

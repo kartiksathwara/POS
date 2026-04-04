@@ -1,10 +1,12 @@
 import { useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FaSignOutAlt } from "react-icons/fa";
 const NAV_ITEMS = [
-  { icon: "◈", label: "Dashboard" },
-  { icon: "◫", label: "Orders" },
-  { icon: "◉", label: "Users" },
-  { icon: "⬡", label: "Products" },
-  { icon: "◎", label: "Reports" },
+  { icon: "◈", label: "Dashboard", path: "/admin-dashboard" },
+  { icon: "◫", label: "Orders", path: "/admin-orders" },
+  { icon: "◉", label: "Users", path: "/admin-users" },
+  { icon: "⬡", label: "Products", path: "/admin-products" },
+  { icon: "◎", label: "Reports", path: "/admin-reports" },
 ];
 
 type Props = {
@@ -55,15 +57,25 @@ const AdminSidebar = ({ isOpen, onClose }: Props) => {
 
         <nav className="mt-4">
           {NAV_ITEMS.map((item) => (
-            <div
-              key={item.label}
-              className="flex items-center gap-3 px-4 py-3 text-sm text-[#E9DCCF]/70 hover:bg-white/5 cursor-pointer"
-            >
-              <span>{item.icon}</span>
-              {item.label}
-            </div>
+            <Link to={item.path} key={item.label}>
+              <div
+                className="flex items-center gap-3 px-4 py-3 text-sm text-[#E9DCCF]/70 hover:bg-white/5 cursor-pointer"
+              >
+                <span>{item.icon}</span>
+                {item.label}
+              </div>
+            </Link>
           ))}
         </nav>
+        <button
+          onClick={() => {
+            localStorage.clear();
+            window.location.href = "/";
+          }}
+          className="flex items-center gap-3 w-full px-4 py-2 rounded-xl text-sm text-red-400 hover:bg-red-500/10"
+        >
+          <FaSignOutAlt /> Logout
+        </button>
       </aside>
     </>
   );

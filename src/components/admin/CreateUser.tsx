@@ -192,6 +192,7 @@ import { IoClose } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { Link } from "react-router-dom";
+import AdminSidebar from "./AdminSidebar";
 
 import {
   createUser,
@@ -209,6 +210,7 @@ const CreateUser = () => {
   const [adminPassword, setAdminPassword] = useState(""); // ✅ NEW
   const [showDeleteModal, setShowDeleteModal] = useState(false); // ✅ NEW
   const [deleteId, setDeleteId] = useState(""); // ✅ NEW
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -317,9 +319,21 @@ const CreateUser = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col relative">
-      <AdminHeader />
-
+   <div className="flex min-h-screen bg-[#FAF6F1]">
+         <AdminSidebar
+           isOpen={sidebarOpen}
+           onClose={() => setSidebarOpen(false)}
+         />
+         <div
+           className={`
+             flex-1 flex flex-col transition-all duration-300
+             ${sidebarOpen ? "ml-[240px]" : "ml-0"}
+           `}
+         >
+           <AdminHeader
+             sidebarOpen={sidebarOpen}
+             setSidebarOpen={setSidebarOpen}
+           />
       <div className="flex-1 overflow-y-auto p-4">
 
         <SearchBar onSearch={handleSearch} />
@@ -495,6 +509,7 @@ const CreateUser = () => {
         </div>
       )}
 
+    </div>
     </div>
   );
 };

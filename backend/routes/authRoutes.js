@@ -312,6 +312,7 @@ router.post("/login", async (req, res) => {
       role: user.role,
       name: user.name,
       userId: user._id,
+      isAdmin: user.role === "admin",
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

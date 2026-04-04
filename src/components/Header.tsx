@@ -69,7 +69,7 @@ const Header = () => {
                       <button
                         onClick={() => {
                           localStorage.clear(); 
-                          window.location.href = "/login";  
+                          window.location.href = "/";  
                         }}
                         className="block w-full text-left px-4 py-3 text-lg text-(--main) border-b border-gray-400 cursor-pointer"
                       >

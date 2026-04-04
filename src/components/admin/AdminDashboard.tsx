@@ -400,7 +400,7 @@ const AdminDashboard = () => {
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart
                   data={chartData}
-                  margin={{ top: 5, right: 15, left: 15, bottom: 0 }} // ✅ spacing fix
+                  margin={{ top: 5, right: 15, left: 15, bottom: 0 }} 
                   barSize={13}
                 >
                   <CartesianGrid stroke="#F0E8DF" strokeDasharray="4 4" vertical={false} />
@@ -413,8 +413,8 @@ const AdminDashboard = () => {
                   />
 
                   <YAxis
-                    width={80} // ✅ FIX overflow
-                    tickFormatter={(value) => Number(value).toLocaleString("en-IN")} // ✅ comma
+                    width={80} 
+                    tickFormatter={(value) => Number(value).toLocaleString("en-IN")} 
                     tick={axProps}
                     axisLine={false}
                     tickLine={false}
