@@ -508,13 +508,30 @@ const Payment = () => {
     navigate("/");
   };
 
-  const handleEmailClick = () => {
+  const handleEmailClick = async () => {
     if (!email || !email.includes("@")) {
-      alert("Please enter a valid email address.");
+      alert("Enter valid email");
       return;
     }
 
-    window.location.href = `mailto:${email}`;
+    try {
+      await fetch("http://localhost:5000/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          orderData, 
+        }),
+      });
+
+      alert("✅ Receipt sent with PDF!");
+      setEmail("");
+
+    } catch (error) {
+      alert("❌ Failed");
+    }
   };
 
   return (
@@ -571,7 +588,7 @@ const Payment = () => {
               </button>
 
               <div className="flex flex-1 border border-gray-500 rounded overflow-hidden">
-              <input
+                <input
                   type="email"
                   placeholder="abcd@example.com"
                   value={email}

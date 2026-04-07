@@ -1,4 +1,4 @@
-import {  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area} from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { useEffect, useMemo, useState } from "react";
 import { getAdminDashboard } from "../../api/apiServices";
 import AdminHeader from "./AdminHeader";
@@ -9,12 +9,37 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const COLORS = ["#5C4033", "#8B6F5E", "#C8A882", "#E9DCCF", "#A0856C"];
 const filterByTime = (orders: any[], filter: string) => {
   const now = new Date();
+
+  // ✅ normalize today (remove time)
+  now.setHours(0, 0, 0, 0);
+
   return orders.filter((o) => {
     const d = new Date(o.createdAt);
-    if (filter === "week") { const w = new Date(); w.setDate(now.getDate() - 7); return d >= w; }
-    if (filter === "2weeks") { const w = new Date(); w.setDate(now.getDate() - 14); return d >= w; }
-    if (filter === "month") return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    if (filter === "year") return d.getFullYear() === now.getFullYear();
+    d.setHours(0, 0, 0, 0); // ✅ normalize order date
+
+    if (filter === "week") {
+      const start = new Date(now);
+      start.setDate(now.getDate() - 6); // last 7 days
+      return d >= start && d <= now;
+    }
+
+    if (filter === "2weeks") {
+      const start = new Date(now);
+      start.setDate(now.getDate() - 13); // last 14 days
+      return d >= start && d <= now;
+    }
+
+    if (filter === "month") {
+      return (
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear()
+      );
+    }
+
+    if (filter === "year") {
+      return d.getFullYear() === now.getFullYear();
+    }
+
     return true;
   });
 };
@@ -73,24 +98,107 @@ const AdminDashboard = () => {
     (a: number, b: any) => a + (b.totalAmount || 0), 0
   );
 
+  // const chartData = useMemo(() => {
+  //   if (timeFilter === "year") {
+  //     const monthly = Array(12).fill(0);
+  //     filteredOrders.forEach((o: any) => { monthly[new Date(o.createdAt).getMonth()] += o.totalAmount || 0; });
+  //     return monthly.map((v, i) => ({ name: months[i], revenue: v, orders: Math.round(v / 2) }));
+  //   }
+  //   if (timeFilter === "week" || timeFilter === "2weeks") {
+  //     const map: any = {};
+
+  //     filteredOrders.forEach((o: any) => {
+  //       const date = new Date(o.createdAt);
+  //       const key = date.toISOString().split("T")[0]; // YYYY-MM-DD
+
+  //       map[key] = (map[key] || 0) + (o.totalAmount || 0);
+  //     });
+
+  //     return Object.entries(map)
+  //       .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime()) // ✅ SORT
+  //       .map(([k, v]) => ({
+  //         name: k,
+  //         revenue: v,
+  //         orders: Math.round((v as number) / 2),
+  //       }));
+  //   }
+  //   const monthly = Array(12).fill(0);
+  //   filteredOrders.forEach((o: any) => { monthly[new Date(o.createdAt).getMonth()] += o.totalAmount || 0; });
+  //   return monthly.map((v, i) => ({ name: months[i], revenue: v, orders: Math.round(v / 2) }));
+  // }, [filteredOrders, timeFilter]);
+
   const chartData = useMemo(() => {
-    if (timeFilter === "year") {
-      const monthly = Array(12).fill(0);
-      filteredOrders.forEach((o: any) => { monthly[new Date(o.createdAt).getMonth()] += o.totalAmount || 0; });
-      return monthly.map((v, i) => ({ name: months[i], revenue: v, orders: Math.round(v / 2) }));
+  if (timeFilter === "week" || timeFilter === "2weeks") {
+    
+    const days = timeFilter === "week" ? 7 : 14;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // ✅ Step 1: create full date range
+    const dateArray: string[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+
+      const key = d.toISOString().split("T")[0];
+      dateArray.push(key);
     }
-    if (timeFilter === "week" || timeFilter === "2weeks") {
-      const map: any = {};
-      filteredOrders.forEach((o: any) => {
-        const d = new Date(o.createdAt).toLocaleDateString();
-        map[d] = (map[d] || 0) + (o.totalAmount || 0);
-      });
-      return Object.entries(map).map(([k, v]) => ({ name: k, revenue: v, orders: Math.round((v as number) / 2) }));
-    }
+
+    // ✅ Step 2: map actual data
+    const dataMap: any = {};
+
+    filteredOrders.forEach((o: any) => {
+      const d = new Date(o.createdAt);
+      d.setHours(0, 0, 0, 0);
+
+      const key = d.toISOString().split("T")[0];
+
+      if (!dataMap[key]) {
+        dataMap[key] = 0;
+      }
+
+      dataMap[key] += o.totalAmount || 0;
+    });
+
+    // ✅ Step 3: fill missing dates with 0
+    return dateArray.map((date) => ({
+      name: new Date(date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+      }),
+      revenue: dataMap[date] || 0,
+      orders: Math.round((dataMap[date] || 0) / 2),
+    }));
+  }
+
+  // existing month/year logic
+  if (timeFilter === "year") {
     const monthly = Array(12).fill(0);
-    filteredOrders.forEach((o: any) => { monthly[new Date(o.createdAt).getMonth()] += o.totalAmount || 0; });
-    return monthly.map((v, i) => ({ name: months[i], revenue: v, orders: Math.round(v / 2) }));
-  }, [filteredOrders, timeFilter]);
+    filteredOrders.forEach((o: any) => {
+      monthly[new Date(o.createdAt).getMonth()] += o.totalAmount || 0;
+    });
+
+    return monthly.map((v, i) => ({
+      name: months[i],
+      revenue: v,
+      orders: Math.round(v / 2),
+    }));
+  }
+
+  // month
+  const monthly = Array(12).fill(0);
+  filteredOrders.forEach((o: any) => {
+    monthly[new Date(o.createdAt).getMonth()] += o.totalAmount || 0;
+  });
+
+  return monthly.map((v, i) => ({
+    name: months[i],
+    revenue: v,
+    orders: Math.round(v / 2),
+  }));
+
+}, [filteredOrders, timeFilter]);
 
   const statusData = useMemo(() => {
     const map: any = {};
@@ -160,12 +268,12 @@ const AdminDashboard = () => {
               </select> */}
               <div className="flex items-center gap-4">
 
-  {/* USER SELECT */}
-  <div className="relative">
-    <select
-      value={selectedUser}
-      onChange={(e) => setSelectedUser(e.target.value)}
-      className="
+                {/* USER SELECT */}
+                <div className="relative">
+                  <select
+                    value={selectedUser}
+                    onChange={(e) => setSelectedUser(e.target.value)}
+                    className="
         appearance-none
         bg-[#3D2314]
         text-[#E9DCCF]
@@ -183,27 +291,27 @@ const AdminDashboard = () => {
         hover:bg-[#4b2e1d]
         focus:ring-2 focus:ring-[#C8A882]/40
       "
-    >
-      <option value="all">All Users</option>
-      {users.map((u: any) => (
-        <option key={u.userId} value={u.userId}>
-          {u.name}
-        </option>
-      ))}
-    </select>
+                  >
+                    <option value="all">All Users</option>
+                    {users.map((u: any) => (
+                      <option key={u.userId} value={u.userId}>
+                        {u.name}
+                      </option>
+                    ))}
+                  </select>
 
-    {/* Custom Arrow */}
-    <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#C8A882] text-xs">
-      <FaAngleDown />
-    </span>
-  </div>
+                  {/* Custom Arrow */}
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#C8A882] text-xs">
+                    <FaAngleDown />
+                  </span>
+                </div>
 
-  {/* TIME FILTER */}
-  <div className="relative">
-    <select
-      value={timeFilter}
-      onChange={(e) => setTimeFilter(e.target.value)}
-      className="
+                {/* TIME FILTER */}
+                <div className="relative">
+                  <select
+                    value={timeFilter}
+                    onChange={(e) => setTimeFilter(e.target.value)}
+                    className="
         appearance-none
         bg-[#3D2314]
         text-[#E9DCCF]
@@ -221,19 +329,19 @@ const AdminDashboard = () => {
         hover:bg-[#4b2e1d]
         focus:ring-2 focus:ring-[#C8A882]/40
       "
-    >
-      <option value="week">This Week</option>
-      <option value="2weeks">Last 2 Weeks</option>
-      <option value="month">This Month</option>
-      <option value="year">This Year</option>
-    </select>
+                  >
+                    <option value="week">This Week</option>
+                    <option value="2weeks">Last 2 Weeks</option>
+                    <option value="month">This Month</option>
+                    <option value="year">This Year</option>
+                  </select>
 
-    <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#C8A882] text-xs">
-      <FaAngleDown />
-    </span>
-  </div>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#C8A882] text-xs">
+                    <FaAngleDown />
+                  </span>
+                </div>
 
-</div>
+              </div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C8A882] to-[#8B6F5E] flex items-center justify-center text-white font-bold text-sm cursor-pointer">
                 A
               </div>
@@ -400,7 +508,7 @@ const AdminDashboard = () => {
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart
                   data={chartData}
-                  margin={{ top: 5, right: 15, left: 15, bottom: 0 }} 
+                  margin={{ top: 5, right: 15, left: 15, bottom: 0 }}
                   barSize={13}
                 >
                   <CartesianGrid stroke="#F0E8DF" strokeDasharray="4 4" vertical={false} />
@@ -413,8 +521,8 @@ const AdminDashboard = () => {
                   />
 
                   <YAxis
-                    width={80} 
-                    tickFormatter={(value) => Number(value).toLocaleString("en-IN")} 
+                    width={80}
+                    tickFormatter={(value) => Number(value).toLocaleString("en-IN")}
                     tick={axProps}
                     axisLine={false}
                     tickLine={false}

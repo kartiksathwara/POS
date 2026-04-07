@@ -86,7 +86,7 @@ const AdminRegister = () => {
     try {
       await registerAdmin(form);
       alert("Admin Registered Successfully");
-      navigate("/login");
+      navigate("/");
     } catch (err: any) {
       alert(err.message);
     }

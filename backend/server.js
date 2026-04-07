@@ -43,10 +43,11 @@ import couponRoutes from "./routes/couponRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import orderCustomerRoutes from "./routes/orderCustomerRoutes.js";
 import adminDashboardRoutes from "./routes/adminDashboard.js";
+import emailRoutes from "./routes/emailRoutes.js";
+import receiptRoutes from "./routes/receiptRoutes.js";
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
-
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
@@ -58,6 +59,8 @@ app.use("/api/hold-orders", holdOrderRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/ordercustomers", orderCustomerRoutes);
 app.use("/api/admin-dashboard", adminDashboardRoutes);
+app.use("/api", emailRoutes);
+app.use("/api", receiptRoutes);
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {

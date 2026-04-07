@@ -364,12 +364,6 @@ const InventoryPage = () => {
 
             <div className="overflow-y-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 scrollbar-hide rounded-md pb-4">
               {filteredProducts.map((product: any) => {
-
-                const percent =
-                  product.initialStock > 0
-                    ? (product.quantity / product.initialStock) * 100
-                    : 0;
-
                 return (
                   <DraggableWrapper key={product._id} product={product}>
 
@@ -385,23 +379,7 @@ const InventoryPage = () => {
                           })
                         }
                       />
-
-                      {/* ❌ OUT OF STOCK */}
-                      {product.quantity === 0 && (
-                        <div className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded">
-                          Out of Stock
-                        </div>
-                      )}
-
-                      {/* ⚠ LOW STOCK */}
-                      {product.quantity > 0 && percent <= 10 && (
-                        <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">
-                          Low Stock ({percent.toFixed(0)}%)
-                        </div>
-                      )}
-
                     </div>
-
                   </DraggableWrapper>
                 );
               })}

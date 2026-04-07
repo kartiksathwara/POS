@@ -684,15 +684,38 @@ const CustomTooltip = ({ active, payload, label }: any) => {
    TIME FILTER
 ─────────────────────────────────────────────────────────── */
 const filterByTime = (orders: any[], filter: string) => {
-    const now = new Date();
-    return orders.filter((o) => {
-        const d = new Date(o.createdAt);
-        if (filter === "week") { const w = new Date(); w.setDate(now.getDate() - 7); return d >= w; }
-        if (filter === "2weeks") { const w = new Date(); w.setDate(now.getDate() - 14); return d >= w; }
-        if (filter === "month") return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-        if (filter === "year") return d.getFullYear() === now.getFullYear();
-        return true;
-    });
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  return orders.filter((o) => {
+    const d = new Date(o.createdAt);
+    d.setHours(0, 0, 0, 0);
+
+    if (filter === "week") {
+      const start = new Date(now);
+      start.setDate(now.getDate() - 6);
+      return d >= start && d <= now;
+    }
+
+    if (filter === "2weeks") {
+      const start = new Date(now);
+      start.setDate(now.getDate() - 13);
+      return d >= start && d <= now;
+    }
+
+    if (filter === "month") {
+      return (
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear()
+      );
+    }
+
+    if (filter === "year") {
+      return d.getFullYear() === now.getFullYear();
+    }
+
+    return true;
+  });
 };
 
 const getUserId = (o: any): string => typeof o.userId === "string" ? o.userId : o.userId?._id || "";
@@ -748,18 +771,68 @@ const AdminOrders = () => {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     const chartData = useMemo(() => {
-        if (timeFilter === "week" || timeFilter === "2weeks") {
-            const map: Record<string, number> = {};
-            chartBase.forEach((o) => {
-                const k = new Date(o.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
-                map[k] = (map[k] || 0) + (o.totalAmount || 0);
-            });
-            return Object.entries(map).map(([name, revenue]) => ({ name, revenue }));
-        }
-        const m = Array(12).fill(0);
-        chartBase.forEach((o) => { m[new Date(o.createdAt).getMonth()] += o.totalAmount || 0; });
-        return m.map((revenue, i) => ({ name: months[i], revenue }));
-    }, [chartBase, timeFilter]);
+  if (timeFilter === "week" || timeFilter === "2weeks") {
+
+    const days = timeFilter === "week" ? 7 : 14;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // ✅ create full date range
+    const dateArray: string[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      dateArray.push(d.toISOString().split("T")[0]);
+    }
+
+    // ✅ map real data
+    const dataMap: any = {};
+    chartBase.forEach((o) => {
+      const d = new Date(o.createdAt);
+      d.setHours(0, 0, 0, 0);
+
+      const key = d.toISOString().split("T")[0];
+
+      if (!dataMap[key]) dataMap[key] = 0;
+      dataMap[key] += o.totalAmount || 0;
+    });
+
+    // ✅ fill missing dates
+    return dateArray.map((date) => ({
+      name: new Date(date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+      }),
+      revenue: dataMap[date] || 0,
+    }));
+  }
+
+  // year
+  if (timeFilter === "year") {
+    const m = Array(12).fill(0);
+    chartBase.forEach((o) => {
+      m[new Date(o.createdAt).getMonth()] += o.totalAmount || 0;
+    });
+
+    return m.map((v, i) => ({
+      name: months[i],
+      revenue: v,
+    }));
+  }
+
+  // month
+  const m = Array(12).fill(0);
+  chartBase.forEach((o) => {
+    m[new Date(o.createdAt).getMonth()] += o.totalAmount || 0;
+  });
+
+  return m.map((v, i) => ({
+    name: months[i],
+    revenue: v,
+  }));
+
+}, [chartBase, timeFilter]);
 
     const statusData = useMemo(() => {
         const map: Record<string, number> = {};
