@@ -713,7 +713,7 @@ export const verifyAdmin = async (password: string) => {
 };
 
 export const getAdminDashboard = async () => {
-  const token = localStorage.getItem("POS-token");
+  const token = localStorage.getItem("token");
 
   const res = await fetch("http://localhost:5000/api/admin-dashboard", {
     headers: {
@@ -730,4 +730,19 @@ export const getAdminDashboard = async () => {
     throw new Error("Backend not returning JSON");
   }
 };
+export const updateUserPin = async (id: string, pin: string, adminPassword: string) => {
+  const res = await fetch(`${BASE_URL}/auth/update-user/${id}`, {
+    method: "PATCH",
+    headers: {
+      ...getAuthHeader(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ pin, adminPassword })
+  });
 
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  return data;
+};

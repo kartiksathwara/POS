@@ -403,17 +403,57 @@ router.patch("/:id", protect, async (req, res) => {
 
 /* ================= DELETE ORDER ================= */
 
+// router.delete("/:id", protect, async (req, res) => {
+//   try {
+//     await Order.findOneAndDelete({
+//       _id: req.params.id,
+//       userId: req.user.id // 🔥 SECURITY
+//     });
+
+//     res.json({ message: "Order deleted" });
+
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+// export default router;
+
+
 router.delete("/:id", protect, async (req, res) => {
   try {
-    await Order.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.user.id // 🔥 SECURITY
+    console.log("DELETE REQUEST ID:", req.params.id);
+    console.log("USER:", req.user);
+
+    // 🔒 only admin
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Only admin can delete orders"
+      });
+    }
+
+    // ✅ find first
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found"
+      });
+    }
+
+    // ✅ delete using deleteOne (more reliable)
+    await Order.deleteOne({ _id: req.params.id });
+
+    res.json({
+      message: "Order deleted successfully",
+      deletedId: req.params.id
     });
 
-    res.json({ message: "Order deleted" });
-
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("DELETE ERROR:", err);
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 

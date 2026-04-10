@@ -428,3 +428,33 @@ router.post("/verify-admin", protect, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+
+router.patch("/update-user/:id", protect, async (req, res) => {
+  try {
+    const { pin, adminPassword } = req.body;
+
+    const admin = await User.findById(req.user.id);
+
+    if (!admin || admin.role !== "admin") {
+      return res.status(403).json({ message: "Not admin" });
+    }
+
+    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Wrong admin password" });
+    }
+
+    const hashedPin = await bcrypt.hash(pin, 10);
+
+    await User.findByIdAndUpdate(req.params.id, {
+      pin: hashedPin,
+    });
+
+    res.json({ message: "PIN updated successfully" });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});

@@ -113,9 +113,8 @@ import { useEffect, useState } from "react";
 import Header from "./Header";
 import SearchBar from "./SearchBar";
 import { IoIosArrowBack } from "react-icons/io";
-import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { getOrders, deleteOrder } from "../api/apiServices";
+import { getOrders } from "../api/apiServices";
 import type { Order } from "../api/apiServices";
 
 const statusStyles: Record<string, string> = {
@@ -143,18 +142,7 @@ const OrdersPage = () => {
     loadOrders();
   }, []);
 
-  /* ================= DELETE ORDER ================= */
-  const handleDelete = async (id: string) => {
-  try {
-
-    await deleteOrder(id);
-
-    setOrders((prev) => prev.filter((o) => o._id !== id));
-
-  } catch (err) {
-    console.error(err);
-  }
-};
+  
 
   /* ================= SEARCH ================= */
   const handleSearch = (term: string) => {
@@ -198,7 +186,6 @@ const OrdersPage = () => {
                 <th className="p-3 text-white">Name</th>
                 <th className="p-3 text-white">Date & Time</th>
                 <th className="p-3 text-white">Status</th>
-                <th className="p-3 text-white">Action</th>
               </tr>
             </thead>
 
@@ -218,7 +205,7 @@ const OrdersPage = () => {
 
                     {/* Customer */}
                     <td className="p-3">
-                     {order.customer?.name || "Guest"}
+                      {order.customer?.name || "Guest"}
                     </td>
 
                     {/* Date & Time */}
@@ -236,12 +223,7 @@ const OrdersPage = () => {
                     </td>
 
                     {/* Delete */}
-                    <td className="p-3">
-                      <FaTrash
-                        className="cursor-pointer text-red-500"
-                        onClick={() => handleDelete(order._id)}
-                      />
-                    </td>
+                    
                   </tr>
                 );
               })}
